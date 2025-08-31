@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Debug NestJS API",
+      "request": "launch",
+      "command": "npm run start:dev",
+      "autoAttachChildProcesses": true,
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/personal-music-api"
+    }
+  ]
+}
