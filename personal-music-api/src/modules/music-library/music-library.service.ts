@@ -16,6 +16,9 @@ interface ParsedInfo {
 
 @Injectable()
 export class MusicLibraryService {
+  getAlbumArtBuffer(id: number) {
+    throw new Error('Method not implemented.');
+  }
   constructor(private prisma: PrismaService) {}
 
   private sanitizeString(str: string): string {
