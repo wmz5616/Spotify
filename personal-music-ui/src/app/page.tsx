@@ -5,10 +5,10 @@ import AlbumCard from "@/components/AlbumCard";
 type Album = {
   id: number;
   title: string;
-  artist: {
+  artists: {
     id: number;
     name: string;
-  };
+  }[];
   _count: {
     songs: number;
   };

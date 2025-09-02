@@ -3,12 +3,12 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as mm from 'music-metadata';
-import { Artist } from '@prisma/client';
+import { ensureDir } from 'fs-extra';
 
-interface ParsedTags {
-  artist?: string;
-  album?: string;
-  title?: string;
+interface ParsedInfo {
+  artist: string;
+  album: string;
+  title: string;
   trackNumber?: number;
   imageBuffer?: Buffer;
   duration?: number;
@@ -24,19 +24,57 @@ export class MusicLibraryService {
     return str.replace(/\u0000/g, '').trim();
   }
 
-  async parseMetadata(filePath: string): Promise<ParsedTags | null> {
+  parseInfoFromPath(
+    filePath: string,
+    musicDirectory: string,
+  ): Omit<ParsedInfo, 'imageBuffer' | 'duration' | 'trackNumber'> | null {
+    const relativePath = path.relative(musicDirectory, filePath);
+    const parts = relativePath.split(path.sep);
+
+    if (parts.length < 3) {
+      console.warn(`Skipping file with invalid path structure: ${filePath}`);
+      return null;
+    }
+
+    const artist = parts[0];
+    const album = parts[1];
+
+    const songFileName = path.basename(
+      parts[parts.length - 1],
+      path.extname(parts[parts.length - 1]),
+    );
+
+    const titleWithArtists = songFileName.replace(/^\d+\s*[-.]?\s*/, '');
+    const separator = ' - ';
+    const separatorIndex = titleWithArtists.lastIndexOf(separator);
+    let title;
+
+    if (separatorIndex !== -1) {
+      title = titleWithArtists.substring(separatorIndex + separator.length);
+    } else {
+      title = titleWithArtists;
+    }
+
+    if (!artist || !album || !title) {
+      return null;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    return { artist, album, title };
+  }
+
+  async getSupplementaryMetadata(
+    filePath: string,
+  ): Promise<Pick<ParsedInfo, 'imageBuffer' | 'duration' | 'trackNumber'>> {
     try {
       const metadata = await mm.parseFile(filePath);
       const track = metadata.common.track.no;
       const picture = metadata.common.picture?.[0];
 
       return {
-        artist: metadata.common.artist,
-        album: metadata.common.album,
-        title: metadata.common.title,
-        trackNumber: track && !isNaN(track) ? track : undefined,
         imageBuffer: picture ? Buffer.from(picture.data) : undefined,
         duration: metadata.format.duration,
+        trackNumber: track && !isNaN(track) ? track : undefined,
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -49,97 +87,101 @@ export class MusicLibraryService {
           error,
         );
       }
-      return null;
+      return {};
     }
   }
 
   async scanAndSaveMusic(directory: string) {
-    console.log('Starting music library scan...');
+    console.log('Starting music library scan with new architecture...');
     const filePaths = await this.getAudioFilePaths(directory);
     console.log(`Found ${filePaths.length} audio files.`);
 
+    const coversDir = path.join(process.cwd(), 'public', 'covers');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    await ensureDir(coversDir);
+
     for (const filePath of filePaths) {
-      const tags = await this.parseMetadata(filePath);
-      if (!tags || !tags.artist || !tags.album || !tags.title) {
-        console.warn(`Skipping file with incomplete metadata: ${filePath}`);
-        continue;
+      const pathInfo = this.parseInfoFromPath(filePath, directory);
+      if (!pathInfo) continue;
+
+      const supplementaryInfo = await this.getSupplementaryMetadata(filePath);
+      const tags = { ...pathInfo, ...supplementaryInfo };
+
+      const artistName = this.sanitizeString(tags.artist);
+      if (!artistName) continue;
+
+      let artist = await this.prisma.artist.upsert({
+        where: { name: artistName },
+        create: { name: artistName },
+        update: {},
+      });
+
+      const artistFolderPath = path.dirname(path.dirname(filePath));
+      const avatarPath = path.join(artistFolderPath, '头像.png');
+      const headerPath = path.join(artistFolderPath, '封面图.png');
+      const dataToUpdate: { avatarUrl?: string; headerUrl?: string } = {};
+
+      try {
+        await fs.access(avatarPath);
+        dataToUpdate.avatarUrl = path
+          .relative(directory, avatarPath)
+          .replace(/\\/g, '/');
+      } catch {
+        /* ignore */
+      }
+      try {
+        await fs.access(headerPath);
+        dataToUpdate.headerUrl = path
+          .relative(directory, headerPath)
+          .replace(/\\/g, '/');
+      } catch {
+        /* ignore */
       }
 
-      const artistNames = tags.artist
-        .split(/[,;&/／]| feat\. /)
-        .map((name) => this.sanitizeString(name))
-        .filter(Boolean);
-      if (artistNames.length === 0) {
-        console.warn(`Skipping file with no valid artist names: ${filePath}`);
-        continue;
-      }
-
-      const artistEntities: Artist[] = [];
-      for (const name of artistNames) {
-        let artist = await this.prisma.artist.upsert({
-          where: { name },
-          create: { name },
-          update: {},
+      if (Object.keys(dataToUpdate).length > 0) {
+        artist = await this.prisma.artist.update({
+          where: { id: artist.id },
+          data: dataToUpdate,
         });
-
-        if (!artist.avatarUrl || !artist.headerUrl) {
-          const artistFolderPath = path.dirname(filePath);
-          const avatarPath = path.join(artistFolderPath, '头像.png');
-          const headerPath = path.join(artistFolderPath, '封面图.png');
-
-          const dataToUpdate: { avatarUrl?: string; headerUrl?: string } = {};
-
-          try {
-            await fs.access(avatarPath);
-            dataToUpdate.avatarUrl = path
-              .relative(directory, avatarPath)
-              .replace(/\\/g, '/');
-          } catch {
-            /* ignore */
-          }
-
-          try {
-            await fs.access(headerPath);
-            dataToUpdate.headerUrl = path
-              .relative(directory, headerPath)
-              .replace(/\\/g, '/');
-          } catch {
-            /* ignore */
-          }
-
-          if (Object.keys(dataToUpdate).length > 0) {
-            artist = await this.prisma.artist.update({
-              where: { id: artist.id },
-              data: dataToUpdate,
-            });
-          }
-        }
-        artistEntities.push(artist);
       }
 
       const cleanAlbum = this.sanitizeString(tags.album);
       const cleanTitle = this.sanitizeString(tags.title);
-
       if (!cleanAlbum || !cleanTitle) continue;
 
-      const sortedArtistNames = artistEntities
-        .map((a) => a.name)
-        .sort()
-        .join(', ');
-      const albumUniqueId = `${cleanAlbum}___${sortedArtistNames}`;
+      const albumUniqueId = `${cleanAlbum}___${artist.name}`;
 
       const album = await this.prisma.album.upsert({
         where: { uniqueId: albumUniqueId },
         create: {
           title: cleanAlbum,
           uniqueId: albumUniqueId,
-          cover: tags.imageBuffer,
-          artists: { connect: artistEntities.map((a) => ({ id: a.id })) },
+          artists: { connect: { id: artist.id } },
         },
         update: {
-          ...(tags.imageBuffer && { cover: tags.imageBuffer }),
+          artists: { connect: { id: artist.id } },
         },
       });
+
+      const existingAlbum = await this.prisma.album.findUnique({
+        where: { id: album.id },
+        select: { coverPath: true },
+      });
+      let coverPath: string | null = existingAlbum?.coverPath || null;
+
+      if (!coverPath) {
+        const finalCoverBuffer = tags.imageBuffer;
+        if (finalCoverBuffer) {
+          const newCoverPath = path.join(coversDir, `${album.id}.jpg`);
+          await fs.writeFile(newCoverPath, finalCoverBuffer);
+          coverPath = `/covers/${album.id}.jpg`;
+
+          await this.prisma.album.update({
+            where: { id: album.id },
+            data: { coverPath: coverPath },
+          });
+        }
+      }
 
       await this.prisma.song.upsert({
         where: { path: filePath },
@@ -221,7 +263,7 @@ export class MusicLibraryService {
   async findAlbumArt(id: number) {
     return this.prisma.album.findUnique({
       where: { id },
-      select: { cover: true },
+      select: { coverPath: true },
     });
   }
 
@@ -268,5 +310,58 @@ export class MusicLibraryService {
       }),
     );
     return files.flat().filter((file): file is string => !!file);
+  }
+
+  async createPlaylist(name: string, description?: string) {
+    return this.prisma.playlist.create({
+      data: {
+        name,
+        description,
+      },
+    });
+  }
+
+  async addSongsToPlaylist(playlistId: number, songIds: number[]) {
+    return this.prisma.playlist.update({
+      where: { id: playlistId },
+      data: {
+        songs: {
+          connect: songIds.map((id) => ({ id })),
+        },
+      },
+    });
+  }
+
+  async findAllPlaylists() {
+    return this.prisma.playlist.findMany({
+      include: {
+        songs: {
+          take: 1,
+          include: {
+            album: true,
+          },
+        },
+        _count: {
+          select: { songs: true },
+        },
+      },
+    });
+  }
+
+  async findPlaylistById(id: number) {
+    return this.prisma.playlist.findUnique({
+      where: { id },
+      include: {
+        songs: {
+          include: {
+            album: {
+              include: {
+                artists: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }

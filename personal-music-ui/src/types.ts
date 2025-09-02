@@ -28,3 +28,12 @@ export type Song = {
     artists: Artist[];
   };
 };
+
+export type Playlist = {
+  id: number;
+  name: string;
+  songs: Song[];
+  _count: {
+    songs: number;
+  };
+};

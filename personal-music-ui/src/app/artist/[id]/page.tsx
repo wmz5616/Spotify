@@ -4,6 +4,7 @@ import AlbumCard from "@/components/AlbumCard";
 import { Play } from "lucide-react";
 import type { Song, Album, Artist } from "@/types";
 import SongRowItem from "@/components/SongRowItem";
+import PopularSongsList from "@/components/PopularSongsList";
 
 type ArtistDetails = Artist & {
   albums: (Album & { songs: Song[]; artists: Artist[] })[];
@@ -88,11 +89,7 @@ const ArtistDetailPage = async ({ params }: ArtistDetailPageProps) => {
 
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Popular</h2>
-          <div>
-            {popularSongs.map((song, index) => (
-              <SongRowItem key={song.id} song={song} index={index} />
-            ))}
-          </div>
+          <PopularSongsList songs={popularSongs} />
         </section>
 
         <section>

@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   Post,
+  Body,
   ParseIntPipe,
   Res,
   Req,
@@ -12,7 +13,9 @@ import {
 } from '@nestjs/common';
 import { MusicLibraryService } from './music-library.service';
 import type { Request, Response } from 'express';
+// ▼▼▼ 新增下面这行，这是解决所有错误的关键 ▼▼▼
 import { createReadStream, statSync, promises as fs } from 'fs';
+// ▲▲▲ 新增上面这行 ▲▲▲
 import { join } from 'path';
 
 @Controller('api')
@@ -54,23 +57,25 @@ export class MusicLibraryController {
   @Get('album-art/:id')
   async getAlbumArt(
     @Param('id', ParseIntPipe) id: number,
-    @Res() response: Response,
-  ) {
-    const result = await this.musicLibraryService.findAlbumArt(id);
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<StreamableFile> {
+    const album = await this.musicLibraryService.findAlbumArt(id);
     const placeholderPath = join(process.cwd(), 'assets', 'placeholder.png');
 
-    if (result && result.cover) {
-      response.setHeader('Content-Type', 'image/jpeg');
-      response.send(result.cover);
-    } else {
+    if (album && album.coverPath) {
+      const coverAbsolutePath = join(process.cwd(), 'public', album.coverPath);
       try {
-        await fs.access(placeholderPath);
-        response.setHeader('Content-Type', 'image/png');
-        createReadStream(placeholderPath).pipe(response);
+        await fs.access(coverAbsolutePath); // 检查文件是否存在
+        response.set({ 'Content-Type': 'image/jpeg' });
+        return new StreamableFile(createReadStream(coverAbsolutePath));
       } catch {
-        throw new NotFoundException('Album art not found');
+        // 如果文件不存在，则回退到占位图
       }
     }
+
+    // 如果没有封面或文件不存在，则返回占位图
+    response.set({ 'Content-Type': 'image/png' });
+    return new StreamableFile(createReadStream(placeholderPath));
   }
 
   @Get('search')
@@ -136,5 +141,33 @@ export class MusicLibraryController {
       response.set({ 'Content-Type': 'image/png' });
       return new StreamableFile(file);
     }
+  }
+
+  @Get('playlists')
+  findAllPlaylists() {
+    return this.musicLibraryService.findAllPlaylists();
+  }
+
+  @Get('playlists/:id')
+  findPlaylistById(@Param('id', ParseIntPipe) id: number) {
+    return this.musicLibraryService.findPlaylistById(id);
+  }
+
+  @Post('playlists')
+  createPlaylist(
+    @Body() createPlaylistDto: { name: string; description?: string },
+  ) {
+    return this.musicLibraryService.createPlaylist(
+      createPlaylistDto.name,
+      createPlaylistDto.description,
+    );
+  }
+
+  @Post('playlists/:id/songs')
+  addSongsToPlaylist(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() addSongsDto: { songIds: number[] },
+  ) {
+    return this.musicLibraryService.addSongsToPlaylist(id, addSongsDto.songIds);
   }
 }
