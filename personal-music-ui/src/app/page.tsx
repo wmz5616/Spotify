@@ -1,11 +1,14 @@
 import AlbumCard from "@/components/AlbumCard";
-import type { Song } from "@/types"; // 我们复用之前创建的类型
 
 // 为从API获取的专辑数据定义一个更完整的类型
 // 注意：这与 AlbumCard 中定义的类型是兼容的
 type Album = {
   id: number;
   title: string;
+  artist: {
+    id: number;
+    name: string;
+  };
   _count: {
     songs: number;
   };
@@ -25,6 +28,7 @@ const HomePage = async () => {
 
     if (res.ok) {
       albums = await res.json();
+      console.log("Data received from API:", JSON.stringify(albums, null, 2));
     } else {
       // 如果API请求失败，记录一个错误信息
       error = "Could not load albums from the library.";
@@ -37,7 +41,7 @@ const HomePage = async () => {
 
   return (
     // 使用 padding 来创建页面内容的边距
-    <div className="p-6">
+    <div>
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white tracking-tight">
           Welcome Back
@@ -48,7 +52,7 @@ const HomePage = async () => {
       </header>
 
       <section>
-        <h2 className="text-xl font-bold text-white mb-4">All Albums</h2>
+        <h2 className="text-xl font-bold text-white mb-6">All Albums</h2>
 
         {/* 根据数据加载情况，显示不同的内容 */}
         {error ? (

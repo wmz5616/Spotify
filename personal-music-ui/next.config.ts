@@ -5,8 +5,15 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-        port: "3000", // 明确指定后端的端口
-        pathname: "/api/album-art/**", // 明确指定允许的路径
+        port: "3000",
+        pathname: "/api/album-art/**", // 已有的
+      },
+      {
+        // 新增的部分
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+        pathname: "/api/artist-image/**",
       },
     ],
   },

@@ -1,57 +1,98 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { Home, Search, Library } from "lucide-react";
+import type { Artist } from "@/types";
 
-// 1. 为从API获取的艺术家数据定义一个类型，增强代码健壮性
-type Artist = {
-  id: number;
-  name: string;
-  _count: {
-    albums: number;
-  };
-};
-
-// 2. 将组件声明为 async，使其可以在服务器端执行异步操作
-const Sidebar = async () => {
-  let artists: Artist[] = [];
-
-  // 3. 使用 fetch 从后端API获取艺术家列表
+async function getArtists(): Promise<Artist[]> {
   try {
     const res = await fetch("http://localhost:3000/api/artists", {
-      cache: "no-store", // 在开发阶段，确保每次都能获取最新数据
+      cache: "no-store",
     });
-
     if (res.ok) {
-      artists = await res.json();
-    } else {
-      console.error("Failed to fetch artists:", res.statusText);
+      return res.json();
     }
+    console.error("Failed to fetch artists:", res.statusText);
+    return [];
   } catch (error) {
     console.error("An error occurred while fetching artists:", error);
+    return [];
   }
+}
+
+const Sidebar = async () => {
+  const artists = await getArtists();
 
   return (
-    <aside className="row-span-2 flex flex-col bg-neutral-900 p-4">
-      <div className="mb-4">
-        {/* 这里可以放 Logo 或 Home/Search 链接 */}
-        <h1 className="text-2xl font-bold">My Music</h1>
-      </div>
-      <div className="flex-grow overflow-y-auto">
-        <h2 className="text-sm font-semibold text-neutral-400 mb-2">ARTISTS</h2>
+    <aside className="row-span-2 flex flex-col gap-2 bg-black p-2">
+      <div className="bg-neutral-900 rounded-lg p-2">
         <nav>
           <ul>
-            {/* 4. 使用 map 遍历获取到的 artists 数组，并渲染成一个列表 */}
-            {artists.map((artist) => (
-              <li key={artist.id} className="mb-1">
-                <Link
-                  href={`/artist/${artist.id}`}
-                  className="block text-neutral-300 hover:text-white transition-colors duration-200 py-1 rounded"
-                >
-                  {artist.name}
-                </Link>
-              </li>
-            ))}
+            <li>
+              <Link
+                href="/"
+                className="flex items-center gap-4 p-2 text-neutral-300 font-bold hover:text-white transition-colors"
+              >
+                <Home size={24} />
+                <span>Home</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/search"
+                className="flex items-center gap-4 p-2 text-neutral-300 font-bold hover:text-white transition-colors"
+              >
+                <Search size={24} />
+                <span>Search</span>
+              </Link>
+            </li>
           </ul>
         </nav>
+      </div>
+      <div className="bg-neutral-900 rounded-lg flex-grow flex flex-col">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-4 text-neutral-300 font-bold hover:text-white transition-colors cursor-pointer">
+            <Library size={24} />
+            <span>Your Library</span>
+          </div>
+        </div>
+        <div className="flex-grow overflow-y-auto px-2 pb-2">
+          <nav>
+            <ul>
+              {artists.map((artist) => {
+                const imageUrl = artist.avatarUrl
+                  ? `http://localhost:3000/api/artist-image/${artist.avatarUrl}`
+                  : artist.albums && artist.albums.length > 0
+                  ? `http://localhost:3000/api/album-art/${artist.albums[0].id}`
+                  : "/placeholder.png";
+
+                return (
+                  <li key={artist.id}>
+                    <Link
+                      href={`/artist/${artist.id}`}
+                      className="flex items-center gap-3 p-2 rounded-md hover:bg-neutral-800/50 transition-colors"
+                    >
+                      <div className="relative w-12 h-12 flex-shrink-0">
+                        <Image
+                          src={imageUrl}
+                          alt={artist.name}
+                          fill
+                          className="rounded-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white truncate">
+                          {artist.name}
+                        </p>
+                        <p className="text-sm text-neutral-400">Artist</p>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </div>
       </div>
     </aside>
   );

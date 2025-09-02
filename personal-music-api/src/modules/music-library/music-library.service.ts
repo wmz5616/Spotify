@@ -3,14 +3,15 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as mm from 'music-metadata';
+import { Artist } from '@prisma/client';
 
-// ... (Interface ParsedTags, constructor, sanitizeString, parseMetadata, scanAndSaveMusic, findAllArtists, findArtistById, findAllAlbums - all remain the same)
 interface ParsedTags {
   artist?: string;
   album?: string;
   title?: string;
   trackNumber?: number;
   imageBuffer?: Buffer;
+  duration?: number;
 }
 
 @Injectable()
@@ -19,7 +20,8 @@ export class MusicLibraryService {
 
   private sanitizeString(str: string): string {
     if (!str) return '';
-    return str.replace(/[^a-zA-Z0-9\s.,'()_-]/g, '').trim();
+    // eslint-disable-next-line no-control-regex
+    return str.replace(/\u0000/g, '').trim();
   }
 
   async parseMetadata(filePath: string): Promise<ParsedTags | null> {
@@ -34,6 +36,7 @@ export class MusicLibraryService {
         title: metadata.common.title,
         trackNumber: track && !isNaN(track) ? track : undefined,
         imageBuffer: picture ? Buffer.from(picture.data) : undefined,
+        duration: metadata.format.duration,
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -57,36 +60,84 @@ export class MusicLibraryService {
 
     for (const filePath of filePaths) {
       const tags = await this.parseMetadata(filePath);
-
       if (!tags || !tags.artist || !tags.album || !tags.title) {
         console.warn(`Skipping file with incomplete metadata: ${filePath}`);
         continue;
       }
 
-      const cleanArtist = this.sanitizeString(tags.artist);
-      const cleanAlbum = this.sanitizeString(tags.album);
-      const cleanTitle = this.sanitizeString(tags.title);
-
-      if (!cleanArtist || !cleanAlbum || !cleanTitle) {
-        console.warn(
-          `Skipping file after sanitization (empty metadata): ${filePath}`,
-        );
+      const artistNames = tags.artist
+        .split(/[,;&/／]| feat\. /)
+        .map((name) => this.sanitizeString(name))
+        .filter(Boolean);
+      if (artistNames.length === 0) {
+        console.warn(`Skipping file with no valid artist names: ${filePath}`);
         continue;
       }
 
-      const artist = await this.prisma.artist.upsert({
-        where: { name: cleanArtist },
-        update: {},
-        create: { name: cleanArtist },
-      });
+      const artistEntities: Artist[] = [];
+      for (const name of artistNames) {
+        let artist = await this.prisma.artist.upsert({
+          where: { name },
+          create: { name },
+          update: {},
+        });
+
+        if (!artist.avatarUrl || !artist.headerUrl) {
+          const artistFolderPath = path.dirname(filePath);
+          const avatarPath = path.join(artistFolderPath, '头像.png');
+          const headerPath = path.join(artistFolderPath, '封面图.png');
+
+          const dataToUpdate: { avatarUrl?: string; headerUrl?: string } = {};
+
+          try {
+            await fs.access(avatarPath);
+            dataToUpdate.avatarUrl = path
+              .relative(directory, avatarPath)
+              .replace(/\\/g, '/');
+          } catch {
+            /* ignore */
+          }
+
+          try {
+            await fs.access(headerPath);
+            dataToUpdate.headerUrl = path
+              .relative(directory, headerPath)
+              .replace(/\\/g, '/');
+          } catch {
+            /* ignore */
+          }
+
+          if (Object.keys(dataToUpdate).length > 0) {
+            artist = await this.prisma.artist.update({
+              where: { id: artist.id },
+              data: dataToUpdate,
+            });
+          }
+        }
+        artistEntities.push(artist);
+      }
+
+      const cleanAlbum = this.sanitizeString(tags.album);
+      const cleanTitle = this.sanitizeString(tags.title);
+
+      if (!cleanAlbum || !cleanTitle) continue;
+
+      const sortedArtistNames = artistEntities
+        .map((a) => a.name)
+        .sort()
+        .join(', ');
+      const albumUniqueId = `${cleanAlbum}___${sortedArtistNames}`;
 
       const album = await this.prisma.album.upsert({
-        where: { title_artistId: { title: cleanAlbum, artistId: artist.id } },
-        update: { cover: tags.imageBuffer },
+        where: { uniqueId: albumUniqueId },
         create: {
           title: cleanAlbum,
-          artistId: artist.id,
+          uniqueId: albumUniqueId,
           cover: tags.imageBuffer,
+          artists: { connect: artistEntities.map((a) => ({ id: a.id })) },
+        },
+        update: {
+          ...(tags.imageBuffer && { cover: tags.imageBuffer }),
         },
       });
 
@@ -96,12 +147,14 @@ export class MusicLibraryService {
           title: cleanTitle,
           trackNumber: tags.trackNumber,
           albumId: album.id,
+          duration: tags.duration,
         },
         create: {
           path: filePath,
           title: cleanTitle,
           trackNumber: tags.trackNumber,
           albumId: album.id,
+          duration: tags.duration,
         },
       });
     }
@@ -111,9 +164,8 @@ export class MusicLibraryService {
   async findAllArtists() {
     return this.prisma.artist.findMany({
       include: {
-        _count: {
-          select: { albums: true },
-        },
+        _count: { select: { albums: true } },
+        albums: { take: 1, select: { id: true } },
       },
     });
   }
@@ -121,14 +173,18 @@ export class MusicLibraryService {
   async findArtistById(id: number) {
     return this.prisma.artist.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        avatarUrl: true,
+        headerUrl: true,
         albums: {
           select: {
             id: true,
             title: true,
-            _count: {
-              select: { songs: true },
-            },
+            artists: { select: { id: true, name: true } },
+            songs: { orderBy: { trackNumber: 'asc' } },
+            _count: { select: { songs: true } },
           },
         },
       },
@@ -140,47 +196,52 @@ export class MusicLibraryService {
       select: {
         id: true,
         title: true,
-        artist: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        artists: { select: { id: true, name: true } },
+        _count: { select: { songs: true } },
       },
     });
   }
 
-  // --- 修正这里的代码 ---
   async findAlbumById(id: number) {
     return this.prisma.album.findUnique({
       where: { id },
       select: {
         id: true,
         title: true,
-        artist: true, // 把 artist 加回来
-        songs: {
-          orderBy: {
-            trackNumber: 'asc',
-          },
-        },
+        artists: { select: { id: true, name: true } },
+        songs: { orderBy: { trackNumber: 'asc' } },
       },
     });
   }
-  // --- 修正结束 ---
 
   async findSongById(id: number) {
-    return this.prisma.song.findUnique({
-      where: { id },
-    });
+    return this.prisma.song.findUnique({ where: { id } });
   }
 
   async findAlbumArt(id: number) {
     return this.prisma.album.findUnique({
       where: { id },
-      select: {
-        cover: true,
-      },
+      select: { cover: true },
     });
+  }
+
+  async search(query: string) {
+    const artists = await this.prisma.artist.findMany({
+      where: { name: { contains: query } },
+      include: { albums: { take: 1 } },
+      take: 5,
+    });
+    const albums = await this.prisma.album.findMany({
+      where: { title: { contains: query } },
+      include: { artists: true, _count: { select: { songs: true } } },
+      take: 5,
+    });
+    const songs = await this.prisma.song.findMany({
+      where: { title: { contains: query } },
+      include: { album: { include: { artists: true } } },
+      take: 10,
+    });
+    return { artists, albums, songs };
   }
 
   async findSongPath(id: number): Promise<string | null> {
@@ -198,16 +259,14 @@ export class MusicLibraryService {
         const res = path.resolve(dir, dirent.name);
         if (dirent.isDirectory()) {
           return this.getAudioFilePaths(res);
-        } else {
-          if (
-            ['.mp3', '.flac', '.m4a'].includes(path.extname(res).toLowerCase())
-          ) {
-            return res;
-          }
-          return null;
+        } else if (
+          ['.mp3', '.flac', '.m4a'].includes(path.extname(res).toLowerCase())
+        ) {
+          return res;
         }
+        return null;
       }),
     );
-    return files.flat().filter(Boolean) as string[];
+    return files.flat().filter((file): file is string => !!file);
   }
 }

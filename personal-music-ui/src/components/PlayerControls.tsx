@@ -4,6 +4,8 @@ import React from "react";
 import { Play, Pause } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import ProgressBar from "./ProgressBar"; // 1. 导入进度条组件
+import Image from "next/image"; // 1. 导入 Image 组件
+import Link from "next/link"; // 1. 导入 Link 组件
 
 const PlayerControls = () => {
   const { isPlaying, togglePlayPause, currentSong } = usePlayerStore();
@@ -16,12 +18,40 @@ const PlayerControls = () => {
     );
   }
 
+  const albumArtUrl = currentSong.album?.id
+    ? `http://localhost:3000/api/album-art/${currentSong.album.id}`
+    : "/placeholder.jpg"; // 一个备用图片
+
   return (
     <footer className="col-start-1 col-span-2 bg-neutral-950 h-[90px] px-4 border-t border-neutral-800 grid grid-cols-3 items-center">
       {/* 左侧：当前歌曲信息 */}
-      <div className="text-white">
-        <h3 className="font-bold truncate">{currentSong.title}</h3>
-        <p className="text-sm text-neutral-400">Artist Name</p>
+      <div className="flex items-center gap-3">
+        {currentSong.album && (
+          <Image
+            src={albumArtUrl}
+            alt={currentSong.album.title}
+            width={56}
+            height={56}
+            className="rounded-md"
+          />
+        )}
+        <div>
+          <h3 className="font-semibold text-white truncate text-sm">
+            {currentSong.title}
+          </h3>
+          {/* 下方 P 标签改为 Div 来处理链接 */}
+          <div className="text-xs text-neutral-400 truncate">
+            {currentSong.album?.artists.map((artist, index) => (
+              <React.Fragment key={artist.id}>
+                <Link href={`/artist/${artist.id}`} className="hover:underline">
+                  {artist.name}
+                </Link>
+                {/* 如果不是最后一个艺人，则添加逗号和空格 */}
+                {index < currentSong.album!.artists.length - 1 && ", "}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* 中间：播放控制和进度条 */}

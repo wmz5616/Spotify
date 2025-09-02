@@ -22,7 +22,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="grid grid-rows-[1fr_auto] grid-cols-[auto_1fr] h-screen bg-black text-white">
           <Sidebar /> {/* 3. 使用Sidebar组件 */}
-          <main className="overflow-y-auto bg-neutral-800 p-4">{children}</main>
+          <main className="overflow-y-auto relative">
+            {/* 这个 div 就是我们的渐变背景 */}
+            <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-emerald-800 to-neutral-900/50 -z-10" />
+            <div className="p-6">{children}</div>
+          </main>
           <PlayerControls /> {/* 4. 使用PlayerControls组件 */}
           <AudioPlayer />
         </div>

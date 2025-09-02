@@ -7,11 +7,13 @@ import {
   Res,
   Req,
   NotFoundException,
-} from '@nestjs/common'; // 1. 移除了未使用的 Header 和 StreamableFile
+  Query,
+  StreamableFile,
+} from '@nestjs/common';
 import { MusicLibraryService } from './music-library.service';
-import type { Request, Response } from 'express'; // 2. 将 import 改为 import type
-import { createReadStream, statSync } from 'fs';
-// 3. 移除了未使用的 join
+import type { Request, Response } from 'express';
+import { createReadStream, statSync, promises as fs } from 'fs';
+import { join } from 'path';
 
 @Controller('api')
 export class MusicLibraryController {
@@ -55,11 +57,25 @@ export class MusicLibraryController {
     @Res() response: Response,
   ) {
     const result = await this.musicLibraryService.findAlbumArt(id);
-    if (!result || !result.cover) {
-      throw new NotFoundException('Album art not found');
+    const placeholderPath = join(process.cwd(), 'assets', 'placeholder.png');
+
+    if (result && result.cover) {
+      response.setHeader('Content-Type', 'image/jpeg');
+      response.send(result.cover);
+    } else {
+      try {
+        await fs.access(placeholderPath);
+        response.setHeader('Content-Type', 'image/png');
+        createReadStream(placeholderPath).pipe(response);
+      } catch {
+        throw new NotFoundException('Album art not found');
+      }
     }
-    response.setHeader('Content-Type', 'image/jpeg');
-    response.send(result.cover);
+  }
+
+  @Get('search')
+  search(@Query('q') query: string) {
+    return this.musicLibraryService.search(query || '');
   }
 
   @Get('stream/:id')
@@ -81,7 +97,6 @@ export class MusicLibraryController {
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
       const chunksize = end - start + 1;
-
       const file = createReadStream(songPath, { start, end });
       const head = {
         'Content-Range': `bytes ${start}-${end}/${size}`,
@@ -89,7 +104,6 @@ export class MusicLibraryController {
         'Content-Length': chunksize,
         'Content-Type': 'audio/mpeg',
       };
-
       response.writeHead(206, head);
       file.pipe(response);
     } else {
@@ -99,6 +113,28 @@ export class MusicLibraryController {
       };
       response.writeHead(200, head);
       createReadStream(songPath).pipe(response);
+    }
+  }
+
+  @Get('artist-image/*')
+  getArtistImage(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): StreamableFile {
+    const imagePath = request.params[0];
+    const musicDirectory = 'D:\\音乐库\\已收录';
+    const fullPath = join(musicDirectory, imagePath);
+    const placeholderPath = join(process.cwd(), 'assets', 'placeholder.png');
+
+    try {
+      statSync(fullPath);
+      const file = createReadStream(fullPath);
+      response.set({ 'Content-Type': 'image/png' });
+      return new StreamableFile(file);
+    } catch {
+      const file = createReadStream(placeholderPath);
+      response.set({ 'Content-Type': 'image/png' });
+      return new StreamableFile(file);
     }
   }
 }

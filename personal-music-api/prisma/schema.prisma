@@ -12,17 +12,19 @@ model Artist {
   id     Int     @id @default(autoincrement())
   name   String  @unique
   albums Album[]
+  avatarUrl String? 
+  headerUrl String?
 }
 
 model Album {
   id        Int      @id @default(autoincrement())
   title     String
-  artist    Artist   @relation(fields: [artistId], references: [id])
-  artistId  Int
-  cover     Bytes? // 存储专辑封面图片数据
+  uniqueId  String   @unique
+  artists   Artist[] @relation
+  cover     Bytes? 
   songs     Song[]
 
-  @@unique([title, artistId])
+  
 }
 
 model Song {
@@ -32,4 +34,5 @@ model Song {
   path        String @unique
   album       Album  @relation(fields: [albumId], references: [id])
   albumId     Int
+  duration    Float?
 }
