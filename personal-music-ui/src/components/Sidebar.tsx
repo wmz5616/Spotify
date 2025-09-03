@@ -127,8 +127,15 @@ const Sidebar = async () => {
               })}
               {/* 艺术家渲染 */}
               {artists.map((artist) => {
+                console.log(
+                  "[Sidebar] Artist object:",
+                  JSON.stringify(artist, null, 2)
+                );
                 const imageUrl = artist.avatarUrl
-                  ? `http://localhost:3000/api/artist-image/${artist.avatarUrl}`
+                  ? `http://localhost:3000/api/artist-image/${artist.avatarUrl
+                      .split("/")
+                      .map(encodeURIComponent)
+                      .join("/")}`
                   : artist.albums && artist.albums.length > 0
                   ? `http://localhost:3000/api/album-art/${artist.albums[0].id}`
                   : "/placeholder.png";

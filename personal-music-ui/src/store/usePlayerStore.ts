@@ -8,20 +8,26 @@ interface PlayerState {
   volume: number;
   currentTime: number;
   duration: number;
-
-  // 修正 1: 状态本身的类型也需要允许 ref.current 为 null
   audioRef: React.RefObject<HTMLAudioElement | null> | null;
 
-  playSong: (song: Song) => void;
+  // 新增：播放队列和当前播放索引
+  playQueue: Song[];
+  currentQueueIndex: number | null;
+
+  // 修改：播放歌曲的方法
+  playSong: (song: Song, queue?: Song[]) => void;
+
   togglePlayPause: () => void;
   setVolume: (volume: number) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
-
-  // 修正 2: 函数参数的类型同样需要允许 ref.current 为 null
   setAudioRef: (ref: React.RefObject<HTMLAudioElement | null>) => void;
-
   seek: (time: number) => void;
+
+  // 新增：播放下一首和上一首的方法
+  playNextSong: () => void;
+  playPreviousSong: () => void;
+  handleSongEnd: () => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set, get) => ({
@@ -32,17 +38,54 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   duration: 0,
   audioRef: null,
 
-  playSong: (song) =>
-    set({ currentSong: song, isPlaying: true, currentTime: 0 }),
+  playQueue: [],
+  currentQueueIndex: null,
+
+  playSong: (song, queue = []) => {
+    const newQueue = queue.length > 0 ? queue : [song];
+    const newIndex = newQueue.findIndex((s) => s.id === song.id);
+
+    set({
+      currentSong: song,
+      playQueue: newQueue,
+      currentQueueIndex: newIndex !== -1 ? newIndex : null,
+      isPlaying: true,
+      currentTime: 0,
+    });
+  },
+
   togglePlayPause: () => set((state) => ({ isPlaying: !state.isPlaying })),
   setVolume: (volume) => set({ volume }),
   setCurrentTime: (time) => set({ currentTime: time }),
-  setDuration: (duration) => set({ duration: duration }),
+  setDuration: (duration) => set({ duration }),
   setAudioRef: (ref) => set({ audioRef: ref }),
+
   seek: (time) => {
     const { audioRef } = get();
     if (audioRef?.current) {
       audioRef.current.currentTime = time;
     }
+  },
+
+  playNextSong: () => {
+    const { playQueue, currentQueueIndex } = get();
+    if (playQueue.length > 0 && currentQueueIndex !== null) {
+      const nextIndex = (currentQueueIndex + 1) % playQueue.length;
+      get().playSong(playQueue[nextIndex], playQueue);
+    }
+  },
+
+  playPreviousSong: () => {
+    const { playQueue, currentQueueIndex } = get();
+    if (playQueue.length > 0 && currentQueueIndex !== null) {
+      const prevIndex =
+        (currentQueueIndex - 1 + playQueue.length) % playQueue.length;
+      get().playSong(playQueue[prevIndex], playQueue);
+    }
+  },
+
+  handleSongEnd: () => {
+    // 歌曲播放完后自动播放下一首
+    get().playNextSong();
   },
 }));

@@ -11,7 +11,7 @@ const AudioPlayer = () => {
     setAudioRef,
     setCurrentTime,
     setDuration,
-    togglePlayPause,
+    handleSongEnd, // 获取新的方法
   } = usePlayerStore();
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -58,18 +58,20 @@ const AudioPlayer = () => {
 
     const updateCurrentTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
-    const handleSongEnd = () => togglePlayPause(); // 歌曲播完自动暂停
+
+    // 注意这里的变化！
+    const onEnded = () => handleSongEnd();
 
     audio.addEventListener("timeupdate", updateCurrentTime);
     audio.addEventListener("loadedmetadata", updateDuration);
-    audio.addEventListener("ended", handleSongEnd);
+    audio.addEventListener("ended", onEnded); // 使用新的 onEnded
 
     return () => {
       audio.removeEventListener("timeupdate", updateCurrentTime);
       audio.removeEventListener("loadedmetadata", updateDuration);
-      audio.removeEventListener("ended", handleSongEnd);
+      audio.removeEventListener("ended", onEnded);
     };
-  }, [setCurrentTime, setDuration, togglePlayPause]);
+  }, [setCurrentTime, setDuration, handleSongEnd]); // 添加 handleSongEnd 到依赖项
 
   return <audio ref={audioRef} />;
 };

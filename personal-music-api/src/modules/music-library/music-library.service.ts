@@ -16,7 +16,8 @@ interface ParsedInfo {
 
 @Injectable()
 export class MusicLibraryService {
-  getAlbumArtBuffer(id: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getAlbumArtBuffer(_id: number) {
     throw new Error('Method not implemented.');
   }
   constructor(private prisma: PrismaService) {}
@@ -95,7 +96,7 @@ export class MusicLibraryService {
   }
 
   async scanAndSaveMusic(directory: string) {
-    console.log('Starting music library scan with new architecture...');
+    console.log('Starting music library scan...');
     const filePaths = await this.getAudioFilePaths(directory);
     console.log(`Found ${filePaths.length} audio files.`);
 
@@ -166,23 +167,19 @@ export class MusicLibraryService {
         },
       });
 
-      const existingAlbum = await this.prisma.album.findUnique({
-        where: { id: album.id },
-        select: { coverPath: true },
-      });
-      let coverPath: string | null = existingAlbum?.coverPath || null;
-
-      if (!coverPath) {
+      // 健壮的封面处理逻辑
+      if (!album.coverPath && tags.imageBuffer) {
         const finalCoverBuffer = tags.imageBuffer;
-        if (finalCoverBuffer) {
-          const newCoverPath = path.join(coversDir, `${album.id}.jpg`);
+        const newCoverPath = path.join(coversDir, `${album.id}.jpg`);
+        try {
           await fs.writeFile(newCoverPath, finalCoverBuffer);
-          coverPath = `/covers/${album.id}.jpg`;
-
+          const coverPathForDb = `/covers/${album.id}.jpg`;
           await this.prisma.album.update({
             where: { id: album.id },
-            data: { coverPath: coverPath },
+            data: { coverPath: coverPathForDb },
           });
+        } catch (e) {
+          console.error(`Failed to write cover for album ID ${album.id}:`, e);
         }
       }
 
@@ -208,7 +205,10 @@ export class MusicLibraryService {
 
   async findAllArtists() {
     return this.prisma.artist.findMany({
-      include: {
+      select: {
+        id: true,
+        name: true,
+        avatarUrl: true,
         _count: { select: { albums: true } },
         albums: { take: 1, select: { id: true } },
       },

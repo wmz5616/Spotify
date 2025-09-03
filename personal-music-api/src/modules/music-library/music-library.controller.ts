@@ -13,10 +13,8 @@ import {
 } from '@nestjs/common';
 import { MusicLibraryService } from './music-library.service';
 import type { Request, Response } from 'express';
-// ▼▼▼ 新增下面这行，这是解决所有错误的关键 ▼▼▼
 import { createReadStream, statSync, promises as fs } from 'fs';
-// ▲▲▲ 新增上面这行 ▲▲▲
-import { join } from 'path';
+import path, { join } from 'path';
 
 @Controller('api')
 export class MusicLibraryController {
@@ -122,24 +120,44 @@ export class MusicLibraryController {
   }
 
   @Get('artist-image/*')
-  getArtistImage(
+  async getArtistImage(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-  ): StreamableFile {
-    const imagePath = request.params[0];
+  ): Promise<StreamableFile> {
+    const imagePath = decodeURIComponent(request.params[0]);
     const musicDirectory = 'D:\\音乐库\\已收录';
-    const fullPath = join(musicDirectory, imagePath);
     const placeholderPath = join(process.cwd(), 'assets', 'placeholder.png');
 
+    if (!imagePath || imagePath === 'undefined' || imagePath === 'null') {
+      console.error(
+        `[DIAGNOSTIC-ERROR] Received invalid image path: ${imagePath}, serving placeholder.`,
+      );
+      response.set({ 'Content-Type': 'image/png' });
+      return new StreamableFile(createReadStream(placeholderPath));
+    }
+
+    // 使用 path.resolve 来构建更可靠的绝对路径
+    const fullPath = path.resolve(musicDirectory, imagePath);
+
+    // 我们把路径用引号括起来打印，以检查是否有看不见的空格等字符
+    console.log(`[DIAGNOSTIC-INFO] Final calculated path: "${fullPath}"`);
+
     try {
-      statSync(fullPath);
-      const file = createReadStream(fullPath);
+      // 检查文件是否存在
+      await fs.access(fullPath);
+
+      console.log(`[DIAGNOSTIC-SUCCESS] File found! Serving: "${fullPath}"`);
       response.set({ 'Content-Type': 'image/png' });
-      return new StreamableFile(file);
-    } catch {
-      const file = createReadStream(placeholderPath);
+      return new StreamableFile(createReadStream(fullPath));
+    } catch (error) {
+      // 打印出文件访问失败的【具体错误信息】
+      console.error(
+        `[DIAGNOSTIC-FAILURE] File access FAILED for "${fullPath}". Reason:`,
+        error,
+      );
+
       response.set({ 'Content-Type': 'image/png' });
-      return new StreamableFile(file);
+      return new StreamableFile(createReadStream(placeholderPath));
     }
   }
 

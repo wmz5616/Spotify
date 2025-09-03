@@ -30,7 +30,13 @@ interface ArtistDetailPageProps {
 }
 
 const ArtistDetailPage = async ({ params }: ArtistDetailPageProps) => {
-  const artist = await getArtistDetails(params.id);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id } = await params;
+  const artist = await getArtistDetails(id);
+  console.log(
+    "[Artist Detail Page] Artist object:",
+    JSON.stringify(artist, null, 2)
+  );
 
   if (!artist) {
     return (
@@ -54,7 +60,10 @@ const ArtistDetailPage = async ({ params }: ArtistDetailPageProps) => {
     .slice(0, 5);
 
   const artistImageUrl = artist.headerUrl
-    ? `http://localhost:3000/api/artist-image/${artist.headerUrl}`
+    ? `http://localhost:3000/api/artist-image/${artist.headerUrl
+        .split("/")
+        .map(encodeURIComponent)
+        .join("/")}`
     : artist.albums.length > 0
     ? `http://localhost:3000/api/album-art/${artist.albums[0].id}`
     : "/placeholder.png";
