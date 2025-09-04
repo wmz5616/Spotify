@@ -5,12 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { usePlayerStore } from "@/store/usePlayerStore";
-import type { Song, Artist } from "@/types"; // 引入 Artist 类型
-import { Clock, Heart, Play, Volume2 } from "lucide-react"; // 引入新图标
+import type { Song, Artist } from "@/types";
+import { Clock, Heart, Play, Volume2 } from "lucide-react"; // Volume2 用于播放状态
 import { formatDuration } from "@/lib/utils";
+import { useColor } from "color-thief-react";
+import AlbumPageSkeleton from "@/components/AlbumPageSkeleton";
+import clsx from "clsx"; // 1. 导入 clsx
 
-// 类型定义
-// 注意：我们从 types.ts 导入了 Artist，所以这里可以移除
 type AlbumDetails = {
   id: number;
   title: string;
@@ -23,10 +24,27 @@ const AlbumDetailPage = () => {
   const id = params.id as string;
 
   const [album, setAlbum] = useState<AlbumDetails | null>(null);
+  const [isDataLoading, setIsDataLoading] = useState(true);
+  const [backgroundStyle, setBackgroundStyle] = useState({
+    backgroundImage: "linear-gradient(to bottom, #1f2937 0%, transparent 40vh)",
+  });
+
   const { playSong, currentSong, isPlaying } = usePlayerStore();
+
+  const albumArtUrl = `http://localhost:3000/static/covers/${id}.jpg`;
+
+  const { data: dominantColor, loading: colorLoading } = useColor(
+    albumArtUrl,
+    "hex",
+    {
+      crossOrigin: "anonymous",
+      quality: 10,
+    }
+  );
 
   useEffect(() => {
     if (!id) return;
+    setIsDataLoading(true);
     const fetchAlbumData = async () => {
       try {
         const res = await fetch(`http://localhost:3000/api/albums/${id}`, {
@@ -38,44 +56,54 @@ const AlbumDetailPage = () => {
         }
       } catch (error) {
         console.error("Failed to fetch album details:", error);
+      } finally {
+        setIsDataLoading(false);
       }
     };
     fetchAlbumData();
   }, [id]);
 
+  useEffect(() => {
+    if (dominantColor) {
+      setBackgroundStyle({
+        backgroundImage: `linear-gradient(to bottom, ${dominantColor} 0%, transparent 40vh)`,
+      });
+    }
+  }, [dominantColor]);
+
+  if (isDataLoading || colorLoading) {
+    return <AlbumPageSkeleton />;
+  }
+
   if (!album) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p>Loading album...</p>
-      </div>
+      <div className="p-8 text-center">Album not found or failed to load.</div>
     );
   }
 
-  const albumArtUrl = `http://localhost:3000/api/album-art/${album.id}`;
+  const fullSongQueue = album.songs.map((song) => ({
+    ...song,
+    album: {
+      id: album.id,
+      title: album.title,
+      artists: album.artists,
+    },
+  }));
 
   const handlePlayAlbum = () => {
-    if (album.songs && album.songs.length > 0) {
-      // 播放第一首歌，并构建包含完整信息的 song 对象
-      const firstSongWithDetails = {
-        ...album.songs[0],
-        album: {
-          id: album.id,
-          title: album.title,
-          artists: album.artists,
-        },
-      };
-      playSong(firstSongWithDetails);
+    if (fullSongQueue.length > 0) {
+      playSong(fullSongQueue[0], fullSongQueue);
     }
   };
 
   return (
-    // 主容器，去掉了外层 p-8，因为我们要在内部精确控制
     <div className="relative">
-      {/* 1. 动态渐变背景 */}
-      <div className="absolute top-0 left-0 w-full h-[40vh] bg-gradient-to-b from-purple-800 to-transparent -z-10" />
+      <div
+        className="absolute top-0 left-0 w-full h-[40vh] -z-10 transition-all duration-1000"
+        style={backgroundStyle}
+      />
 
       <div className="p-8">
-        {/* 2. 现代化的头部布局 */}
         <header className="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8 pt-16">
           <div className="w-48 h-48 lg:w-56 lg:h-56 flex-shrink-0 bg-neutral-800 rounded-md shadow-2xl overflow-hidden">
             <Image
@@ -115,7 +143,6 @@ const AlbumDetailPage = () => {
           </div>
         </header>
 
-        {/* 3. 标志性的操作按钮 */}
         <div className="flex items-center gap-6 mb-8">
           <button
             onClick={handlePlayAlbum}
@@ -132,7 +159,6 @@ const AlbumDetailPage = () => {
           </button>
         </div>
 
-        {/* 4. 精致的歌曲列表 */}
         <section>
           <div className="grid grid-cols-[2rem_1fr_auto] gap-x-4 px-4 py-2 text-neutral-400 text-sm border-b border-neutral-800/50 mb-2">
             <div className="text-right">#</div>
@@ -142,46 +168,46 @@ const AlbumDetailPage = () => {
             </div>
           </div>
           <ul>
-            {album.songs.map((song, index) => {
+            {fullSongQueue.map((song, index) => {
               const isActive = song.id === currentSong?.id;
-              const songWithDetails = {
-                ...song,
-                album: {
-                  id: album.id,
-                  title: album.title,
-                  artists: album.artists,
-                },
-              };
 
               return (
                 <li
                   key={song.id}
-                  onClick={() => playSong(songWithDetails)}
-                  className={`grid grid-cols-[2rem_1fr_auto] gap-x-4 px-4 py-2 items-center rounded-md hover:bg-neutral-800/50 cursor-pointer group ${
-                    isActive ? "bg-neutral-700/50" : ""
-                  }`}
+                  onClick={() => playSong(song, fullSongQueue)}
+                  // 2. 使用 clsx 动态添加类名
+                  className={clsx(
+                    "grid grid-cols-[2rem_1fr_auto] gap-x-4 px-4 py-2 items-center rounded-md hover:bg-neutral-800/50 cursor-pointer group",
+                    { "bg-neutral-700/50": isActive }
+                  )}
                 >
-                  <div
-                    className={`flex justify-end items-center ${
-                      isActive ? "text-green-400" : "text-neutral-400"
-                    }`}
-                  >
-                    <span className="group-hover:hidden">
-                      {song.trackNumber || index + 1}
-                    </span>
-                    <Play
-                      size={16}
-                      className="hidden group-hover:block"
-                      fill="currentColor"
-                    />
-                    {isActive && isPlaying && (
-                      <Volume2 size={16} className="absolute" />
+                  <div className="flex justify-end items-center">
+                    {/* 3. 核心交互逻辑 */}
+                    {isActive && isPlaying ? (
+                      <Volume2 size={16} className="text-green-400" />
+                    ) : (
+                      <>
+                        <span
+                          className={clsx(
+                            "group-hover:hidden",
+                            isActive ? "text-green-400" : "text-neutral-400"
+                          )}
+                        >
+                          {song.trackNumber || index + 1}
+                        </span>
+                        <Play
+                          size={16}
+                          className="hidden group-hover:block text-white"
+                          fill="currentColor"
+                        />
+                      </>
                     )}
                   </div>
                   <div
-                    className={`font-medium truncate ${
+                    className={clsx(
+                      "font-medium truncate",
                       isActive ? "text-green-400" : "text-white"
-                    }`}
+                    )}
                   >
                     {song.title}
                   </div>

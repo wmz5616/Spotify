@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as mm from 'music-metadata';
-import { ensureDir } from 'fs-extra';
+import { ensureDir, copy } from 'fs-extra';
 
 interface ParsedInfo {
   artist: string;
@@ -101,8 +101,11 @@ export class MusicLibraryService {
     console.log(`Found ${filePaths.length} audio files.`);
 
     const coversDir = path.join(process.cwd(), 'public', 'covers');
+    const artistImagesDir = path.join(process.cwd(), 'public', 'artist-images');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await ensureDir(coversDir);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    await ensureDir(artistImagesDir);
 
     for (const filePath of filePaths) {
       const pathInfo = this.parseInfoFromPath(filePath, directory);
@@ -123,23 +126,61 @@ export class MusicLibraryService {
       const artistFolderPath = path.dirname(path.dirname(filePath));
       const avatarPath = path.join(artistFolderPath, '头像.png');
       const headerPath = path.join(artistFolderPath, '封面图.png');
-      const dataToUpdate: { avatarUrl?: string; headerUrl?: string } = {};
+      const dataToUpdate: {
+        avatarUrl?: string;
+        headerUrl?: string;
+        bio?: string; // 1. 准备更新 bio
+        bioImageUrl?: string; // 2. 准备更新 bioImageUrl
+      } = {};
+
+      const processArtistImage = async (
+        sourcePath: string,
+        type: 'avatar' | 'header',
+      ): Promise<string | undefined> => {
+        try {
+          await fs.access(sourcePath);
+          const targetFileName = `${artist.id}-${type}.png`;
+          const targetPath = path.join(artistImagesDir, targetFileName);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          await copy(sourcePath, targetPath, { overwrite: true });
+          return `/artist-images/${targetFileName}`;
+        } catch {
+          return undefined;
+        }
+      };
+
+      const newAvatarUrl = await processArtistImage(avatarPath, 'avatar');
+      if (newAvatarUrl) {
+        dataToUpdate.avatarUrl = newAvatarUrl;
+      }
+
+      const newHeaderUrl = await processArtistImage(headerPath, 'header');
+      if (newHeaderUrl) {
+        dataToUpdate.headerUrl = newHeaderUrl;
+      }
+
+      const bioTextPath = path.join(artistFolderPath, 'bio.txt');
+      const bioImagePath = path.join(artistFolderPath, 'bio.png');
 
       try {
-        await fs.access(avatarPath);
-        dataToUpdate.avatarUrl = path
-          .relative(directory, avatarPath)
-          .replace(/\\/g, '/');
+        await fs.access(bioTextPath);
+        const bioContent = await fs.readFile(bioTextPath, 'utf-8');
+        dataToUpdate.bio = bioContent;
+        console.log(`Found bio for ${artistName}`);
       } catch {
-        /* ignore */
+        /* bio.txt 不存在，忽略 */
       }
+
       try {
-        await fs.access(headerPath);
-        dataToUpdate.headerUrl = path
-          .relative(directory, headerPath)
-          .replace(/\\/g, '/');
+        await fs.access(bioImagePath);
+        const targetFileName = `${artist.id}-bio.png`;
+        const targetPath = path.join(artistImagesDir, targetFileName);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        await copy(bioImagePath, targetPath, { overwrite: true });
+        dataToUpdate.bioImageUrl = `/artist-images/${targetFileName}`;
+        console.log(`Found bio image for ${artistName}`);
       } catch {
-        /* ignore */
+        /* bio.png 不存在，忽略 */
       }
 
       if (Object.keys(dataToUpdate).length > 0) {
@@ -167,8 +208,9 @@ export class MusicLibraryService {
         },
       });
 
-      // 健壮的封面处理逻辑
-      if (!album.coverPath && tags.imageBuffer) {
+      // --- 修正后的封面处理逻辑 ---
+      if (tags.imageBuffer) {
+        // 只要找到图片buffer就执行保存
         const finalCoverBuffer = tags.imageBuffer;
         const newCoverPath = path.join(coversDir, `${album.id}.jpg`);
         try {
@@ -223,6 +265,8 @@ export class MusicLibraryService {
         name: true,
         avatarUrl: true,
         headerUrl: true,
+        bio: true,
+        bioImageUrl: true,
         albums: {
           select: {
             id: true,

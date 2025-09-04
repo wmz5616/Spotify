@@ -1,51 +1,84 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import AlbumCard from "@/components/AlbumCard";
+import { useParams } from "next/navigation";
 import { Play } from "lucide-react";
 import type { Song, Album, Artist } from "@/types";
-import SongRowItem from "@/components/SongRowItem";
+import AlbumCard from "@/components/AlbumCard";
 import PopularSongsList from "@/components/PopularSongsList";
+import AboutCard from "@/components/AboutCard";
 
+// (类型和骨架屏组件保持不变)
 type ArtistDetails = Artist & {
   albums: (Album & { songs: Song[]; artists: Artist[] })[];
 };
+const ArtistPageSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="h-[40vh] bg-neutral-800 rounded-lg" />
+    <div className="p-8">
+      <div className="h-16 w-16 bg-neutral-700 rounded-full mb-8"></div>
+      <section className="mb-12">
+        <div className="h-8 w-32 bg-neutral-700 rounded mb-6"></div>
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="h-12 w-full bg-neutral-800/50 rounded-md"
+            ></div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+);
 
-async function getArtistDetails(id: string): Promise<ArtistDetails | null> {
-  try {
-    const res = await fetch(`http://localhost:3000/api/artists/${id}`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      return res.json();
-    }
-    return null;
-  } catch (error) {
-    console.error("Failed to fetch artist details:", error);
-    return null;
-  }
-}
+const ArtistDetailPage = () => {
+  const params = useParams();
+  const id = params.id as string;
+  const [artist, setArtist] = useState<ArtistDetails | null>(null);
+  const [scrollY, setScrollY] = useState(0);
 
-interface ArtistDetailPageProps {
-  params: { id: string };
-}
+  useEffect(() => {
+    const mainContent = document.getElementById("main-content");
+    if (!mainContent) return;
+    const handleScroll = () => {
+      setScrollY(mainContent.scrollTop);
+    };
+    mainContent.addEventListener("scroll", handleScroll);
+    return () => {
+      mainContent.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
-const ArtistDetailPage = async ({ params }: ArtistDetailPageProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id } = await params;
-  const artist = await getArtistDetails(id);
-  console.log(
-    "[Artist Detail Page] Artist object:",
-    JSON.stringify(artist, null, 2)
-  );
+  useEffect(() => {
+    if (!id) return;
+    const getArtistDetails = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/api/artists/${id}`, {
+          cache: "no-store",
+        });
+        if (res.ok) {
+          setArtist(await res.json());
+        }
+      } catch (error) {
+        console.error("Failed to fetch artist details:", error);
+      }
+    };
+    getArtistDetails();
+  }, [id]);
 
   if (!artist) {
-    return (
-      <div className="p-10 text-center">
-        Artist not found or failed to load.
-      </div>
-    );
+    return <ArtistPageSkeleton />;
   }
 
+  const ALBUM_TRACK_THRESHOLD = 5;
+  const studioAlbums = artist.albums.filter(
+    (album) => album.songs.length > ALBUM_TRACK_THRESHOLD
+  );
+  const singlesAndEPs = artist.albums.filter(
+    (album) => album.songs.length <= ALBUM_TRACK_THRESHOLD
+  );
   const popularSongs = artist.albums
     .flatMap((album) =>
       album.songs.map((song) => ({
@@ -58,27 +91,49 @@ const ArtistDetailPage = async ({ params }: ArtistDetailPageProps) => {
       }))
     )
     .slice(0, 5);
-
   const artistImageUrl = artist.headerUrl
-    ? `http://localhost:3000/api/artist-image/${artist.headerUrl
-        .split("/")
-        .map(encodeURIComponent)
-        .join("/")}`
+    ? `http://localhost:3000/static${artist.headerUrl}`
     : artist.albums.length > 0
-    ? `http://localhost:3000/api/album-art/${artist.albums[0].id}`
+    ? `http://localhost:3000/static/covers/${artist.albums[0].id}.jpg`
     : "/placeholder.png";
 
+  const headerTextOpacity = Math.max(0, 1 - scrollY / 150);
+  const headerTextTransform = `translateY(${Math.min(
+    100,
+    scrollY / 3
+  )}px) scale(${Math.max(0.8, 1 - scrollY / 1000)})`;
+  const imageScale = 1 + scrollY / 5000;
+  const imageTransform = `scale(${imageScale})`;
+
   return (
-    <div className="relative">
-      <header className="relative flex flex-col md:flex-row items-end gap-6 p-8 h-[40vh] text-white">
-        <Image
-          src={artistImageUrl}
-          alt={`Photo of ${artist.name}`}
-          fill
-          className="object-cover opacity-30"
-          priority
-        />
-        <div className="relative flex flex-col gap-4 z-10">
+    <div>
+      {/* 1. Header 容器添加 rounded-lg 和 overflow-hidden */}
+      <header className="relative w-full h-auto rounded-lg overflow-hidden">
+        {/* 图片容器 */}
+        <div className="relative w-full h-0 pb-[40%] max-h-[500px] min-h-[340px]">
+          <Image
+            src={artistImageUrl}
+            alt={`Photo of ${artist.name}`}
+            fill
+            className="object-cover"
+            priority
+            style={{
+              transform: imageTransform,
+              willChange: "transform",
+            }}
+          />
+        </div>
+
+        {/* 蒙版和文字 */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+        <div
+          className="absolute bottom-0 p-8 flex flex-col gap-4"
+          style={{
+            opacity: headerTextOpacity,
+            transform: headerTextTransform,
+            willChange: "transform, opacity",
+          }}
+        >
           <span className="font-bold">Artist</span>
           <h1 className="text-5xl lg:text-8xl font-black tracking-tighter">
             {artist.name}
@@ -86,6 +141,7 @@ const ArtistDetailPage = async ({ params }: ArtistDetailPageProps) => {
         </div>
       </header>
 
+      {/* 主要内容区域 */}
       <div className="p-8">
         <div className="flex items-center gap-6 mb-8">
           <button
@@ -101,20 +157,46 @@ const ArtistDetailPage = async ({ params }: ArtistDetailPageProps) => {
           <PopularSongsList songs={popularSongs} />
         </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-6">Albums</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {artist.albums.map((album) => (
-              <AlbumCard
-                key={album.id}
-                album={{
-                  ...album,
-                  _count: { songs: album.songs.length },
-                }}
-              />
-            ))}
-          </div>
-        </section>
+        {artist.bio && artist.bioImageUrl && (
+          <AboutCard
+            bio={artist.bio}
+            imageUrl={`http://localhost:3000/static${artist.bioImageUrl}`}
+          />
+        )}
+
+        {studioAlbums.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold mb-6">Albums</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {studioAlbums.map((album) => (
+                <AlbumCard
+                  key={album.id}
+                  album={{
+                    ...album,
+                    _count: { songs: album.songs.length },
+                  }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {singlesAndEPs.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-bold mb-6">Singles & EPs</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {singlesAndEPs.map((album) => (
+                <AlbumCard
+                  key={album.id}
+                  album={{
+                    ...album,
+                    _count: { songs: album.songs.length },
+                  }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

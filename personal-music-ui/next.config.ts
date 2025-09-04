@@ -6,14 +6,15 @@ const nextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "3000",
-        pathname: "/api/album-art/**", // 已有的
+        // 允许来自 /covers/ 的所有图片
+        pathname: "/static/**",
       },
       {
-        // 新增的部分
         protocol: "http",
         hostname: "localhost",
         port: "3000",
-        pathname: "/api/artist-image/**",
+        // 允许来自 /artist-images/ 的所有图片
+        pathname: "/artist-images/**",
       },
     ],
   },

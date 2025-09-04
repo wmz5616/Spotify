@@ -13,6 +13,8 @@ model Artist {
   albums    Album[]
   avatarUrl String?
   headerUrl String?
+  bio          String? 
+  bioImageUrl  String? 
 }
 
 model Album {

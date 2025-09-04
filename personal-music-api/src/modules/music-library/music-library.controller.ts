@@ -9,12 +9,10 @@ import {
   Req,
   NotFoundException,
   Query,
-  StreamableFile,
 } from '@nestjs/common';
 import { MusicLibraryService } from './music-library.service';
 import type { Request, Response } from 'express';
-import { createReadStream, statSync, promises as fs } from 'fs';
-import path, { join } from 'path';
+import { createReadStream, statSync } from 'fs';
 
 @Controller('api')
 export class MusicLibraryController {
@@ -26,6 +24,9 @@ export class MusicLibraryController {
     await this.musicLibraryService.scanAndSaveMusic(musicDirectory);
     return { message: 'Library scan completed successfully.' };
   }
+
+  // 我们已经删除了 getAlbumArt 和 getArtistImage 方法
+  // 因为 ServeStaticModule 会自动处理它们
 
   @Get('artists')
   findAllArtists() {
@@ -50,30 +51,6 @@ export class MusicLibraryController {
   @Get('songs/:id')
   findSongById(@Param('id', ParseIntPipe) id: number) {
     return this.musicLibraryService.findSongById(id);
-  }
-
-  @Get('album-art/:id')
-  async getAlbumArt(
-    @Param('id', ParseIntPipe) id: number,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<StreamableFile> {
-    const album = await this.musicLibraryService.findAlbumArt(id);
-    const placeholderPath = join(process.cwd(), 'assets', 'placeholder.png');
-
-    if (album && album.coverPath) {
-      const coverAbsolutePath = join(process.cwd(), 'public', album.coverPath);
-      try {
-        await fs.access(coverAbsolutePath); // 检查文件是否存在
-        response.set({ 'Content-Type': 'image/jpeg' });
-        return new StreamableFile(createReadStream(coverAbsolutePath));
-      } catch {
-        // 如果文件不存在，则回退到占位图
-      }
-    }
-
-    // 如果没有封面或文件不存在，则返回占位图
-    response.set({ 'Content-Type': 'image/png' });
-    return new StreamableFile(createReadStream(placeholderPath));
   }
 
   @Get('search')
@@ -116,48 +93,6 @@ export class MusicLibraryController {
       };
       response.writeHead(200, head);
       createReadStream(songPath).pipe(response);
-    }
-  }
-
-  @Get('artist-image/*')
-  async getArtistImage(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<StreamableFile> {
-    const imagePath = decodeURIComponent(request.params[0]);
-    const musicDirectory = 'D:\\音乐库\\已收录';
-    const placeholderPath = join(process.cwd(), 'assets', 'placeholder.png');
-
-    if (!imagePath || imagePath === 'undefined' || imagePath === 'null') {
-      console.error(
-        `[DIAGNOSTIC-ERROR] Received invalid image path: ${imagePath}, serving placeholder.`,
-      );
-      response.set({ 'Content-Type': 'image/png' });
-      return new StreamableFile(createReadStream(placeholderPath));
-    }
-
-    // 使用 path.resolve 来构建更可靠的绝对路径
-    const fullPath = path.resolve(musicDirectory, imagePath);
-
-    // 我们把路径用引号括起来打印，以检查是否有看不见的空格等字符
-    console.log(`[DIAGNOSTIC-INFO] Final calculated path: "${fullPath}"`);
-
-    try {
-      // 检查文件是否存在
-      await fs.access(fullPath);
-
-      console.log(`[DIAGNOSTIC-SUCCESS] File found! Serving: "${fullPath}"`);
-      response.set({ 'Content-Type': 'image/png' });
-      return new StreamableFile(createReadStream(fullPath));
-    } catch (error) {
-      // 打印出文件访问失败的【具体错误信息】
-      console.error(
-        `[DIAGNOSTIC-FAILURE] File access FAILED for "${fullPath}". Reason:`,
-        error,
-      );
-
-      response.set({ 'Content-Type': 'image/png' });
-      return new StreamableFile(createReadStream(placeholderPath));
     }
   }
 

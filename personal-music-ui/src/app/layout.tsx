@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar"; // 1. 导入Sidebar组件
-import PlayerControls from "@/components/PlayerControls"; // 2. 导入PlayerControls组件
+import Sidebar from "@/components/Sidebar";
+import PlayerControls from "@/components/PlayerControls";
 import AudioPlayer from "@/components/AudioPlayer";
+import Header from "@/components/Header"; // 1. 导入新的 Header 组件
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,8 +24,10 @@ export default function RootLayout({
         <div className="h-screen flex flex-col bg-black text-white">
           <div className="flex-grow flex min-h-0">
             <Sidebar />
-            <main className="flex-1 overflow-y-auto relative">
-              <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-emerald-800 to-neutral-900/50 -z-10" />
+            {/* 2. 主内容区现在包含 Header 和页面 {children} */}
+            <main id="main-content" className="flex-1 overflow-y-auto relative">
+              <Header />
+              {/* 3. 我们把 children 移到一个新的 div 中，以应用统一的内边距 */}
               <div className="p-6">{children}</div>
             </main>
           </div>

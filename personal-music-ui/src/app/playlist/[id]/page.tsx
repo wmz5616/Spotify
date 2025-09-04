@@ -60,7 +60,7 @@ const PlaylistDetailPage = () => {
 
   const coverArtUrl =
     playlist.songs.length > 0
-      ? `http://localhost:3000/api/album-art/${playlist.songs[0].album.id}`
+      ? `http://localhost:3000/static/covers/${playlist.songs[0].album.id}.jpg`
       : "/placeholder.png";
 
   return (

@@ -2,6 +2,9 @@ import { create } from "zustand";
 import type { Song } from "@/types";
 import React from "react";
 
+// 播放模式现在包含 "repeat-one"
+export type PlayMode = "normal" | "repeat-all" | "repeat-one" | "shuffle";
+
 interface PlayerState {
   isPlaying: boolean;
   currentSong: Song | null;
@@ -9,25 +12,23 @@ interface PlayerState {
   currentTime: number;
   duration: number;
   audioRef: React.RefObject<HTMLAudioElement | null> | null;
-
-  // 新增：播放队列和当前播放索引
   playQueue: Song[];
   currentQueueIndex: number | null;
+  playMode: PlayMode;
 
-  // 修改：播放歌曲的方法
   playSong: (song: Song, queue?: Song[]) => void;
-
   togglePlayPause: () => void;
   setVolume: (volume: number) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setAudioRef: (ref: React.RefObject<HTMLAudioElement | null>) => void;
   seek: (time: number) => void;
-
-  // 新增：播放下一首和上一首的方法
   playNextSong: () => void;
   playPreviousSong: () => void;
   handleSongEnd: () => void;
+  // 分离成两个独立的方法，逻辑更清晰
+  toggleShuffle: () => void;
+  toggleRepeat: () => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set, get) => ({
@@ -37,9 +38,9 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   currentTime: 0,
   duration: 0,
   audioRef: null,
-
   playQueue: [],
   currentQueueIndex: null,
+  playMode: "normal",
 
   playSong: (song, queue = []) => {
     const newQueue = queue.length > 0 ? queue : [song];
@@ -68,24 +69,57 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   },
 
   playNextSong: () => {
-    const { playQueue, currentQueueIndex } = get();
-    if (playQueue.length > 0 && currentQueueIndex !== null) {
-      const nextIndex = (currentQueueIndex + 1) % playQueue.length;
+    const { playQueue, currentQueueIndex, playMode } = get();
+    if (playQueue.length === 0 || currentQueueIndex === null) return;
+
+    if (playMode === "shuffle") {
+      let nextIndex = Math.floor(Math.random() * playQueue.length);
+      if (playQueue.length > 1 && nextIndex === currentQueueIndex) {
+        nextIndex = (nextIndex + 1) % playQueue.length;
+      }
       get().playSong(playQueue[nextIndex], playQueue);
+    } else {
+      const nextIndex = (currentQueueIndex + 1) % playQueue.length;
+      if (playMode === "normal" && nextIndex === 0) {
+        // 在普通模式下，播放完列表后停止
+        set({ isPlaying: false });
+      } else {
+        get().playSong(playQueue[nextIndex], playQueue);
+      }
     }
   },
 
   playPreviousSong: () => {
     const { playQueue, currentQueueIndex } = get();
-    if (playQueue.length > 0 && currentQueueIndex !== null) {
-      const prevIndex =
-        (currentQueueIndex - 1 + playQueue.length) % playQueue.length;
-      get().playSong(playQueue[prevIndex], playQueue);
-    }
+    if (playQueue.length === 0 || currentQueueIndex === null) return;
+
+    const prevIndex =
+      (currentQueueIndex - 1 + playQueue.length) % playQueue.length;
+    get().playSong(playQueue[prevIndex], playQueue);
   },
 
   handleSongEnd: () => {
-    // 歌曲播放完后自动播放下一首
-    get().playNextSong();
+    const { playMode, audioRef } = get();
+    if (playMode === "repeat-one" && audioRef?.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+    } else {
+      get().playNextSong();
+    }
+  },
+
+  toggleShuffle: () => {
+    set((state) => ({
+      playMode: state.playMode === "shuffle" ? "normal" : "shuffle",
+    }));
+  },
+
+  toggleRepeat: () => {
+    set((state) => {
+      if (state.playMode === "normal") return { playMode: "repeat-all" };
+      if (state.playMode === "repeat-all") return { playMode: "repeat-one" };
+      // 从 repeat-one 或 shuffle 切换回 normal
+      return { playMode: "normal" };
+    });
   },
 }));

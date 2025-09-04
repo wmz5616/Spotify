@@ -1,14 +1,31 @@
 "use client";
 
 import React from "react";
-import { Play, Pause } from "lucide-react";
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Shuffle,
+  Repeat,
+  Repeat1,
+} from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
-import ProgressBar from "./ProgressBar"; // 1. 导入进度条组件
-import Image from "next/image"; // 1. 导入 Image 组件
-import Link from "next/link"; // 1. 导入 Link 组件
+import ProgressBar from "./ProgressBar";
+import Image from "next/image";
+import Link from "next/link";
 
 const PlayerControls = () => {
-  const { isPlaying, togglePlayPause, currentSong } = usePlayerStore();
+  const {
+    isPlaying,
+    togglePlayPause,
+    currentSong,
+    playNextSong,
+    playPreviousSong,
+    playMode,
+    toggleShuffle,
+    toggleRepeat,
+  } = usePlayerStore();
 
   if (!currentSong) {
     return (
@@ -19,13 +36,20 @@ const PlayerControls = () => {
   }
 
   const albumArtUrl = currentSong.album?.id
-    ? `http://localhost:3000/api/album-art/${currentSong.album.id}`
-    : "/placeholder.jpg"; // 一个备用图片
+    ? `http://localhost:3000/static/covers/${currentSong.album.id}.jpg`
+    : "/placeholder.jpg";
+
+  const renderRepeatIcon = () => {
+    if (playMode === "repeat-one") {
+      return <Repeat1 size={18} />;
+    }
+    return <Repeat size={18} />;
+  };
 
   return (
     <footer className="col-start-1 col-span-2 bg-neutral-950 h-[90px] px-4 border-t border-neutral-800 grid grid-cols-3 items-center">
       {/* 左侧：当前歌曲信息 */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 truncate">
         {currentSong.album && (
           <Image
             src={albumArtUrl}
@@ -35,18 +59,16 @@ const PlayerControls = () => {
             className="rounded-md"
           />
         )}
-        <div>
+        <div className="truncate">
           <h3 className="font-semibold text-white truncate text-sm">
             {currentSong.title}
           </h3>
-          {/* 下方 P 标签改为 Div 来处理链接 */}
           <div className="text-xs text-neutral-400 truncate">
             {currentSong.album?.artists.map((artist, index) => (
               <React.Fragment key={artist.id}>
                 <Link href={`/artist/${artist.id}`} className="hover:underline">
                   {artist.name}
                 </Link>
-                {/* 如果不是最后一个艺人，则添加逗号和空格 */}
                 {index < currentSong.album!.artists.length - 1 && ", "}
               </React.Fragment>
             ))}
@@ -56,18 +78,54 @@ const PlayerControls = () => {
 
       {/* 中间：播放控制和进度条 */}
       <div className="flex flex-col items-center justify-center gap-2">
-        <button
-          onClick={togglePlayPause}
-          className="bg-white text-black rounded-full p-3 flex items-center justify-center hover:scale-105 transition-transform focus:outline-none"
-          aria-label={isPlaying ? "Pause" : "Play"}
-        >
-          {isPlaying ? (
-            <Pause size={24} fill="black" />
-          ) : (
-            <Play size={24} fill="black" className="translate-x-0.5" />
-          )}
-        </button>
-        <ProgressBar /> {/* 2. 在这里使用进度条组件 */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={toggleShuffle}
+            className={`transition ${
+              playMode === "shuffle" ? "text-green-500" : "text-neutral-400"
+            } hover:text-white`}
+            title="Shuffle"
+          >
+            <Shuffle size={18} />
+          </button>
+          <button
+            onClick={playPreviousSong}
+            className="text-neutral-400 hover:text-white transition"
+            title="Previous"
+          >
+            <SkipBack size={20} fill="currentColor" />
+          </button>
+          <button
+            onClick={togglePlayPause}
+            className="bg-white text-black rounded-full p-3 flex items-center justify-center hover:scale-105 transition-transform focus:outline-none"
+            aria-label={isPlaying ? "Pause" : "Play"}
+          >
+            {isPlaying ? (
+              <Pause size={24} fill="black" />
+            ) : (
+              <Play size={24} fill="black" className="translate-x-0.5" />
+            )}
+          </button>
+          <button
+            onClick={playNextSong}
+            className="text-neutral-400 hover:text-white transition"
+            title="Next"
+          >
+            <SkipForward size={20} fill="currentColor" />
+          </button>
+          <button
+            onClick={toggleRepeat}
+            className={`transition ${
+              playMode.includes("repeat")
+                ? "text-green-500"
+                : "text-neutral-400"
+            } hover:text-white`}
+            title="Repeat"
+          >
+            {renderRepeatIcon()}
+          </button>
+        </div>
+        <ProgressBar />
       </div>
 
       {/* 右侧：音量等控制（占位） */}

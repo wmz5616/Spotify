@@ -1,12 +1,13 @@
 export type Artist = {
   id: number;
   name: string;
-  avatarUrl?: string | null; // 新增
-  headerUrl?: string | null; // 新增
-  albums?: Album[]; // 让 albums 变成可选，因为有时我们不需要它
+  avatarUrl?: string | null;
+  headerUrl?: string | null;
+  albums?: Album[];
+  bio?: string | null;
+  bioImageUrl?: string | null;
 };
 
-// 1. 新增并导出 Album 类型
 export type Album = {
   id: number;
   title: string;

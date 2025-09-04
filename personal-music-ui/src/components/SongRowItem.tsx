@@ -18,7 +18,7 @@ const SongRowItem = ({ song, index }: SongRowItemProps) => {
   const isActive = song.id === currentSong?.id;
 
   const albumArtUrl = song.album?.id
-    ? `http://localhost:3000/api/album-art/${song.album.id}`
+    ? `http://localhost:3000/static/covers/${song.album.id}.jpg`
     : "/placeholder.png";
 
   return (
