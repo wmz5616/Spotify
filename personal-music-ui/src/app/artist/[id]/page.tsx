@@ -2,16 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
-import { Play } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { Play, AlertCircle } from "lucide-react";
 import type { Song, Album, Artist } from "@/types";
 import AlbumCard from "@/components/AlbumCard";
 import PopularSongsList from "@/components/PopularSongsList";
 import AboutCard from "@/components/AboutCard";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 type ArtistDetails = Artist & {
   albums: (Album & { songs: Song[]; artists: Artist[] })[];
 };
+
 const ArtistPageSkeleton = () => (
   <div className="animate-pulse">
     <div className="h-[40vh] bg-neutral-800 rounded-lg" />
@@ -34,9 +37,12 @@ const ArtistPageSkeleton = () => (
 
 const ArtistDetailPage = () => {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const [artist, setArtist] = useState<ArtistDetails | null>(null);
   const [scrollY, setScrollY] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const mainContent = document.getElementById("main-content");
@@ -54,21 +60,52 @@ const ArtistDetailPage = () => {
     if (!id) return;
     const getArtistDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/artists/${id}`, {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(`${API_BASE_URL}/api/artists/${id}`, {
           cache: "no-store",
         });
-        if (res.ok) {
-          setArtist(await res.json());
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error("Artist not found");
+          }
+          throw new Error(`Failed to fetch artist: ${res.statusText}`);
         }
-      } catch (error) {
-        console.error("Failed to fetch artist details:", error);
+
+        const data = await res.json();
+        setArtist(data);
+      } catch (err) {
+        console.error("Failed to fetch artist details:", err);
+        setError(err instanceof Error ? err.message : "Failed to load artist");
+      } finally {
+        setLoading(false);
       }
     };
     getArtistDetails();
   }, [id]);
 
-  if (!artist) {
+  if (loading) {
     return <ArtistPageSkeleton />;
+  }
+
+  if (error || !artist) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[50vh] text-neutral-400">
+        <AlertCircle size={48} className="mb-4 text-red-500" />
+        <h2 className="text-xl font-bold text-white mb-2">Artist Not Found</h2>
+        <p className="mb-6">
+          {error || "The requested artist does not exist."}
+        </p>
+        <button
+          onClick={() => router.back()}
+          className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-full text-white transition-colors"
+        >
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   const ALBUM_TRACK_THRESHOLD = 5;
@@ -90,11 +127,10 @@ const ArtistDetailPage = () => {
       }))
     )
     .slice(0, 5);
+
   const artistImageUrl = artist.headerUrl
-    ? `http://localhost:3001/static${artist.headerUrl}`
-    : artist.albums.length > 0
-    ? `http://localhost:3001/static/covers/${artist.albums[0].id}.jpg`
-    : "/placeholder.png";
+    ? `${API_BASE_URL}/static${artist.headerUrl}`
+    : "/placeholder.jpg";
 
   const headerTextOpacity = Math.max(0, 1 - scrollY / 150);
   const headerTextTransform = `translateY(${Math.min(
@@ -106,9 +142,7 @@ const ArtistDetailPage = () => {
 
   return (
     <div>
-      {}
       <header className="relative w-full h-auto rounded-lg overflow-hidden">
-        {}
         <div className="relative w-full h-0 pb-[40%] max-h-[500px] min-h-[340px]">
           <Image
             src={artistImageUrl}
@@ -116,6 +150,8 @@ const ArtistDetailPage = () => {
             fill
             className="object-cover"
             priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
+            unoptimized={artistImageUrl.startsWith(API_BASE_URL)}
             style={{
               transform: imageTransform,
               willChange: "transform",
@@ -123,7 +159,6 @@ const ArtistDetailPage = () => {
           />
         </div>
 
-        {}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         <div
           className="absolute bottom-0 p-8 flex flex-col gap-4"
@@ -140,14 +175,17 @@ const ArtistDetailPage = () => {
         </div>
       </header>
 
-      {}
       <div className="p-8">
         <div className="flex items-center gap-6 mb-8">
           <button
             className="bg-green-500 text-black p-4 rounded-full shadow-lg hover:scale-105 transition-transform"
             aria-label={`Play ${artist.name}`}
           >
-            <Play size={28} fill="black" />
+            <Play
+              size={28}
+              fill="black"
+              className="translate-x-0.5 text-black"
+            />
           </button>
         </div>
 
@@ -159,7 +197,7 @@ const ArtistDetailPage = () => {
         {artist.bio && artist.bioImageUrl && (
           <AboutCard
             bio={artist.bio}
-            imageUrl={`http://localhost:3001/static${artist.bioImageUrl}`}
+            imageUrl={`${API_BASE_URL}/static${artist.bioImageUrl}`}
           />
         )}
 

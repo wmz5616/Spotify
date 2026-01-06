@@ -14,15 +14,29 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 interface SongRowItemProps {
   song: Song;
   index: number;
   queue?: Song[];
+  hideCover?: boolean;
 }
 
-const SongRowItem = ({ song, index, queue }: SongRowItemProps) => {
-  const { playSong, currentSong, isPlaying, addToQueue, playNext } =
-    usePlayerStore();
+const SongRowItem = ({
+  song,
+  index,
+  queue,
+  hideCover = false,
+}: SongRowItemProps) => {
+  const {
+    playSong,
+    currentSong,
+    isPlaying,
+    addToQueue,
+    insertNext, // [修复] 使用 insertNext (插队播放)，而不是 playNext (切歌)
+  } = usePlayerStore();
+
   const isActive = song.id === currentSong?.id;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -39,13 +53,14 @@ const SongRowItem = ({ song, index, queue }: SongRowItemProps) => {
 
   const handlePlayNext = (e: React.MouseEvent) => {
     e.stopPropagation();
-    playNext(song);
+    // [修复] 调用插队逻辑
+    insertNext(song);
     setIsMenuOpen(false);
   };
 
   const albumArtUrl = song.album?.id
-    ? `http://localhost:3001/static/covers/${song.album.id}.jpg`
-    : "/placeholder.png";
+    ? `${API_BASE_URL}/api/covers/${song.album.id}?size=64`
+    : "/placeholder.jpg";
 
   return (
     <div
@@ -69,13 +84,17 @@ const SongRowItem = ({ song, index, queue }: SongRowItemProps) => {
       </div>
 
       <div className="flex items-center gap-4 truncate">
-        <Image
-          src={albumArtUrl}
-          alt={song.album?.title || "album art"}
-          width={40}
-          height={40}
-          className="rounded-sm"
-        />
+        {!hideCover && (
+          <Image
+            src={albumArtUrl}
+            alt={song.album?.title || "album art"}
+            width={40}
+            height={40}
+            className="rounded-sm flex-shrink-0"
+            unoptimized // 必须加
+          />
+        )}
+
         <div className="truncate">
           <p
             className={`font-medium truncate ${
@@ -94,7 +113,7 @@ const SongRowItem = ({ song, index, queue }: SongRowItemProps) => {
                 >
                   {artist.name}
                 </Link>
-                {index < song.album!.artists.length - 1 && ", "}
+                {index < (song.album?.artists.length || 0) - 1 && ", "}
               </React.Fragment>
             ))}
           </div>

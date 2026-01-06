@@ -11,6 +11,8 @@ import clsx from "clsx";
 import SongRowItem from "./SongRowItem";
 import { useColor } from "color-thief-react";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 const NowPlayingView = () => {
   const {
     isQueueOpen,
@@ -27,13 +29,14 @@ const NowPlayingView = () => {
   }, [currentSong?.id]);
 
   const albumArtUrl = currentSong?.album?.id
-    ? `http://localhost:3001/static/covers/${currentSong.album.id}.jpg`
+    ? `${API_BASE_URL}/static/covers/${currentSong.album.id}.jpg`
     : "/placeholder.jpg";
 
   const { data: dominantColor } = useColor(albumArtUrl, "hex", {
     crossOrigin: "anonymous",
     quality: 10,
   });
+  
   const [backgroundStyle, setBackgroundStyle] = useState({});
 
   useEffect(() => {
@@ -65,15 +68,38 @@ const NowPlayingView = () => {
           exit={{ y: "100%" }}
           transition={{
             type: "spring",
-            stiffness: 400,
-            damping: 40,
-            mass: 1.2,
+            stiffness: 300,
+            damping: 30, 
+            mass: 0.8,
           }}
-          className="fixed inset-0 z-50 flex flex-col"
-          style={backgroundStyle}
+          style={{ willChange: "transform" }}
+          className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-neutral-900"
         >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-xl" />
 
+          <div 
+            className="absolute inset-0 transition-colors duration-1000 ease-in-out"
+            style={{
+               ...backgroundStyle,
+               transform: "translateZ(0)",
+               willChange: "background"
+            }} 
+          />
+          
+          <motion.div 
+            className="absolute inset-0 bg-white/20 mix-blend-overlay pointer-events-none"
+            style={{ 
+              opacity: glowOpacity,
+              willChange: "opacity",
+              transform: "translateZ(0)"
+            }}
+          />
+
+          <div 
+            className="absolute inset-0 bg-black/40 backdrop-blur-xl" 
+            style={{ transform: "translateZ(0)" }}
+          />
+
+          {/* --- 内容层 --- */}
           <div className="relative z-10 flex flex-col h-full">
             <header className="flex items-center justify-between p-4 flex-shrink-0">
               <div className="flex items-center gap-4">
@@ -83,10 +109,11 @@ const NowPlayingView = () => {
                   width={56}
                   height={56}
                   className="rounded-md shadow-lg"
+                  unoptimized
                 />
                 <div>
-                  <h3 className="font-bold text-white">{currentSong.title}</h3>
-                  <div className="text-sm text-neutral-300">
+                  <h3 className="font-bold text-white line-clamp-1">{currentSong.title}</h3>
+                  <div className="text-sm text-neutral-300 line-clamp-1">
                     {album &&
                       album.artists.map((artist, index) => (
                         <React.Fragment key={artist.id}>

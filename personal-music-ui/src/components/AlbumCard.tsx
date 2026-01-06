@@ -5,7 +5,9 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Play, LoaderCircle } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
-import type { Song, Artist } from "@/types";
+import type { Song } from "@/types";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 type AlbumForCard = {
   id: number;
@@ -26,8 +28,7 @@ type AlbumWithSongs = AlbumForCard & {
 const AlbumCard = ({ album }: { album: AlbumForCard }) => {
   const { playSong } = usePlayerStore();
   const [isLoading, setIsLoading] = useState(false);
-
-  const albumArtUrl = `http://localhost:3001/static/covers/${album.id}.jpg`;
+  const albumArtUrl = `${API_BASE_URL}/api/covers/${album.id}?size=300`;
 
   const handlePlayClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -35,7 +36,7 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:3001/api/albums/${album.id}`);
+      const res = await fetch(`${API_BASE_URL}/api/albums/${album.id}`);
       if (!res.ok) return;
 
       const fullAlbum: AlbumWithSongs = await res.json();
@@ -63,7 +64,6 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
       href={`/album/${album.id}`}
       className="block group relative p-4 rounded-lg bg-neutral-900/50 hover:bg-neutral-800/80 transition-colors duration-300"
     >
-      {}
       <div className="relative transform group-hover:scale-105 transition-transform duration-300 ease-in-out">
         <div className="relative w-full aspect-square shadow-lg">
           <Image
@@ -71,6 +71,7 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
             alt={`Cover for ${album.title}`}
             fill
             className="object-cover rounded-md"
+            unoptimized
             sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 20vw"
           />
         </div>
@@ -82,20 +83,19 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
         </div>
       </div>
 
-      {}
       <button
         onClick={handlePlayClick}
         disabled={isLoading}
         className="absolute bottom-[100px] right-6 flex items-center justify-center bg-green-500 p-3 rounded-full shadow-lg 
                    opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 
                    transition-all duration-300 ease-in-out
-                   focus:outline-none"
+                   focus:outline-none hover:scale-110 hover:bg-green-400"
         aria-label={`Play ${album.title}`}
       >
         {isLoading ? (
           <LoaderCircle size={24} className="text-black animate-spin" />
         ) : (
-          <Play size={24} className="text-black" fill="black" />
+          <Play size={24} className="text-black translate-x-0.5" fill="black" />
         )}
       </button>
     </Link>

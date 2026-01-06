@@ -100,6 +100,8 @@ export class MusicLibraryService {
       'folder.jpg',
       'cover.png',
       'folder.png',
+      'Cover.jpg',
+      'Folder.jpg',
     ];
     for (const name of commonCoverNames) {
       const coverPath = path.join(albumPath, name);
@@ -110,9 +112,10 @@ export class MusicLibraryService {
     }
     return null;
   }
-
-  async scanAndSaveMusic(directory: string) {
-    console.log('Starting music library scan...');
+  async scanAndSaveMusic(directory: string, forceUpdate: boolean = false) {
+    console.log(
+      `Starting music library scan... (Force Update: ${forceUpdate})`,
+    );
     const filePaths = await this.getAudioFilePaths(directory);
     console.log(`Found ${filePaths.length} audio files.`);
 
@@ -144,7 +147,6 @@ export class MusicLibraryService {
           update: {},
         });
         artistCache.set(artistName, artist);
-
         const artistFolderPath = path.dirname(path.dirname(filePath));
         const avatarPath = path.join(artistFolderPath, '头像.png');
         const headerPath = path.join(artistFolderPath, '封面图.png');
@@ -188,7 +190,6 @@ export class MusicLibraryService {
           await fs.access(bioTextPath);
           const bioContent = await fs.readFile(bioTextPath, 'utf-8');
           dataToUpdate.bio = bioContent;
-          console.log(`Found bio for ${artistName}`);
         } catch {
           /* bio.txt does not exist, ignore */
         }
@@ -200,7 +201,6 @@ export class MusicLibraryService {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           await copy(bioImagePath, targetPath, { overwrite: true });
           dataToUpdate.bioImageUrl = `/artist-images/${targetFileName}`;
-          console.log(`Found bio image for ${artistName}`);
         } catch {
           /* bio.png does not exist, ignore */
         }
@@ -234,10 +234,37 @@ export class MusicLibraryService {
         });
         albumCache.set(albumUniqueId, album);
       }
-
-      if (!album.coverPath && !album.coverAttempted) {
+      if ((!album.coverPath || forceUpdate) && !album.coverAttempted) {
         let coverSaved = false;
-        if (tags.imageBuffer) {
+        const albumFolderPath = path.dirname(filePath);
+        const folderCoverPath = await this.findFolderCover(albumFolderPath);
+        if (folderCoverPath) {
+          const fileExtension = path.extname(folderCoverPath);
+          const newCoverPath = path.join(
+            coversDir,
+            `${album.id}${fileExtension}`,
+          );
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            await copy(folderCoverPath, newCoverPath, { overwrite: true });
+            const coverPathForDb = `/covers/${album.id}${fileExtension}`;
+            const updatedAlbum = await this.prisma.album.update({
+              where: { id: album.id },
+              data: { coverPath: coverPathForDb },
+            });
+            album.coverPath = updatedAlbum.coverPath;
+            coverSaved = true;
+            console.log(
+              `[Cover] ${forceUpdate ? '覆盖' : '使用'}文件夹图片: ${folderCoverPath}`,
+            );
+          } catch (e) {
+            console.error(
+              `Failed to copy folder cover for album ID ${album.id}:`,
+              e,
+            );
+          }
+        }
+        if (!coverSaved && tags.imageBuffer) {
           const newCoverPath = path.join(coversDir, `${album.id}.jpg`);
           try {
             await fs.writeFile(newCoverPath, tags.imageBuffer);
@@ -248,38 +275,14 @@ export class MusicLibraryService {
             });
             album.coverPath = updatedAlbum.coverPath;
             coverSaved = true;
+            console.log(
+              `[Cover] ${forceUpdate ? '覆盖' : '使用'}内嵌图片: ${filePath}`,
+            );
           } catch (e) {
             console.error(
               `Failed to write embedded cover for album ID ${album.id}:`,
               e,
             );
-          }
-        }
-
-        if (!coverSaved) {
-          const albumFolderPath = path.dirname(filePath);
-          const folderCoverPath = await this.findFolderCover(albumFolderPath);
-          if (folderCoverPath) {
-            const fileExtension = path.extname(folderCoverPath);
-            const newCoverPath = path.join(
-              coversDir,
-              `${album.id}${fileExtension}`,
-            );
-            try {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              await copy(folderCoverPath, newCoverPath, { overwrite: true });
-              const coverPathForDb = `/covers/${album.id}${fileExtension}`;
-              const updatedAlbum = await this.prisma.album.update({
-                where: { id: album.id },
-                data: { coverPath: coverPathForDb },
-              });
-              album.coverPath = updatedAlbum.coverPath;
-            } catch (e) {
-              console.error(
-                `Failed to copy folder cover for album ID ${album.id}:`,
-                e,
-              );
-            }
           }
         }
         album.coverAttempted = true;

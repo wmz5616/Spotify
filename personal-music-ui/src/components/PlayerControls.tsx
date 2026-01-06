@@ -11,23 +11,26 @@ import {
   Repeat1,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePlayerStore } from "@/store/usePlayerStore"; // 确保导入 usePlayerStore
-import ProgressBar from "./ProgressBar";
+import { usePlayerStore } from "@/store/usePlayerStore";
+import ProgressBar from "./ProgressBar"; // 假设你已有这个组件
 import Image from "next/image";
 import Link from "next/link";
-import QueueButton from "./QueueButton";
+import QueueButton from "./QueueButton"; // 假设你已有这个组件
+
+// [优化] 使用环境变量
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 const PlayerControls = () => {
   const {
     isPlaying,
     togglePlayPause,
     currentSong,
-    playNextSong,
-    playPreviousSong,
+    playNext, // [修复] 对应 Store 中的新名字 (原 playNextSong)
+    playPrev, // [修复] 对应 Store 中的新名字 (原 playPreviousSong)
     playMode,
     toggleShuffle,
     toggleRepeat,
-    toggleQueue, // <-- 关键：这里要导入 toggleQueue 方法
+    toggleQueue,
   } = usePlayerStore();
 
   if (!currentSong) {
@@ -38,8 +41,9 @@ const PlayerControls = () => {
     );
   }
 
+  // [优化] 使用后端智能封面接口 (支持占位图)
   const albumArtUrl = currentSong.album?.id
-    ? `http://localhost:3001/static/covers/${currentSong.album.id}.jpg`
+    ? `${API_BASE_URL}/api/covers/${currentSong.album.id}?size=128`
     : "/placeholder.jpg";
 
   const renderRepeatIcon = () => {
@@ -50,111 +54,119 @@ const PlayerControls = () => {
   };
 
   return (
-    <footer className="col-start-1 col-span-2 bg-neutral-950 h-[90px] px-4 border-t border-neutral-800 grid grid-cols-3 items-center">
-      {/* 左侧：当前歌曲信息 (带动画，且可点击) */}
+    <footer className="col-start-1 col-span-2 bg-neutral-950 h-[90px] px-4 border-t border-neutral-800 grid grid-cols-3 items-center z-50 relative">
+      {/* 左侧：当前歌曲信息 */}
       <div className="flex items-center gap-3 truncate">
         <AnimatePresence mode="wait">
-          {currentSong.album && (
-            <motion.div
-              key={currentSong.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="flex items-center gap-3 truncate"
+          <motion.div
+            key={currentSong.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center gap-3 truncate"
+          >
+            <div
+              onClick={toggleQueue}
+              className="flex items-center gap-3 truncate cursor-pointer hover:bg-neutral-800/50 p-1.5 rounded-md transition-colors group"
+              title="Toggle Queue"
             >
-              {/* 修改这里：将整个歌曲信息区域包裹在一个可点击的 div 中 */}
-              <div
-                onClick={toggleQueue} // <-- 关键：点击时触发 toggleQueue
-                className="flex items-center gap-3 truncate cursor-pointer hover:bg-neutral-800/50 p-1 rounded-md transition-colors"
-                title="Expand Now Playing"
-              >
+              <div className="relative w-14 h-14 flex-shrink-0 shadow-md">
                 <Image
                   src={albumArtUrl}
-                  alt={currentSong.album.title}
-                  width={56}
-                  height={56}
-                  className="rounded-md flex-shrink-0" // 确保图片不被挤压
+                  alt={currentSong.album?.title || "Album Art"}
+                  fill
+                  className="rounded-md object-cover"
+                  unoptimized // [关键] 必须加，避免 Next.js 二次压缩导致加载慢
                 />
-                <div className="truncate">
-                  <h3 className="font-semibold text-white truncate text-sm">
-                    {currentSong.title}
-                  </h3>
-                  <div className="text-xs text-neutral-400 truncate">
-                    {currentSong.album?.artists.map((artist, index) => (
-                      <React.Fragment key={artist.id}>
-                        {/* 这里的Link仍然保留，但点击专辑信息区域会优先触发toggleQueue */}
-                        <Link
-                          href={`/artist/${artist.id}`}
-                          className="hover:underline"
-                          onClick={(e) => e.stopPropagation()} // 阻止Link的点击事件冒泡到父级div
-                        >
-                          {artist.name}
-                        </Link>
-                        {index < currentSong.album!.artists.length - 1 && ", "}
-                      </React.Fragment>
-                    ))}
-                  </div>
+              </div>
+
+              <div className="truncate flex flex-col justify-center">
+                <h3 className="font-semibold text-white truncate text-sm group-hover:text-green-400 transition-colors">
+                  {currentSong.title}
+                </h3>
+                <div className="text-xs text-neutral-400 truncate">
+                  {currentSong.album?.artists.map((artist, index) => (
+                    <React.Fragment key={artist.id}>
+                      <Link
+                        href={`/artist/${artist.id}`}
+                        className="hover:underline hover:text-white transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {artist.name}
+                      </Link>
+                      {index < (currentSong.album?.artists.length || 0) - 1 &&
+                        ", "}
+                    </React.Fragment>
+                  ))}
                 </div>
               </div>
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* 中间：播放控制和进度条 (不变) */}
-      <div className="flex flex-col items-center justify-center gap-2">
-        <div className="flex items-center gap-4">
+      {/* 中间：播放控制和进度条 */}
+      <div className="flex flex-col items-center justify-center gap-2 w-full max-w-[45%] mx-auto">
+        <div className="flex items-center gap-6">
           <button
             onClick={toggleShuffle}
-            className={`transition ${
-              playMode === "shuffle" ? "text-green-500" : "text-neutral-400"
-            } hover:text-white`}
+            className={`transition-colors hover:scale-105 active:scale-95 ${
+              playMode === "shuffle"
+                ? "text-green-500"
+                : "text-neutral-400 hover:text-white"
+            }`}
             title="Shuffle"
           >
             <Shuffle size={18} />
           </button>
+
           <button
-            onClick={playPreviousSong}
-            className="text-neutral-400 hover:text-white transition"
+            onClick={playPrev} // [修复] 使用 playPrev
+            className="text-neutral-400 hover:text-white transition-colors hover:scale-105 active:scale-95"
             title="Previous"
           >
-            <SkipBack size={20} fill="currentColor" />
+            <SkipBack size={22} fill="currentColor" />
           </button>
+
           <button
             onClick={togglePlayPause}
-            className="bg-white text-black rounded-full p-3 flex items-center justify-center hover:scale-105 transition-transform focus:outline-none"
+            className="bg-white text-black rounded-full p-2.5 flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? (
-              <Pause size={24} fill="black" />
+              <Pause size={22} fill="black" />
             ) : (
-              <Play size={24} fill="black" className="translate-x-0.5" />
+              <Play size={22} fill="black" className="translate-x-0.5" />
             )}
           </button>
+
           <button
-            onClick={playNextSong}
-            className="text-neutral-400 hover:text-white transition"
+            onClick={playNext} // [修复] 使用 playNext
+            className="text-neutral-400 hover:text-white transition-colors hover:scale-105 active:scale-95"
             title="Next"
           >
-            <SkipForward size={20} fill="currentColor" />
+            <SkipForward size={22} fill="currentColor" />
           </button>
+
           <button
             onClick={toggleRepeat}
-            className={`transition ${
+            className={`transition-colors hover:scale-105 active:scale-95 ${
               playMode.includes("repeat")
                 ? "text-green-500"
-                : "text-neutral-400"
-            } hover:text-white`}
+                : "text-neutral-400 hover:text-white"
+            }`}
             title="Repeat"
           >
             {renderRepeatIcon()}
           </button>
         </div>
+
+        {/* 进度条组件 */}
         <ProgressBar />
       </div>
 
-      {/* 右侧：添加 QueueButton */}
+      {/* 右侧：队列按钮和其他控制 */}
       <div className="flex items-center justify-end gap-4">
         <QueueButton />
       </div>

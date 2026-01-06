@@ -69,7 +69,7 @@ const SearchContent = () => {
         </div>
       ) : (
         <div className="text-center text-neutral-500 mt-16">
-          <p>Search for your favorite songs, artists, or albums.</p>
+          <p>搜索你喜欢的歌曲、艺术家或专辑</p>
         </div>
       )}
     </div>

@@ -1,223 +1,229 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import { Play, Clock, Calendar, AlertCircle } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
-import type { Song, Artist } from "@/types";
-import { Clock, Heart, Play, Volume2 } from "lucide-react";
+import type { Song, Album, Artist } from "@/types";
+import SongRowItem from "@/components/SongRowItem";
+import AlbumPageSkeleton from "@/components/AlbumPageSkeleton";
 import { formatDuration } from "@/lib/utils";
 import { useColor } from "color-thief-react";
-import AlbumPageSkeleton from "@/components/AlbumPageSkeleton";
-import clsx from "clsx";
 
-type AlbumDetails = {
-  id: number;
-  title: string;
-  artists: Artist[];
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+type AlbumDetails = Album & {
   songs: Song[];
+  artists: Artist[];
+  duration?: number;
+  releaseDate?: string;
+  description?: string;
 };
 
 const AlbumDetailPage = () => {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
-
-  const [album, setAlbum] = useState<AlbumDetails | null>(null);
-  const [isDataLoading, setIsDataLoading] = useState(true);
-  const [backgroundStyle, setBackgroundStyle] = useState({
-    backgroundImage: "linear-gradient(to bottom, #1f2937 0%, transparent 40vh)",
-  });
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { playSong, currentSong, isPlaying } = usePlayerStore();
 
-  const albumArtUrl = `http://localhost:3001/static/covers/${id}.jpg`;
+  const [album, setAlbum] = useState<AlbumDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const { data: dominantColor, loading: colorLoading } = useColor(
-    albumArtUrl,
-    "hex",
-    {
-      crossOrigin: "anonymous",
-      quality: 10,
-    }
-  );
+  const albumArtUrl = id
+    ? `${API_BASE_URL}/api/covers/${id}?size=600`
+    : "/placeholder.jpg";
+
+  const { data: dominantColor } = useColor(albumArtUrl, "hex", {
+    crossOrigin: "anonymous",
+    quality: 10,
+  });
 
   useEffect(() => {
     if (!id) return;
-    setIsDataLoading(true);
+
     const fetchAlbumData = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/albums/${id}`, {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(`${API_BASE_URL}/api/albums/${id}`, {
           cache: "no-store",
         });
-        if (res.ok) {
-          const data = await res.json();
-          setAlbum(data);
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error("Album not found");
+          }
+          throw new Error(`Failed to fetch album: ${res.statusText}`);
         }
-      } catch (error) {
-        console.error("Failed to fetch album details:", error);
+
+        const data = await res.json();
+        setAlbum(data);
+      } catch (err) {
+        console.error("Error loading album:", err);
+        setError(err instanceof Error ? err.message : "Failed to load album");
       } finally {
-        setIsDataLoading(false);
+        setLoading(false);
       }
     };
+
     fetchAlbumData();
   }, [id]);
 
-  useEffect(() => {
-    if (dominantColor) {
-      setBackgroundStyle({
-        backgroundImage: `linear-gradient(to bottom, ${dominantColor} 0%, transparent 40vh)`,
-      });
-    }
-  }, [dominantColor]);
-
-  if (isDataLoading || colorLoading) {
-    return <AlbumPageSkeleton />;
-  }
-
-  if (!album) {
-    return (
-      <div className="p-8 text-center">Album not found or failed to load.</div>
-    );
-  }
-
-  const fullSongQueue = album.songs.map((song) => ({
-    ...song,
-    album: {
-      id: album.id,
-      title: album.title,
-      artists: album.artists,
-    },
-  }));
-
   const handlePlayAlbum = () => {
-    if (fullSongQueue.length > 0) {
-      playSong(fullSongQueue[0], fullSongQueue);
+    if (album?.songs && album.songs.length > 0) {
+      const queue = album.songs.map((song) => ({
+        ...song,
+        album: {
+          id: album.id,
+          title: album.title,
+          artists: album.artists,
+        },
+      }));
+      playSong(queue[0], queue);
     }
   };
 
+  if (loading) return <AlbumPageSkeleton />;
+
+  if (error || !album) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[50vh] text-neutral-400">
+        <AlertCircle size={48} className="mb-4 text-red-500" />
+        <h2 className="text-xl font-bold text-white mb-2">Album Not Found</h2>
+        <p className="mb-6">{error || "The requested album does not exist."}</p>
+        <button
+          onClick={() => router.back()}
+          className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-full text-white transition-colors"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
+
+  const totalDuration = album.songs.reduce(
+    (acc, song) => acc + (song.duration || 0),
+    0
+  );
+
   return (
-    <div className="relative">
+    <div className="relative isolate min-h-screen">
       <div
-        className="absolute top-0 left-0 w-full h-[40vh] -z-10 transition-all duration-1000"
-        style={backgroundStyle}
+        className="absolute inset-x-0 top-0 h-[500px] -z-10 transition-colors duration-700 ease-in-out"
+        style={{
+          background: `linear-gradient(to bottom, ${
+            dominantColor || "#222"
+          } 0%, #121212 100%)`,
+          opacity: 0.6,
+        }}
       />
 
-      <div className="p-8">
-        <header className="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8 pt-16">
-          <div className="w-48 h-48 lg:w-56 lg:h-56 flex-shrink-0 bg-neutral-800 rounded-md shadow-2xl overflow-hidden">
+      <div className="p-6 pt-10">
+        <div className="flex flex-col md:flex-row items-end gap-6 mb-8">
+          <div className="relative w-48 h-48 md:w-60 md:h-60 shadow-2xl flex-shrink-0">
             <Image
               src={albumArtUrl}
-              alt={`Cover for ${album.title}`}
-              width={224}
-              height={224}
-              className="object-cover w-full h-full"
+              alt={album.title}
+              fill
+              className="object-cover rounded-md"
               priority
+              unoptimized
+              sizes="(max-width: 768px) 100vw, 300px"
             />
           </div>
-          <div className="flex flex-col gap-3 text-center md:text-left">
-            <span className="text-sm font-bold">ALBUM</span>
-            <h1 className="text-5xl lg:text-8xl font-black tracking-tighter break-words">
+
+          <div className="flex flex-col gap-2 mb-2 w-full">
+            <span className="text-sm font-bold uppercase tracking-wider text-neutral-200">
+              Album
+            </span>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-4">
               {album.title}
             </h1>
-            <div className="flex items-center justify-center md:justify-start gap-2 text-sm mt-2">
-              <div className="w-6 h-6 bg-pink-500 rounded-full"></div>
-              <p className="font-bold">
-                {album.artists.map((artist, index) => (
-                  <React.Fragment key={artist.id}>
-                    <Link
-                      href={`/artist/${artist.id}`}
-                      className="hover:underline"
-                    >
-                      {artist.name}
-                    </Link>
-                    {index < album.artists.length - 1 && ", "}
-                  </React.Fragment>
+
+            <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-300 font-medium">
+              <div className="flex items-center gap-1">
+                {album.artists.map((artist, i) => (
+                  <span
+                    key={artist.id}
+                    className="text-white hover:underline cursor-pointer"
+                  >
+                    {artist.name}
+                    {i < album.artists.length - 1 && ", "}
+                  </span>
                 ))}
-              </p>
-              <span className="text-neutral-400">&bull;</span>
-              <span className="text-neutral-400">
-                {album.songs.length} songs
+              </div>
+              <span className="text-neutral-400">•</span>
+              <span>{album.songs.length} songs</span>
+              <span className="text-neutral-400">•</span>
+              <span className="flex items-center gap-1">
+                <Clock size={14} />
+                {formatDuration(totalDuration)}
               </span>
+              {album.releaseDate && (
+                <>
+                  <span className="text-neutral-400">•</span>
+                  <span className="flex items-center gap-1">
+                    <Calendar size={14} />
+                    {new Date(album.releaseDate).getFullYear()}
+                  </span>
+                </>
+              )}
             </div>
           </div>
-        </header>
+        </div>
 
-        <div className="flex items-center gap-6 mb-8">
+        <div className="flex items-center gap-4 mb-8">
           <button
             onClick={handlePlayAlbum}
-            className="bg-green-500 text-black p-4 rounded-full shadow-lg hover:scale-105 transition-transform"
-            aria-label="Play album"
+            className="flex items-center justify-center w-14 h-14 bg-green-500 rounded-full shadow-lg hover:scale-105 hover:bg-green-400 transition-all"
           >
-            <Play size={28} fill="black" />
-          </button>
-          <button
-            className="text-neutral-400 hover:text-white"
-            aria-label="Like"
-          >
-            <Heart size={32} />
+            <Play
+              size={28}
+              fill="black"
+              className="translate-x-0.5 text-black"
+            />
           </button>
         </div>
 
-        <section>
-          <div className="grid grid-cols-[2rem_1fr_auto] gap-x-4 px-4 py-2 text-neutral-400 text-sm border-b border-neutral-800/50 mb-2">
-            <div className="text-right">#</div>
-            <div>TITLE</div>
-            <div className="flex justify-end">
-              <Clock size={16} />
-            </div>
+        <div className="grid grid-cols-[2rem_minmax(0,1fr)_minmax(0,1fr)_auto_2rem] gap-x-4 px-4 py-2 border-b border-neutral-800 text-neutral-400 text-sm mb-4 sticky top-0 bg-[#121212]/95 backdrop-blur-sm z-10">
+          <div className="text-right">#</div>
+          <div>Title</div>
+          <div className="hidden md:block">Album</div>
+          <div className="flex justify-end">
+            <Clock size={16} />
           </div>
-          <ul>
-            {fullSongQueue.map((song, index) => {
-              const isActive = song.id === currentSong?.id;
+          <div></div>
+        </div>
 
-              return (
-                <li
-                  key={song.id}
-                  onClick={() => playSong(song, fullSongQueue)}
-                  className={clsx(
-                    "grid grid-cols-[2rem_1fr_auto] gap-x-4 px-4 py-2 items-center rounded-md hover:bg-neutral-800/50 cursor-pointer group",
-                    { "bg-neutral-700/50": isActive }
-                  )}
-                >
-                  <div className="flex justify-end items-center">
-                    {}
-                    {isActive && isPlaying ? (
-                      <Volume2 size={16} className="text-green-400" />
-                    ) : (
-                      <>
-                        <span
-                          className={clsx(
-                            "group-hover:hidden",
-                            isActive ? "text-green-400" : "text-neutral-400"
-                          )}
-                        >
-                          {song.trackNumber || index + 1}
-                        </span>
-                        <Play
-                          size={16}
-                          className="hidden group-hover:block text-white"
-                          fill="currentColor"
-                        />
-                      </>
-                    )}
-                  </div>
-                  <div
-                    className={clsx(
-                      "font-medium truncate",
-                      isActive ? "text-green-400" : "text-white"
-                    )}
-                  >
-                    {song.title}
-                  </div>
-                  <div className="text-neutral-400 text-sm">
-                    {formatDuration(song.duration)}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+        <div className="flex flex-col">
+          {album.songs.map((song, index) => (
+            <SongRowItem
+              key={song.id}
+              song={{
+                ...song,
+                album: {
+                  id: album.id,
+                  title: album.title,
+                  artists: album.artists,
+                },
+              }}
+              index={index}
+              queue={album.songs.map((s) => ({
+                ...s,
+                album: {
+                  id: album.id,
+                  title: album.title,
+                  artists: album.artists,
+                },
+              }))}
+              hideCover={true}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
