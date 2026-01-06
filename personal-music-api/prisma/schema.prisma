@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  albums      Album[]
+  avatarUrl   String?
+  headerUrl   String?
+  bio         String?
+  bioImageUrl String?
+}
+
+model Album {
+  id        Int      @id @default(autoincrement())
+  title     String
+  uniqueId  String   @unique
+  artists   Artist[]
+  songs     Song[]
+  coverPath String?
+}
+
+model Song {
+  id          Int        @id @default(autoincrement())
+  title       String
+  trackNumber Int?
+  path        String     @unique
+  album       Album      @relation(fields: [albumId], references: [id])
+  albumId     Int
+  duration    Float?
+  lyrics      String?
+  playlists   Playlist[] @relation("PlaylistToSong")
+}
+
+model Playlist {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  songs       Song[]   @relation("PlaylistToSong")
+}

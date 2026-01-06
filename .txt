@@ -1,0 +1,13 @@
+1、cd personal-music-api
+后端
+
+npm run start:dev
+
+2、Invoke-RestMethod -Uri "http://localhost:3001/api/library/scan" -Method Post
+更新数据
+
+3、cd personal-music-ui
+前端
+
+npm run dev
+
