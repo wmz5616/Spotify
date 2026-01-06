@@ -1,13 +1,10 @@
-1、cd personal-music-api
-后端
-
+cd personal-music-api
+npx prisma migrate dev
 npm run start:dev
 
-2、Invoke-RestMethod -Uri "http://localhost:3001/api/library/scan" -Method Post
-更新数据
+Invoke-RestMethod -Uri "http://localhost:3001/api/library/scan?force=true" -Method Post
 
-3、cd personal-music-ui
-前端
-
+cd personal-music-ui
 npm run dev
 
+我需要你给出详细的步骤包括完整代码，我需要你一个一个文件按顺序的进行优化，等待我确认后才能进行下一个文件
