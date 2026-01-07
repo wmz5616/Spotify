@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useSpring } from "framer-motion";
-import { X, ListMusic, Mic2 } from "lucide-react";
+import { ChevronDown, ListMusic, Mic2 } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import Link from "next/link";
 import LyricDisplay from "./LyricDisplay";
@@ -36,7 +36,7 @@ const NowPlayingView = () => {
     crossOrigin: "anonymous",
     quality: 10,
   });
-  
+
   const [backgroundStyle, setBackgroundStyle] = useState({});
 
   useEffect(() => {
@@ -69,37 +69,35 @@ const NowPlayingView = () => {
           transition={{
             type: "spring",
             stiffness: 300,
-            damping: 30, 
+            damping: 30,
             mass: 0.8,
           }}
           style={{ willChange: "transform" }}
           className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-neutral-900"
         >
-
-          <div 
+          <div
             className="absolute inset-0 transition-colors duration-1000 ease-in-out"
             style={{
-               ...backgroundStyle,
-               transform: "translateZ(0)",
-               willChange: "background"
-            }} 
-          />
-          
-          <motion.div 
-            className="absolute inset-0 bg-white/20 mix-blend-overlay pointer-events-none"
-            style={{ 
-              opacity: glowOpacity,
-              willChange: "opacity",
-              transform: "translateZ(0)"
+              ...backgroundStyle,
+              transform: "translateZ(0)",
+              willChange: "background",
             }}
           />
 
-          <div 
-            className="absolute inset-0 bg-black/40 backdrop-blur-xl" 
+          <motion.div
+            className="absolute inset-0 bg-white/20 mix-blend-overlay pointer-events-none"
+            style={{
+              opacity: glowOpacity,
+              willChange: "opacity",
+              transform: "translateZ(0)",
+            }}
+          />
+
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-xl"
             style={{ transform: "translateZ(0)" }}
           />
 
-          {/* --- 内容层 --- */}
           <div className="relative z-10 flex flex-col h-full">
             <header className="flex items-center justify-between p-4 flex-shrink-0">
               <div className="flex items-center gap-4">
@@ -112,7 +110,9 @@ const NowPlayingView = () => {
                   unoptimized
                 />
                 <div>
-                  <h3 className="font-bold text-white line-clamp-1">{currentSong.title}</h3>
+                  <h3 className="font-bold text-white line-clamp-1">
+                    {currentSong.title}
+                  </h3>
                   <div className="text-sm text-neutral-300 line-clamp-1">
                     {album &&
                       album.artists.map((artist, index) => (
@@ -156,11 +156,13 @@ const NowPlayingView = () => {
                     <ListMusic size={16} /> Queue
                   </button>
                 </div>
+
                 <button
                   onClick={toggleQueue}
-                  className="p-2 rounded-full hover:bg-black/40 transition-colors"
+                  className="p-2 rounded-full hover:bg-neutral-800/50 transition-colors text-neutral-200 hover:text-white"
+                  title="Close (Swipe Down)"
                 >
-                  <X size={24} />
+                  <ChevronDown size={32} />
                 </button>
               </div>
             </header>

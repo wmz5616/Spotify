@@ -13,6 +13,7 @@ export type Artist = {
 export type Album = {
   id: number;
   title: string;
+  coverPath?: string | null;
   artists: Artist[];
   songs: Song[];
   _count: {
@@ -30,6 +31,7 @@ export type Song = {
   album?: {
     id: number;
     title: string;
+    coverPath?: string | null;
     artists: Artist[];
   };
 };

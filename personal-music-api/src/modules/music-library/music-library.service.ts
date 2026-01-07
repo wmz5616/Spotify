@@ -344,6 +344,7 @@ export class MusicLibraryService {
           select: {
             id: true,
             title: true,
+            coverPath: true,
             artists: { select: { id: true, name: true } },
             songs: { orderBy: { trackNumber: 'asc' } },
             _count: { select: { songs: true } },
@@ -358,6 +359,7 @@ export class MusicLibraryService {
       select: {
         id: true,
         title: true,
+        coverPath: true,
         artists: { select: { id: true, name: true } },
         _count: { select: { songs: true } },
       },
@@ -373,6 +375,7 @@ export class MusicLibraryService {
       select: {
         id: true,
         title: true,
+        coverPath: true,
         artists: { select: { id: true, name: true } },
         _count: { select: { songs: true } },
       },
@@ -385,6 +388,7 @@ export class MusicLibraryService {
       select: {
         id: true,
         title: true,
+        coverPath: true,
         artists: { select: { id: true, name: true } },
         songs: {
           orderBy: { trackNumber: 'asc' },

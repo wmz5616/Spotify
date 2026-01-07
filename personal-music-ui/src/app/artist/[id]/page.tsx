@@ -8,6 +8,7 @@ import type { Song, Album, Artist } from "@/types";
 import AlbumCard from "@/components/AlbumCard";
 import PopularSongsList from "@/components/PopularSongsList";
 import AboutCard from "@/components/AboutCard";
+import clsx from "clsx";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -19,7 +20,7 @@ const ArtistPageSkeleton = () => (
   <div className="animate-pulse">
     <div className="h-[40vh] bg-neutral-800 rounded-lg" />
     <div className="p-8">
-      <div className="h-16 w-16 bg-neutral-700 rounded-full mb-8"></div>
+      <div className="h-32 w-32 bg-neutral-700 rounded-full mb-8 -mt-20 border-4 border-black relative z-10"></div>
       <section className="mb-12">
         <div className="h-8 w-32 bg-neutral-700 rounded mb-6"></div>
         <div className="space-y-2">
@@ -115,6 +116,7 @@ const ArtistDetailPage = () => {
   const singlesAndEPs = artist.albums.filter(
     (album) => album.songs.length <= ALBUM_TRACK_THRESHOLD
   );
+
   const popularSongs = artist.albums
     .flatMap((album) =>
       album.songs.map((song) => ({
@@ -123,14 +125,19 @@ const ArtistDetailPage = () => {
           id: album.id,
           title: album.title,
           artists: album.artists,
+          coverPath: album.coverPath,
         },
       }))
     )
     .slice(0, 5);
 
-  const artistImageUrl = artist.headerUrl
+  const avatarUrl = artist.avatarUrl
+    ? `${API_BASE_URL}/static${artist.avatarUrl}`
+    : null;
+
+  const headerImageUrl = artist.headerUrl
     ? `${API_BASE_URL}/static${artist.headerUrl}`
-    : "/placeholder.jpg";
+    : avatarUrl || "/placeholder.jpg";
 
   const headerTextOpacity = Math.max(0, 1 - scrollY / 150);
   const headerTextTransform = `translateY(${Math.min(
@@ -142,16 +149,19 @@ const ArtistDetailPage = () => {
 
   return (
     <div>
-      <header className="relative w-full h-auto rounded-lg overflow-hidden">
+      <header className="relative w-full h-auto rounded-lg overflow-hidden group">
         <div className="relative w-full h-0 pb-[40%] max-h-[500px] min-h-[340px]">
           <Image
-            src={artistImageUrl}
-            alt={`Photo of ${artist.name}`}
+            src={headerImageUrl}
+            alt={`Cover of ${artist.name}`}
             fill
-            className="object-cover"
+            className={clsx(
+              "object-cover transition-all duration-700",
+              !artist.headerUrl && "blur-xl scale-110 opacity-60"
+            )}
             priority
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 100vw"
-            unoptimized={artistImageUrl.startsWith(API_BASE_URL)}
+            unoptimized={headerImageUrl.startsWith(API_BASE_URL)}
             style={{
               transform: imageTransform,
               willChange: "transform",
@@ -159,19 +169,44 @@ const ArtistDetailPage = () => {
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40 to-transparent" />
+
         <div
-          className="absolute bottom-0 p-8 flex flex-col gap-4"
+          className="absolute bottom-0 p-6 md:p-8 flex items-end gap-6 w-full"
           style={{
             opacity: headerTextOpacity,
             transform: headerTextTransform,
             willChange: "transform, opacity",
           }}
         >
-          <span className="font-bold">Artist</span>
-          <h1 className="text-5xl lg:text-8xl font-black tracking-tighter">
-            {artist.name}
-          </h1>
+          {avatarUrl && (
+            <div className="relative w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-full overflow-hidden shadow-2xl border-4 border-neutral-900/50">
+              <Image
+                src={avatarUrl}
+                alt={artist.name}
+                fill
+                className="object-cover"
+                unoptimized={avatarUrl.startsWith(API_BASE_URL)}
+              />
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2 mb-2">
+            <span className="font-bold text-sm md:text-base flex items-center gap-2">
+              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-3 h-3 text-white fill-current"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              Verified Artist
+            </span>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter shadow-black drop-shadow-lg">
+              {artist.name}
+            </h1>
+          </div>
         </div>
       </header>
 
@@ -186,6 +221,10 @@ const ArtistDetailPage = () => {
               fill="black"
               className="translate-x-0.5 text-black"
             />
+          </button>
+
+          <button className="px-4 py-1.5 border border-neutral-500 rounded-full text-sm font-bold hover:border-white transition-colors">
+            Follow
           </button>
         </div>
 
