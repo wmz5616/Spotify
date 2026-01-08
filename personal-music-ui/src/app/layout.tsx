@@ -6,6 +6,9 @@ import PlayerControls from "@/components/PlayerControls";
 import AudioPlayer from "@/components/AudioPlayer";
 import Header from "@/components/Header";
 import NowPlayingView from "@/components/NowPlayingView";
+import GlobalKeyboardShortcuts from "@/components/GlobalKeyboardShortcuts";
+import ToastContainer from "@/components/ToastContainer";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -31,7 +34,9 @@ export default function RootLayout({
           </div>
           <PlayerControls />
           <AudioPlayer />
-          <NowPlayingView /> {}
+          <NowPlayingView />
+          <GlobalKeyboardShortcuts />
+          <ToastContainer />
         </div>
       </body>
     </html>

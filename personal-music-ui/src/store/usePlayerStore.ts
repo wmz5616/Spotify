@@ -14,8 +14,11 @@ interface PlayerState {
   currentQueueIndex: number;
   playMode: PlayMode;
   isQueueOpen: boolean;
+  isSidebarCollapsed: boolean;
   isLoading: boolean;
   isFullScreen: boolean;
+  isMuted: boolean;
+  prevVolume: number;
 
   audioRef: React.RefObject<HTMLAudioElement | null> | null;
   audioContext: AudioContext | null;
@@ -41,9 +44,11 @@ interface PlayerState {
   toggleShuffle: () => void;
   toggleRepeat: () => void;
   toggleQueue: () => void;
+  toggleSidebar: () => void;
   setIsLoading: (loading: boolean) => void;
   toggleFullScreen: () => void;
   setFullScreen: (isFull: boolean) => void;
+  toggleMute: () => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set, get) => ({
@@ -56,8 +61,11 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   currentQueueIndex: -1,
   playMode: "normal",
   isQueueOpen: false,
+  isSidebarCollapsed: false,
   isLoading: false,
   isFullScreen: false,
+  isMuted: false,
+  prevVolume: 0.8,
   audioRef: null,
   audioContext: null,
   analyser: null,
@@ -105,7 +113,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     if (audioRef?.current) {
       audioRef.current.volume = volume;
     }
-    set({ volume });
+    set({ volume, isMuted: volume === 0 });
   },
 
   setCurrentTime: (time) => set({ currentTime: time }),
@@ -210,9 +218,23 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     }),
 
   toggleQueue: () => set((state) => ({ isQueueOpen: !state.isQueueOpen })),
+  toggleSidebar: () =>
+    set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
   setIsLoading: (loading) => set({ isLoading: loading }),
 
   toggleFullScreen: () =>
     set((state) => ({ isFullScreen: !state.isFullScreen })),
   setFullScreen: (isFull) => set({ isFullScreen: isFull }),
+
+  toggleMute: () => {
+    const { isMuted, volume, prevVolume, setVolume } = get();
+    if (isMuted) {
+      setVolume(prevVolume || 0.8);
+      set({ isMuted: false });
+    } else {
+      set({ prevVolume: volume });
+      setVolume(0);
+      set({ isMuted: true });
+    }
+  },
 }));

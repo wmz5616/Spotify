@@ -1,4 +1,5 @@
 import AlbumCard from "@/components/AlbumCard";
+import WelcomeHeader from "@/components/WelcomeHeader";
 
 type Album = {
   id: number;
@@ -18,13 +19,12 @@ const HomePage = async () => {
   let error: string | null = null;
 
   try {
-    // 并行获取所有专辑和随机专辑
     const [albumsRes, randomAlbumsRes] = await Promise.all([
       fetch("http://localhost:3001/api/albums", {
-        next: { revalidate: 3600 },
+        cache: "no-store",
       }),
       fetch("http://localhost:3001/api/albums/random?take=6", {
-        cache: "no-store", // 确保每次请求都是新的随机结果
+        cache: "no-store",
       }),
     ]);
 
@@ -44,16 +44,8 @@ const HomePage = async () => {
 
   return (
     <div>
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight">
-          Welcome Back
-        </h1>
-        <p className="text-neutral-400 mt-2 text-sm">
-          Here&apos;s a look at your collection.
-        </p>
-      </header>
+      <WelcomeHeader />
 
-      {/* 新增的随机推荐板块 */}
       {randomAlbums.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xl font-bold text-white mb-6">For You</h2>

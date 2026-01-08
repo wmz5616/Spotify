@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as mm from 'music-metadata';
 import { ensureDir, copy, pathExists } from 'fs-extra';
 import { Artist, Album } from '@prisma/client';
+import Fuse from 'fuse.js';
 
 interface ParsedInfo {
   artist: string;
@@ -15,8 +16,31 @@ interface ParsedInfo {
   duration?: number;
 }
 
+interface ArtistSearchItem {
+  id: number;
+  name: string;
+}
+
+interface AlbumSearchItem {
+  id: number;
+  title: string;
+}
+
+interface SongSearchItem {
+  id: number;
+  title: string;
+}
+
+interface FuseSearchInstance<T> {
+  search(pattern: string): { item: T }[];
+}
+
 @Injectable()
 export class MusicLibraryService {
+  private artistFuse: FuseSearchInstance<ArtistSearchItem> | null = null;
+  private albumFuse: FuseSearchInstance<AlbumSearchItem> | null = null;
+  private songFuse: FuseSearchInstance<SongSearchItem> | null = null;
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getAlbumArtBuffer(_id: number) {
     throw new Error('Method not implemented.');
@@ -112,6 +136,7 @@ export class MusicLibraryService {
     }
     return null;
   }
+
   async scanAndSaveMusic(directory: string, forceUpdate: boolean = false) {
     console.log(
       `Starting music library scan... (Force Update: ${forceUpdate})`,
@@ -315,7 +340,115 @@ export class MusicLibraryService {
         },
       });
     }
-    console.log('Music library scan and save complete.');
+
+    this.artistFuse = null;
+    this.albumFuse = null;
+    this.songFuse = null;
+    console.log(
+      'Music library scan and save complete. Search index invalidated.',
+    );
+  }
+
+  private async ensureSearchIndex() {
+    if (this.artistFuse && this.albumFuse && this.songFuse) {
+      return;
+    }
+
+    console.log('Building in-memory search index...');
+
+    const [artists, albums, songs] = await Promise.all([
+      this.prisma.artist.findMany({ select: { id: true, name: true } }),
+      this.prisma.album.findMany({ select: { id: true, title: true } }),
+      this.prisma.song.findMany({ select: { id: true, title: true } }),
+    ]);
+
+    const commonOptions = {
+      includeScore: true,
+      threshold: 0.4,
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    this.artistFuse = new Fuse(artists, {
+      ...commonOptions,
+      keys: ['name'],
+    }) as unknown as FuseSearchInstance<ArtistSearchItem>;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    this.albumFuse = new Fuse(albums, {
+      ...commonOptions,
+      keys: ['title'],
+    }) as unknown as FuseSearchInstance<AlbumSearchItem>;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    this.songFuse = new Fuse(songs, {
+      ...commonOptions,
+      keys: ['title'],
+    }) as unknown as FuseSearchInstance<SongSearchItem>;
+
+    console.log('Search index built successfully.');
+  }
+
+  async search(query: string) {
+    if (!query) return { artists: [], albums: [], songs: [] };
+
+    await this.ensureSearchIndex();
+
+    const artistResults = this.artistFuse
+      ? this.artistFuse.search(query).slice(0, 5)
+      : [];
+    const albumResults = this.albumFuse
+      ? this.albumFuse.search(query).slice(0, 5)
+      : [];
+    const songResults = this.songFuse
+      ? this.songFuse.search(query).slice(0, 10)
+      : [];
+
+    const artistIds = artistResults.map((r) => r.item.id);
+    const albumIds = albumResults.map((r) => r.item.id);
+    const songIds = songResults.map((r) => r.item.id);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const [artists, albums, songs] = await Promise.all([
+      artistIds.length > 0
+        ? this.prisma.artist.findMany({
+            where: { id: { in: artistIds } },
+            include: { albums: { take: 1 } },
+          })
+        : ([] as any),
+      albumIds.length > 0
+        ? this.prisma.album.findMany({
+            where: { id: { in: albumIds } },
+            include: { artists: true, _count: { select: { songs: true } } },
+          })
+        : ([] as any),
+      songIds.length > 0
+        ? this.prisma.song.findMany({
+            where: { id: { in: songIds } },
+            include: { album: { include: { artists: true } } },
+          })
+        : ([] as any),
+    ]);
+
+    const sortedArtists = artistIds
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      .map((id) => artists.find((a: any) => a.id === id))
+      .filter((a: any) => a !== undefined);
+
+    const sortedAlbums = albumIds
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      .map((id) => albums.find((a: any) => a.id === id))
+      .filter((a: any) => a !== undefined);
+
+    const sortedSongs = songIds
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      .map((id) => songs.find((a: any) => a.id === id))
+      .filter((a: any) => a !== undefined);
+
+    return {
+      artists: sortedArtists,
+      albums: sortedAlbums,
+      songs: sortedSongs,
+    };
   }
 
   async findAllArtists() {
@@ -413,25 +546,6 @@ export class MusicLibraryService {
       where: { id },
       select: { coverPath: true },
     });
-  }
-
-  async search(query: string) {
-    const artists = await this.prisma.artist.findMany({
-      where: { name: { contains: query } },
-      include: { albums: { take: 1 } },
-      take: 5,
-    });
-    const albums = await this.prisma.album.findMany({
-      where: { title: { contains: query } },
-      include: { artists: true, _count: { select: { songs: true } } },
-      take: 5,
-    });
-    const songs = await this.prisma.song.findMany({
-      where: { title: { contains: query } },
-      include: { album: { include: { artists: true } } },
-      take: 10,
-    });
-    return { artists, albums, songs };
   }
 
   async findSongPath(id: number): Promise<string | null> {
