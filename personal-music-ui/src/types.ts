@@ -22,6 +22,7 @@ export type Album = {
 };
 
 export type Song = {
+  artist: string;
   year: ReactNode;
   id: number;
   title: string;

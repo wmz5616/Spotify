@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import type { Playlist, Song } from "@/types";
 import { Clock, Play } from "lucide-react";
 import SongRowItem from "@/components/SongRowItem";
+import { FixedSizeList as List } from "react-window";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 type PlaylistDetails = Playlist & {
   songs: (Song & {
@@ -14,6 +17,7 @@ type PlaylistDetails = Playlist & {
       id: number;
       title: string;
       artists: { id: number; name: string }[];
+      coverPath: string;
     };
   })[];
 };
@@ -24,12 +28,14 @@ const PlaylistDetailPage = () => {
 
   const [playlist, setPlaylist] = useState<PlaylistDetails | null>(null);
   const { playSong } = usePlayerStore();
+  const [listHeight, setListHeight] = useState(600);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) return;
     const fetchPlaylistData = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/playlists/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/api/playlists/${id}`, {
           cache: "no-store",
         });
         if (res.ok) {
@@ -43,10 +49,24 @@ const PlaylistDetailPage = () => {
     fetchPlaylistData();
   }, [id]);
 
+  useEffect(() => {
+    const updateHeight = () => {
+      if (containerRef.current) {
+        const top = containerRef.current.getBoundingClientRect().top;
+        const height = window.innerHeight - top - 20;
+        setListHeight(Math.max(300, height));
+      }
+    };
+
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
+  }, [playlist]);
+
   if (!playlist) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p>Loading playlist...</p>
+        <p className="text-neutral-400">Loading playlist...</p>
       </div>
     );
   }
@@ -58,22 +78,22 @@ const PlaylistDetailPage = () => {
   };
 
   const coverArtUrl =
-    playlist.songs.length > 0
-      ? `http://localhost:3001/static/covers/${playlist.songs[0].album.id}.jpg`
-      : "/placeholder.png";
+    playlist.songs.length > 0 && playlist.songs[0].album.coverPath
+      ? `${API_BASE_URL}/static${playlist.songs[0].album.coverPath}`
+      : "/placeholder.jpg";
 
   return (
-    <div className="relative">
-      <div className="p-8">
-        <header className="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8 pt-16">
-          <div className="w-48 h-48 lg:w-56 lg:h-56 flex-shrink-0 bg-neutral-800 rounded-md shadow-2xl overflow-hidden">
+    <div className="relative h-full flex flex-col">
+      <div className="p-8 pb-4 flex-shrink-0">
+        <header className="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8 pt-8">
+          <div className="relative w-48 h-48 lg:w-56 lg:h-56 flex-shrink-0 bg-neutral-800 rounded-md shadow-2xl overflow-hidden">
             <Image
               src={coverArtUrl}
               alt={`Cover for ${playlist.name}`}
-              width={224}
-              height={224}
-              className="object-cover w-full h-full"
+              fill
+              className="object-cover"
               priority
+              unoptimized
             />
           </div>
           <div className="flex flex-col gap-3 text-center md:text-left">
@@ -87,7 +107,7 @@ const PlaylistDetailPage = () => {
           </div>
         </header>
 
-        <div className="flex items-center gap-6 mb-8">
+        <div className="flex items-center gap-6 mb-6">
           <button
             onClick={handlePlayPlaylist}
             className="bg-green-500 text-black p-4 rounded-full shadow-lg hover:scale-105 transition-transform"
@@ -97,21 +117,35 @@ const PlaylistDetailPage = () => {
           </button>
         </div>
 
-        <section>
-          <div className="grid grid-cols-[2rem_minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-4 px-4 py-2 text-neutral-400 text-sm border-b border-neutral-800/50 mb-2">
-            <div className="text-right">#</div>
-            <div>TITLE</div>
-            <div>ALBUM</div>
-            <div className="flex justify-end">
-              <Clock size={16} />
-            </div>
+        <div className="grid grid-cols-[2rem_minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-4 px-4 py-2 text-neutral-400 text-sm border-b border-neutral-800/50">
+          <div className="text-right">#</div>
+          <div>TITLE</div>
+          <div>ALBUM</div>
+          <div className="flex justify-end">
+            <Clock size={16} />
           </div>
-          <ul>
-            {playlist.songs.map((song, index) => (
-              <SongRowItem key={song.id} song={song} index={index} />
-            ))}
-          </ul>
-        </section>
+        </div>
+      </div>
+
+      <div ref={containerRef} className="flex-1 w-full">
+        <List
+          height={listHeight}
+          itemCount={playlist.songs.length}
+          itemSize={64}
+          width="100%"
+          itemData={playlist.songs}
+          className="scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent"
+        >
+          {({ index, style, data }) => (
+            <SongRowItem
+              key={data[index].id}
+              song={data[index]}
+              index={index}
+              queue={data}
+              style={style}
+            />
+          )}
+        </List>
       </div>
     </div>
   );

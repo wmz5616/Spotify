@@ -1,81 +1,56 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { parseLRC, type LyricLine } from "@/lib/lrc-parser";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { useColor } from "color-thief-react";
+import { VariableSizeList as List } from "react-window";
 
 const Interlude = () => (
-  <div className="flex justify-center items-center gap-1.5 h-full">
+  <div className="flex justify-center items-center gap-1.5 h-full opacity-80">
     {[0, 1, 2, 3].map((i) => (
       <span
         key={i}
-        className="w-1.5 h-5 bg-neutral-500 rounded-full animate-music-bars"
-        style={{ animationDelay: `${i * 150}ms`, animationDuration: "1.5s" }}
+        className="w-1.5 h-8 bg-white rounded-full animate-music-bars shadow-[0_0_15px_rgba(255,255,255,0.9)]"
+        style={{ animationDelay: `${i * 150}ms`, animationDuration: "1.2s" }}
       />
     ))}
   </div>
 );
 
-const DynamicBackground = React.memo(({ coverUrl }: { coverUrl: string }) => {
-  const { data: dominantColor } = useColor(coverUrl, "hex", {
-    crossOrigin: "anonymous",
-    quality: 10,
-  });
-
-  const activeColor = dominantColor || "#404040";
-
-  return (
-    <>
-      <div className="absolute inset-0 z-0 bg-neutral-950 transition-colors duration-1000" />
-
-      <motion.div
-        className="absolute inset-0 z-0 opacity-40 blur-[80px]"
-        animate={{
-          background: `radial-gradient(circle at 50% 30%, ${activeColor}, transparent 70%)`,
-        }}
-        transition={{ duration: 2, ease: "easeInOut" }}
-      />
-
-      <motion.div
-        className="absolute inset-0 z-0 opacity-30 blur-[80px]"
-        animate={{
-          backgroundPosition: ["0% 0%", "100% 100%"],
-          background: [
-            `radial-gradient(circle at 20% 80%, ${activeColor}, transparent 50%)`,
-            `radial-gradient(circle at 80% 20%, ${activeColor}, transparent 50%)`,
-          ],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          repeatType: "reverse",
-          ease: "easeInOut",
-        }}
-      />
-    </>
-  );
-});
-
-DynamicBackground.displayName = "DynamicBackground";
-
 const LyricDisplay = () => {
-  const { currentSong, currentTime, seek } = usePlayerStore();
+  const { currentSong, currentTime } = usePlayerStore();
   const [currentLineIndex, setCurrentLineIndex] = useState(-1);
-  const [scrollY, setScrollY] = useState(0);
-
   const containerRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
-
-  const albumCover =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (currentSong?.album as any)?.coverPath || "/placeholder.jpg";
+  const listRef = useRef<List>(null);
+  const outerRef = useRef<HTMLElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   const lyrics: LyricLine[] = useMemo(() => {
     return currentSong?.lyrics ? parseLRC(currentSong.lyrics) : [];
   }, [currentSong?.lyrics]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerSize({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight,
+        });
+      }
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   useEffect(() => {
     if (!lyrics.length) return;
@@ -89,109 +64,153 @@ const LyricDisplay = () => {
     }
   }, [currentTime, lyrics]);
 
-  useEffect(() => {
-    if (currentLineIndex > -1 && containerRef.current && listRef.current) {
-      const activeLineElement = listRef.current.children[
-        currentLineIndex
-      ] as HTMLLIElement;
-      if (activeLineElement) {
-        const containerHeight = containerRef.current.clientHeight;
-        const targetOffset =
-          activeLineElement.offsetTop - containerHeight * 0.4;
-        setScrollY(targetOffset);
+  const getItemHeight = useCallback(
+    (index: number, activeIndex: number) => {
+      if (index === 0 || index === lyrics.length + 1) {
+        return containerSize.height / 2;
       }
+      const lyricIndex = index - 1;
+      const line = lyrics[lyricIndex];
+      if (!line) return 100;
+
+      const isActive = lyricIndex === activeIndex;
+      const hasTranslation = line.text.includes("\n");
+
+      let size = 90;
+      if (isActive) size += 100;
+      if (hasTranslation) size += 40;
+      return size;
+    },
+    [lyrics, containerSize.height]
+  );
+
+  useEffect(() => {
+    if (listRef.current && outerRef.current && currentLineIndex !== -1) {
+      listRef.current.resetAfterIndex(0);
+      const targetIndex = currentLineIndex + 1;
+      let offset = 0;
+      for (let i = 0; i < targetIndex; i++) {
+        offset += getItemHeight(i, currentLineIndex);
+      }
+      const targetItemHeight = getItemHeight(targetIndex, currentLineIndex);
+      const centerOffset =
+        offset + targetItemHeight / 2 - containerSize.height / 2;
+
+      outerRef.current.scrollTo({
+        top: centerOffset,
+        behavior: "smooth",
+      });
     }
-  }, [currentLineIndex]);
+  }, [currentLineIndex, containerSize.height, getItemHeight]);
 
   useEffect(() => {
     setCurrentLineIndex(-1);
-    setScrollY(0);
+    if (outerRef.current) {
+      outerRef.current.scrollTo(0, 0);
+    }
   }, [currentSong?.id]);
 
-  return (
-    <div ref={containerRef} className="h-full overflow-hidden relative">
-      <DynamicBackground coverUrl={albumCover} />
+  const itemSize = (index: number) => getItemHeight(index, currentLineIndex);
 
+  return (
+    <div className="h-full overflow-hidden relative select-none font-sans">
       <div
-        className="relative z-10 w-full h-full"
+        className="absolute inset-0 z-20 pointer-events-none"
         style={{
-          maskImage:
-            "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+          background:
+            "linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)",
         }}
-      >
+      />
+
+      <div className="relative z-10 w-full h-full">
         {lyrics.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-neutral-400 space-y-4">
-            <p className="text-2xl font-semibold">No lyrics available</p>
+          <div className="flex flex-col items-center justify-center h-full text-neutral-600 space-y-6">
+            <p className="text-3xl font-bold tracking-[0.3em] uppercase glow-text-md">
+              Pure Music
+            </p>
           </div>
         ) : (
           <motion.div
             key={currentSong?.id}
-            initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="w-full h-full"
+            ref={containerRef}
           >
-            <ul
-              ref={listRef}
-              style={{
-                transform: `translateY(-${scrollY}px)`,
-                transition: "transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
-              }}
-              className="w-full px-4 md:px-8"
-            >
-              <div style={{ height: "40vh" }} />
-              {lyrics.map((line, index) => {
-                const isActive = currentLineIndex === index;
-                const parts = line.text.split("\n");
-                const originalText = parts[0];
-                const translationText = parts.length > 1 ? parts[1] : null;
+            {containerSize.height > 0 && (
+              <List
+                ref={listRef}
+                outerRef={outerRef}
+                height={containerSize.height}
+                width={containerSize.width}
+                itemCount={lyrics.length + 2}
+                itemSize={itemSize}
+                className="lyric-list [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                itemData={lyrics}
+                style={{ scrollBehavior: "smooth" }}
+              >
+                {({ index, style }) => {
+                  if (index === 0 || index === lyrics.length + 1) {
+                    return <div style={style} />;
+                  }
 
-                return (
-                  <li
-                    key={index}
-                    onClick={() => seek(line.time)}
-                    className={clsx(
-                      "py-4 flex flex-col items-center gap-1 transition-all duration-500 ease-in-out cursor-pointer",
-                      isActive
-                        ? "opacity-100 blur-0 scale-105"
-                        : "opacity-50 blur-[1px] hover:blur-0 hover:opacity-80"
-                    )}
-                    style={{
-                      textShadow: isActive
-                        ? "0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.3)"
-                        : "none",
-                    }}
-                  >
-                    <span
-                      className={clsx(
-                        "font-bold text-center",
-                        isActive
-                          ? "text-white text-3xl md:text-4xl"
-                          : "text-neutral-300 text-2xl md:text-3xl"
-                      )}
+                  const lyricIndex = index - 1;
+                  const line = lyrics[lyricIndex];
+                  if (!line) return null;
+
+                  const isActive = currentLineIndex === lyricIndex;
+                  const parts = line.text.split("\n");
+                  const originalText = parts[0];
+                  const translationText = parts.length > 1 ? parts[1] : null;
+
+                  return (
+                    <div
+                      style={style}
+                      className="flex items-center justify-center w-full px-8 py-4"
                     >
-                      {originalText || <Interlude />}
-                    </span>
-
-                    {translationText && (
-                      <span
+                      <div
                         className={clsx(
-                          "font-medium text-center",
+                          "flex flex-col items-center gap-5 transition-all duration-700 ease-[cubic-bezier(0.25,0.4,0.25,1)] w-full max-w-[95%]",
                           isActive
-                            ? "text-neutral-200 text-lg md:text-xl"
-                            : "text-neutral-400 text-base md:text-lg"
+                            ? "opacity-100 scale-105 blur-0 origin-center"
+                            : "opacity-40 scale-95 blur-[1px] origin-center"
                         )}
+                        style={{
+                          textShadow: isActive
+                            ? "0 0 30px rgba(255, 255, 255, 0.7), 0 0 80px rgba(255, 255, 255, 0.4)"
+                            : "none",
+                        }}
                       >
-                        {translationText}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-              <div style={{ height: "60vh" }} />
-            </ul>
+                        <span
+                          className={clsx(
+                            "text-center leading-tight transition-all duration-700 break-words w-full",
+                            isActive
+                              ? "text-white text-4xl md:text-6xl font-black tracking-tight"
+                              : "text-neutral-300 text-2xl md:text-3xl font-bold"
+                          )}
+                        >
+                          {originalText || <Interlude />}
+                        </span>
+
+                        {translationText && (
+                          <span
+                            className={clsx(
+                              "text-center transition-all duration-700 font-medium tracking-wide break-words w-full",
+                              isActive
+                                ? "text-neutral-200 text-xl md:text-2xl"
+                                : "text-neutral-500 text-base md:text-lg"
+                            )}
+                          >
+                            {translationText}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }}
+              </List>
+            )}
           </motion.div>
         )}
       </div>

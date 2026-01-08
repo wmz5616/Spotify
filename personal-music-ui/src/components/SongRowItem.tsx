@@ -23,6 +23,7 @@ interface SongRowItemProps {
   index: number;
   queue?: Song[];
   hideCover?: boolean;
+  style?: React.CSSProperties;
 }
 
 const SongRowItem = ({
@@ -30,6 +31,7 @@ const SongRowItem = ({
   index,
   queue,
   hideCover = false,
+  style,
 }: SongRowItemProps) => {
   const {
     playSong,
@@ -70,6 +72,7 @@ const SongRowItem = ({
 
   return (
     <div
+      style={style}
       className={clsx(
         "group grid grid-cols-[16px_4fr_2fr_minmax(120px,1fr)] gap-4 px-4 py-2 text-sm text-neutral-400 hover:bg-neutral-800/50 rounded-md transition cursor-default items-center relative",
         isActive && "bg-neutral-800/30 text-green-500"
@@ -143,8 +146,7 @@ const SongRowItem = ({
         </Link>
       </div>
       <div className="flex items-center justify-between pl-2">
-        <div className="w-5 mr-4 invisible group-hover:visible">
-        </div>
+        <div className="w-5 mr-4 invisible group-hover:visible"></div>
 
         <div className="text-sm font-variant-numeric tabular-nums">
           {formatDuration(song.duration)}
