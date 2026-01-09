@@ -1,0 +1,38 @@
+export interface Artist {
+  id: number;
+  name: string;
+  albums?: Album[];
+  avatarUrl: string | null;
+  headerUrl: string | null;
+  bio: string | null;
+  bioImageUrl: string | null;
+}
+
+export interface Album {
+  id: number;
+  title: string;
+  uniqueId: string;
+  artists?: Artist[];
+  songs?: Song[];
+  coverPath: string | null;
+}
+
+export interface Song {
+  id: number;
+  title: string;
+  trackNumber: number | null;
+  path: string;
+  album?: Album;
+  albumId: number;
+  duration: number | null;
+  lyrics: string | null;
+  playlists?: Playlist[];
+}
+
+export interface Playlist {
+  id: number;
+  name: string;
+  description: string | null;
+  createdAt: Date;
+  songs?: Song[];
+}

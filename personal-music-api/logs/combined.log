@@ -1,0 +1,1135 @@
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T03:36:23.393Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T03:36:23.397Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T03:36:23.397Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T03:36:23.398Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T03:36:23.399Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T03:36:23.400Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T03:36:23.400Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T03:36:23.401Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T03:36:23.401Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T03:36:23.402Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T03:36:23.402Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T03:36:23.403Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T03:36:23.403Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T03:36:23.403Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T03:36:23.404Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T03:36:23.404Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T03:36:23.404Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T03:36:23.410Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T03:36:31.860Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T03:36:31.863Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T03:36:31.863Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T03:36:31.864Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T03:36:31.865Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T03:36:31.866Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T03:36:31.867Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T03:36:31.867Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T03:36:31.868Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T03:36:31.868Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T03:36:31.869Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T03:36:31.869Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T03:36:31.870Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T03:36:31.870Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T03:36:31.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T03:36:31.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T03:36:31.871Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T03:36:31.876Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T03:36:43.331Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T03:36:43.334Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T03:36:43.335Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T03:36:43.336Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T03:36:43.337Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T03:36:43.337Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T03:36:43.338Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T03:36:43.338Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T03:36:43.339Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T03:36:43.340Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T03:36:43.340Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T03:36:43.341Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T03:36:43.341Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T03:36:43.342Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T03:36:43.342Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T03:36:43.343Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T03:36:43.343Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T03:36:43.348Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T03:36:54.885Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T03:36:54.888Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T03:36:54.888Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T03:36:54.889Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T03:36:54.890Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T03:36:54.890Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T03:36:54.891Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T03:36:54.891Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T03:36:54.892Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T03:36:54.892Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T03:36:54.893Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T03:36:54.893Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T03:36:54.894Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T03:36:54.894Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T03:36:54.894Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T03:36:54.894Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T03:36:54.895Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T03:36:54.898Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:03:48.171Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:03:48.176Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:03:48.176Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:03:48.177Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:03:48.178Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:03:48.179Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:03:48.179Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:03:48.180Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:03:48.180Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:03:48.180Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:03:48.181Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:03:48.181Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:03:48.182Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:03:48.182Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:03:48.182Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:03:48.183Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:03:48.183Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:03:48.188Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:03:50.170Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:03:50.172Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:03:50.172Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:03:50.173Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:03:50.174Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:03:50.175Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:03:50.175Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:03:50.175Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:03:50.176Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:03:50.176Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:03:50.177Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:03:50.177Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:03:50.178Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:03:50.178Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:03:50.178Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:03:50.179Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:03:50.179Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:03:50.183Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:04:12.668Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:04:12.671Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:04:12.671Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:04:12.672Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:04:12.673Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:04:12.674Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:04:12.674Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:04:12.675Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:04:12.675Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:04:12.677Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:04:12.677Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:04:12.678Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:04:12.678Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:04:12.679Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:04:12.679Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:04:12.680Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:04:12.680Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:04:12.683Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:06:02.853Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:06:02.856Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:06:02.856Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:06:02.857Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:06:02.858Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:06:02.858Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:06:02.859Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:06:02.859Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:06:02.860Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:06:02.860Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:06:02.861Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:06:02.861Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:06:02.861Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:06:02.862Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:06:02.862Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:06:02.862Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:06:02.863Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:06:02.870Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:11:22.041Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:11:22.045Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:11:22.046Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:11:22.048Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:11:22.050Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:11:22.051Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:11:22.051Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:11:22.052Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:11:22.052Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:11:22.053Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:11:22.053Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:11:22.054Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:11:22.054Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:11:22.054Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:11:22.055Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:11:22.055Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:11:22.056Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:11:22.060Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:14:15.268Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:14:15.272Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:14:15.272Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:14:15.273Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:14:15.275Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:14:15.275Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:14:15.275Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:14:15.276Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:14:15.276Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:14:15.277Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:14:15.278Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:14:15.278Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:14:15.279Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:14:15.279Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:14:15.280Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:14:15.280Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:14:15.280Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:14:15.285Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:14:25.001Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:14:25.005Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:14:25.005Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:14:25.006Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:14:25.007Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:14:25.007Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:14:25.008Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:14:25.008Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:14:25.008Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:14:25.009Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:14:25.009Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:14:25.009Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:14:25.010Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:14:25.010Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:14:25.010Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:14:25.010Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:14:25.011Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:14:25.016Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:14:29.233Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:14:29.236Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:14:29.236Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:14:29.237Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:14:29.238Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:14:29.238Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:14:29.239Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:14:29.239Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:14:29.240Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:14:29.240Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:14:29.241Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:14:29.241Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:14:29.242Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:14:29.242Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:14:29.242Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:14:29.243Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:14:29.243Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:14:29.247Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:14:41.702Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:14:41.705Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:14:41.706Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:14:41.707Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:14:41.708Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:14:41.709Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:14:41.710Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:14:41.711Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:14:41.711Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:14:41.712Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:14:41.712Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:14:41.713Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:14:41.713Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:14:41.714Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:14:41.714Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:14:41.715Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:14:41.715Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:14:41.719Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:14:48.160Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:14:48.162Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:14:48.163Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:14:48.164Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:14:48.165Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:14:48.166Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:14:48.167Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:14:48.167Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:14:48.168Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:14:48.168Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:14:48.169Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:14:48.169Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:14:48.169Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:14:48.170Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:14:48.170Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:14:48.171Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:14:48.171Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:14:48.175Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:15:50.137Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:15:50.148Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:15:50.149Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:15:50.150Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:15:50.152Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:15:50.152Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:15:50.153Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:15:50.154Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:15:50.154Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:15:50.155Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:15:50.155Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:15:50.156Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:15:50.156Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:15:50.156Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:15:50.157Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:15:50.157Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:15:50.157Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:15:50.161Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:16:11.844Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:16:11.848Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:16:11.848Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:16:11.850Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:16:11.853Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:16:11.854Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:16:11.854Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:16:11.855Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:16:11.855Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:16:11.856Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:16:11.856Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:16:11.856Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:16:11.857Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:16:11.857Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:16:11.857Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:16:11.857Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:16:11.858Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:16:11.861Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:16:17.627Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:16:17.630Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:16:17.630Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:16:17.631Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:16:17.632Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:16:17.632Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:16:17.633Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:16:17.633Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:16:17.634Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:16:17.634Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:16:17.634Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:16:17.635Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:16:17.635Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:16:17.635Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:16:17.636Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:16:17.636Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:16:17.636Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:16:17.640Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:16:38.647Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:16:38.650Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:16:38.651Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:16:38.652Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:16:38.653Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:16:38.653Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:16:38.653Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:16:38.654Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:16:38.654Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:16:38.655Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:16:38.655Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:16:38.656Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:16:38.657Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:16:38.657Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:16:38.658Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:16:38.659Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:16:38.659Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:16:38.663Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:19:18.487Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:19:18.490Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:19:18.491Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:19:18.491Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:19:18.492Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:19:18.492Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:19:18.493Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:19:18.493Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:19:18.494Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:19:18.495Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:19:18.495Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:19:18.496Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:19:18.496Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:19:18.496Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:19:18.497Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:19:18.497Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:19:18.498Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:19:18.502Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:20:53.491Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:20:53.495Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:20:53.496Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:20:53.497Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:20:53.498Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:20:53.499Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:20:53.500Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:20:53.501Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:20:53.502Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:20:53.503Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:20:53.503Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:20:53.504Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:20:53.504Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:20:53.505Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:20:53.505Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:20:53.506Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:20:53.506Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:20:53.511Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:47:21.938Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:47:21.941Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:47:21.942Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:47:21.944Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:47:21.945Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:47:21.946Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:47:21.946Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:47:21.947Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:47:21.948Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:47:21.948Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:47:21.949Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:47:21.949Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:47:21.950Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:47:21.950Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:47:21.951Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:47:21.951Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:47:21.952Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:47:21.959Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/1.jpg","timestamp":"2026-01-09T05:47:48.427Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/1-avatar.png","timestamp":"2026-01-09T05:47:48.708Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:47:48.719Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/3-avatar.png","timestamp":"2026-01-09T05:47:48.722Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/4-avatar.png","timestamp":"2026-01-09T05:47:48.723Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/5-avatar.png","timestamp":"2026-01-09T05:47:48.724Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/6-avatar.png","timestamp":"2026-01-09T05:47:48.730Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/7-avatar.png","timestamp":"2026-01-09T05:47:48.734Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/8-avatar.png","timestamp":"2026-01-09T05:47:48.737Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/9-avatar.png","timestamp":"2026-01-09T05:47:48.739Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/10-avatar.png","timestamp":"2026-01-09T05:47:48.741Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/12-avatar.png","timestamp":"2026-01-09T05:47:48.743Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/11-avatar.png","timestamp":"2026-01-09T05:47:48.744Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/13-avatar.png","timestamp":"2026-01-09T05:47:48.746Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/14-avatar.png","timestamp":"2026-01-09T05:47:48.753Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/15-avatar.png","timestamp":"2026-01-09T05:47:48.755Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/16-avatar.png","timestamp":"2026-01-09T05:47:48.764Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/17-avatar.png","timestamp":"2026-01-09T05:47:48.769Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/18-avatar.png","timestamp":"2026-01-09T05:47:48.771Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/19-avatar.png","timestamp":"2026-01-09T05:47:48.772Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/20-avatar.png","timestamp":"2026-01-09T05:47:48.773Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/21-avatar.png","timestamp":"2026-01-09T05:47:48.775Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/22-avatar.png","timestamp":"2026-01-09T05:47:48.776Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/23-avatar.png","timestamp":"2026-01-09T05:47:48.779Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/24-avatar.png","timestamp":"2026-01-09T05:47:48.781Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/25-avatar.png","timestamp":"2026-01-09T05:47:48.783Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/26-avatar.png","timestamp":"2026-01-09T05:47:48.785Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/27-avatar.png","timestamp":"2026-01-09T05:47:48.788Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/28-avatar.png","timestamp":"2026-01-09T05:47:48.791Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/29-avatar.png","timestamp":"2026-01-09T05:47:48.792Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/30-avatar.png","timestamp":"2026-01-09T05:47:48.794Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/1.jpg","timestamp":"2026-01-09T05:47:57.377Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/1-avatar.png","timestamp":"2026-01-09T05:47:57.638Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:47:57.640Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/3-avatar.png","timestamp":"2026-01-09T05:47:57.641Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/4-avatar.png","timestamp":"2026-01-09T05:47:57.643Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/5-avatar.png","timestamp":"2026-01-09T05:47:57.644Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/6-avatar.png","timestamp":"2026-01-09T05:47:57.646Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/7-avatar.png","timestamp":"2026-01-09T05:47:57.647Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/8-avatar.png","timestamp":"2026-01-09T05:47:57.648Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/9-avatar.png","timestamp":"2026-01-09T05:47:57.649Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/10-avatar.png","timestamp":"2026-01-09T05:47:57.650Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/11-avatar.png","timestamp":"2026-01-09T05:47:57.652Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/12-avatar.png","timestamp":"2026-01-09T05:47:57.654Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/13-avatar.png","timestamp":"2026-01-09T05:47:57.656Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/14-avatar.png","timestamp":"2026-01-09T05:47:57.657Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/15-avatar.png","timestamp":"2026-01-09T05:47:57.659Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/16-avatar.png","timestamp":"2026-01-09T05:47:57.660Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/17-avatar.png","timestamp":"2026-01-09T05:47:57.662Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/18-avatar.png","timestamp":"2026-01-09T05:47:57.662Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/19-avatar.png","timestamp":"2026-01-09T05:47:57.663Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/20-avatar.png","timestamp":"2026-01-09T05:47:57.664Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/21-avatar.png","timestamp":"2026-01-09T05:47:57.666Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/22-avatar.png","timestamp":"2026-01-09T05:47:57.667Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/23-avatar.png","timestamp":"2026-01-09T05:47:57.668Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/24-avatar.png","timestamp":"2026-01-09T05:47:57.670Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/25-avatar.png","timestamp":"2026-01-09T05:47:57.673Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/26-avatar.png","timestamp":"2026-01-09T05:47:57.675Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/27-avatar.png","timestamp":"2026-01-09T05:47:57.677Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/28-avatar.png","timestamp":"2026-01-09T05:47:57.679Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/29-avatar.png","timestamp":"2026-01-09T05:47:57.680Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/30-avatar.png","timestamp":"2026-01-09T05:47:57.681Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-header.png","timestamp":"2026-01-09T05:48:04.242Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:48:04.380Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:48:04.381Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:48:04.382Z"}
+{"context":"MusicLibraryController","level":"info","message":"Received scan request. Force update: true","timestamp":"2026-01-09T05:48:22.247Z"}
+{"context":"MusicLibraryService","level":"info","message":"Starting music library scan... (Force Update: true)","timestamp":"2026-01-09T05:48:22.248Z"}
+{"context":"MusicLibraryService","level":"info","message":"Scanning artist directories...","timestamp":"2026-01-09T05:48:22.250Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\AESPA\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\3-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.259Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ALEXA\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\4-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.265Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ARTMS\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\6-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.269Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\BABYMONSTER\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\7-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.274Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\BADVILLAIN\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\8-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.280Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\BBGIRLS\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\9-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.285Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\BIBI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\10-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.290Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\BILLLIE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\11-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.297Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\BLACKPINK\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\12-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.302Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\BOL4\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\13-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.308Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\CHOI YENA\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\14-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.314Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\CHUNG HA\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\15-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.319Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\CHUU\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\16-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.324Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\CIGNATURE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\17-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.331Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\CLASS-Y\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\18-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.336Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\CSR\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\19-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.341Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\DREAMCATCHER\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\20-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.346Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\EL7Z UP\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\21-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.352Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\EVERGLOW\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\22-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.357Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\FIFTY FIFTY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\23-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.364Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\FROMIS_9\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\24-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.369Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\GEENIUS\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\25-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.380Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\GYUBIN\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\26-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.386Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\H1-KEY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\27-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.391Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\H3R3刘清云\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\1-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.397Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\HEEJIN\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\28-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.402Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\HEIZE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\29-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.407Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\HWASA\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\30-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.413Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\HYO\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\31-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.419Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\I-DLE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\32-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.425Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ICHILLIN'\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\33-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.432Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ILLIT\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\34-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.436Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ILY-1\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\35-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.440Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ITZY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\36-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.444Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\IU\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\37-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.449Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\IVE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\38-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.455Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JENNIE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\2-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.461Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JENNIE\\封面图.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\2-header.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.464Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JEON SOMI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\39-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.469Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JESSI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\40-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.473Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JIHYO\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\41-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.478Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JISOO\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\42-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.483Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JO YURI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\43-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.489Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\JOY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\44-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.494Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\KARD\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\45-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.500Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\KATSEYE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\46-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.505Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\KEP1ER\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\47-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.509Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\KIM SEJEONG\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\48-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.514Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\KISS OF LIFE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\49-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.518Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\KWON EUN BI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\50-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.522Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LAPILLUS\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\51-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.526Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LE SSERAFIM\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\52-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.531Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LEE CHAE YEON\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\53-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.536Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LEE HI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\54-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.540Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LEE YOUNG JI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\55-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.544Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LIGHTSUM\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\56-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.548Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LISA\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\57-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.553Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\LOOSSEMBLE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\58-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.558Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\MADEIN\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\59-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.563Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\MAMAMOO\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\60-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.568Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\MEOVV\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\61-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.572Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\MIMIIROSE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\62-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.576Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\MINNIE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\63-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.581Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\MIYEON\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\64-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.585Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\MOONBYUL\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\65-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.589Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\NATTY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\66-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.594Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\NAYEON\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\67-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.598Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\NEWJEANS\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\68-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.601Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\NMIXX\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\69-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.605Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\OH MY GIRL\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\70-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.610Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\PIXY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\71-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.613Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\PRIMROSE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\72-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.616Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\PURPLE KISS\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\73-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.619Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\QUEENZ EYE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\74-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.625Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\RED VELVET\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\75-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.630Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\RESCENE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\76-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.634Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ROCKET PUNCH\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\77-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.637Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\ROSÉ\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\78-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.641Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\SECRET NUMBER\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\79-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.645Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\SEULGI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\80-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.649Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\SOLAR\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\81-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.653Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\STAYC\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\82-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.656Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\SUNMI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\83-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.661Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\TAEYEON\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\84-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.664Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\TRI.BE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\85-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.668Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\TRIPLES\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\86-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.671Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\TWICE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\87-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.674Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\TZUYU\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\88-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.677Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\UNIS\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\89-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.680Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\VIVIZ\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\90-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.683Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\WEEEEKLY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\91-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.686Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\WENDY\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\92-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.689Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\WHEEIN\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\93-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.692Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\WJSN\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\94-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.696Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\WOO!AH!\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\95-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.699Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\X-IN\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\96-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.701Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\XG\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\97-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.704Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\YOUNG POSSE\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\98-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.707Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\YUQI\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\99-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.710Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to symlink artist image: Error: EPERM: operation not permitted, symlink 'D:\\Music\\YVES\\头像.png' -> 'D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\artist-images\\100-avatar.png'","stack":[null],"timestamp":"2026-01-09T05:48:22.713Z"}
+{"context":"MusicLibraryService","level":"info","message":"Found 22 audio files. Processing...","timestamp":"2026-01-09T05:48:22.725Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to link folder cover for album ID 1:","stack":[{"code":"EPERM","dest":"D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\covers\\1.jpg","errno":-4048,"path":"D:\\Music\\H3R3刘清云\\先说谎的人\\cover.jpg","syscall":"symlink"}],"timestamp":"2026-01-09T05:48:22.764Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to link folder cover for album ID 2:","stack":[{"code":"EPERM","dest":"D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\covers\\2.jpg","errno":-4048,"path":"D:\\Music\\H3R3刘清云\\忘不掉的你\\cover.jpg","syscall":"symlink"}],"timestamp":"2026-01-09T05:48:22.777Z"}
+{"context":"MusicLibraryService","level":"error","message":"Failed to link folder cover for album ID 3:","stack":[{"code":"EPERM","dest":"D:\\vs code\\项目\\Spotify\\personal-music-api\\public\\covers\\3.jpg","errno":-4048,"path":"D:\\Music\\H3R3刘清云\\还是会想你\\cover.jpg","syscall":"symlink"}],"timestamp":"2026-01-09T05:48:22.787Z"}
+{"context":"MusicLibraryService","level":"info","message":"Music library scan and save complete. Search index invalidated.","timestamp":"2026-01-09T05:48:22.952Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:48:47.530Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:48:47.535Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:48:47.536Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:48:47.537Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:48:47.538Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:48:47.539Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:48:47.539Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:48:47.540Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:48:47.540Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:48:47.541Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:48:47.541Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:48:47.542Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:48:47.542Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:48:47.543Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:48:47.543Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:48:47.544Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:48:47.544Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:48:47.552Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/1.jpg","timestamp":"2026-01-09T05:48:58.711Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-header.png","timestamp":"2026-01-09T05:48:58.760Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:48:58.847Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:48:58.851Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:48:58.853Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/1-avatar.png","timestamp":"2026-01-09T05:48:59.032Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/3-avatar.png","timestamp":"2026-01-09T05:48:59.035Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/4-avatar.png","timestamp":"2026-01-09T05:48:59.036Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/5-avatar.png","timestamp":"2026-01-09T05:48:59.038Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/6-avatar.png","timestamp":"2026-01-09T05:48:59.045Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/7-avatar.png","timestamp":"2026-01-09T05:48:59.050Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/8-avatar.png","timestamp":"2026-01-09T05:48:59.055Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/12-avatar.png","timestamp":"2026-01-09T05:48:59.060Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/10-avatar.png","timestamp":"2026-01-09T05:48:59.063Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/9-avatar.png","timestamp":"2026-01-09T05:48:59.065Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/11-avatar.png","timestamp":"2026-01-09T05:48:59.068Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/13-avatar.png","timestamp":"2026-01-09T05:48:59.071Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/14-avatar.png","timestamp":"2026-01-09T05:48:59.073Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/15-avatar.png","timestamp":"2026-01-09T05:48:59.076Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/16-avatar.png","timestamp":"2026-01-09T05:48:59.078Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/17-avatar.png","timestamp":"2026-01-09T05:48:59.081Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/18-avatar.png","timestamp":"2026-01-09T05:48:59.094Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/19-avatar.png","timestamp":"2026-01-09T05:48:59.106Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/20-avatar.png","timestamp":"2026-01-09T05:48:59.117Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/21-avatar.png","timestamp":"2026-01-09T05:48:59.121Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/22-avatar.png","timestamp":"2026-01-09T05:48:59.138Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/23-avatar.png","timestamp":"2026-01-09T05:48:59.142Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/24-avatar.png","timestamp":"2026-01-09T05:48:59.143Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/25-avatar.png","timestamp":"2026-01-09T05:48:59.151Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/26-avatar.png","timestamp":"2026-01-09T05:48:59.160Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/27-avatar.png","timestamp":"2026-01-09T05:48:59.163Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/28-avatar.png","timestamp":"2026-01-09T05:48:59.165Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/29-avatar.png","timestamp":"2026-01-09T05:48:59.167Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:22.392Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:22.393Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:22.482Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:22.483Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:22.578Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:22.579Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:22.658Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:22.659Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:23.153Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:23.154Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:23.237Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:23.238Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:23.317Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:23.318Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:23.384Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:23.386Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:24.432Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:24.434Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:24.499Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:24.500Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:24.572Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:24.573Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:24.637Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:24.639Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:26.561Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:26.563Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:26.635Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:26.636Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:26.704Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:26.708Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:26.783Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:26.785Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:26.871Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:26.872Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:26.952Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:26.953Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:27.040Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:27.041Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:27.123Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:27.124Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:27.213Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:27.214Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:27.256Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:27.257Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:50:27.297Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:50:27.298Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:51:30.872Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:51:30.875Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:51:30.876Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:51:30.876Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:51:30.878Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:51:30.878Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:51:30.879Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:51:30.879Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:51:30.880Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:51:30.881Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:51:30.882Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:51:30.882Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:51:30.883Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:51:30.883Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:51:30.884Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:51:30.884Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:51:30.885Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:51:30.890Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:53:15.342Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:53:15.346Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:53:15.346Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:53:15.347Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:53:15.348Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:53:15.348Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:53:15.349Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:53:15.350Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:53:15.350Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:53:15.351Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:53:15.352Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:53:15.352Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:53:15.352Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:53:15.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:53:15.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:53:15.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:53:15.353Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:53:15.439Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:53:45.859Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:53:45.863Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:53:45.863Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:53:45.864Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:53:45.866Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:53:45.866Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:53:45.867Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:53:45.868Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:53:45.868Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:53:45.869Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:53:45.869Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:53:45.870Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:53:45.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:53:45.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:53:45.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:53:45.872Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:53:45.873Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:53:45.879Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/1.jpg","timestamp":"2026-01-09T05:54:49.937Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/1-avatar.png","timestamp":"2026-01-09T05:54:50.184Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:54:50.187Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/3-avatar.png","timestamp":"2026-01-09T05:54:50.189Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/4-avatar.png","timestamp":"2026-01-09T05:54:50.190Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/5-avatar.png","timestamp":"2026-01-09T05:54:50.191Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/6-avatar.png","timestamp":"2026-01-09T05:54:50.196Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/7-avatar.png","timestamp":"2026-01-09T05:54:50.198Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/8-avatar.png","timestamp":"2026-01-09T05:54:50.201Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/9-avatar.png","timestamp":"2026-01-09T05:54:50.203Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/10-avatar.png","timestamp":"2026-01-09T05:54:50.204Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/11-avatar.png","timestamp":"2026-01-09T05:54:50.205Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/12-avatar.png","timestamp":"2026-01-09T05:54:50.207Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/13-avatar.png","timestamp":"2026-01-09T05:54:50.209Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/14-avatar.png","timestamp":"2026-01-09T05:54:50.212Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/15-avatar.png","timestamp":"2026-01-09T05:54:50.214Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/16-avatar.png","timestamp":"2026-01-09T05:54:50.215Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/17-avatar.png","timestamp":"2026-01-09T05:54:50.218Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/18-avatar.png","timestamp":"2026-01-09T05:54:50.219Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/19-avatar.png","timestamp":"2026-01-09T05:54:50.220Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/20-avatar.png","timestamp":"2026-01-09T05:54:50.222Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/21-avatar.png","timestamp":"2026-01-09T05:54:50.223Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/22-avatar.png","timestamp":"2026-01-09T05:54:50.224Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/23-avatar.png","timestamp":"2026-01-09T05:54:50.228Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/24-avatar.png","timestamp":"2026-01-09T05:54:50.230Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/25-avatar.png","timestamp":"2026-01-09T05:54:50.232Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/26-avatar.png","timestamp":"2026-01-09T05:54:50.234Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/27-avatar.png","timestamp":"2026-01-09T05:54:50.236Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/28-avatar.png","timestamp":"2026-01-09T05:54:50.238Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/29-avatar.png","timestamp":"2026-01-09T05:54:50.239Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T05:58:44.189Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T05:58:44.193Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T05:58:44.193Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T05:58:44.194Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T05:58:44.195Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T05:58:44.196Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T05:58:44.197Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T05:58:44.197Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T05:58:44.198Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T05:58:44.198Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T05:58:44.199Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T05:58:44.200Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T05:58:44.200Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T05:58:44.200Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T05:58:44.201Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T05:58:44.201Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T05:58:44.201Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T05:58:44.208Z"}
+{"context":"MusicLibraryController","level":"info","message":"Received scan request. Force update: true","timestamp":"2026-01-09T05:58:50.958Z"}
+{"context":"MusicLibraryService","level":"info","message":"Starting music library scan... (Force Update: true)","timestamp":"2026-01-09T05:58:50.959Z"}
+{"context":"MusicLibraryService","level":"info","message":"Scanning artist directories...","timestamp":"2026-01-09T05:58:50.962Z"}
+{"context":"MusicLibraryService","level":"info","message":"Found 22 audio files. Processing...","timestamp":"2026-01-09T05:58:51.706Z"}
+{"context":"MusicLibraryService","level":"info","message":"Music library scan and save complete. Search index invalidated.","timestamp":"2026-01-09T05:58:51.850Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/1.jpg","timestamp":"2026-01-09T05:59:08.616Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/1-avatar.png","timestamp":"2026-01-09T05:59:08.884Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:59:08.886Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/3-avatar.png","timestamp":"2026-01-09T05:59:08.888Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/4-avatar.png","timestamp":"2026-01-09T05:59:08.889Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/5-avatar.png","timestamp":"2026-01-09T05:59:08.890Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/6-avatar.png","timestamp":"2026-01-09T05:59:08.895Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/7-avatar.png","timestamp":"2026-01-09T05:59:08.897Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/8-avatar.png","timestamp":"2026-01-09T05:59:08.898Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/9-avatar.png","timestamp":"2026-01-09T05:59:08.899Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/10-avatar.png","timestamp":"2026-01-09T05:59:08.901Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/11-avatar.png","timestamp":"2026-01-09T05:59:08.904Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/12-avatar.png","timestamp":"2026-01-09T05:59:08.905Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/13-avatar.png","timestamp":"2026-01-09T05:59:08.910Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/14-avatar.png","timestamp":"2026-01-09T05:59:08.912Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/15-avatar.png","timestamp":"2026-01-09T05:59:08.913Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/16-avatar.png","timestamp":"2026-01-09T05:59:08.917Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/17-avatar.png","timestamp":"2026-01-09T05:59:08.919Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/18-avatar.png","timestamp":"2026-01-09T05:59:08.921Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/19-avatar.png","timestamp":"2026-01-09T05:59:08.922Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/20-avatar.png","timestamp":"2026-01-09T05:59:08.931Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/21-avatar.png","timestamp":"2026-01-09T05:59:08.935Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/22-avatar.png","timestamp":"2026-01-09T05:59:08.938Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/23-avatar.png","timestamp":"2026-01-09T05:59:08.940Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/24-avatar.png","timestamp":"2026-01-09T05:59:08.943Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/25-avatar.png","timestamp":"2026-01-09T05:59:08.946Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/26-avatar.png","timestamp":"2026-01-09T05:59:08.950Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/27-avatar.png","timestamp":"2026-01-09T05:59:08.953Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/28-avatar.png","timestamp":"2026-01-09T05:59:08.955Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/29-avatar.png","timestamp":"2026-01-09T05:59:08.957Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-header.png","timestamp":"2026-01-09T05:59:19.193Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:59:19.248Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:59:19.249Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:59:19.251Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:59:19.305Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:59:19.306Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:59:20.129Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:59:20.130Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:59:20.215Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:59:20.217Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:59:20.297Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:59:20.298Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:59:20.393Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:59:20.394Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-header.png","timestamp":"2026-01-09T05:59:47.130Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:59:47.214Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/4.jpg","timestamp":"2026-01-09T05:59:47.216Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/covers/5.jpg","timestamp":"2026-01-09T05:59:47.217Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/1-avatar.png","timestamp":"2026-01-09T05:59:47.435Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/3-avatar.png","timestamp":"2026-01-09T05:59:47.438Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/4-avatar.png","timestamp":"2026-01-09T05:59:47.439Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/5-avatar.png","timestamp":"2026-01-09T05:59:47.440Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/6-avatar.png","timestamp":"2026-01-09T05:59:47.443Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/7-avatar.png","timestamp":"2026-01-09T05:59:47.446Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/8-avatar.png","timestamp":"2026-01-09T05:59:47.454Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/9-avatar.png","timestamp":"2026-01-09T05:59:47.456Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/10-avatar.png","timestamp":"2026-01-09T05:59:47.460Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/11-avatar.png","timestamp":"2026-01-09T05:59:47.464Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/12-avatar.png","timestamp":"2026-01-09T05:59:47.468Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/13-avatar.png","timestamp":"2026-01-09T05:59:47.469Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/14-avatar.png","timestamp":"2026-01-09T05:59:47.472Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/15-avatar.png","timestamp":"2026-01-09T05:59:47.473Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/16-avatar.png","timestamp":"2026-01-09T05:59:47.474Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/17-avatar.png","timestamp":"2026-01-09T05:59:47.475Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/18-avatar.png","timestamp":"2026-01-09T05:59:47.478Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/19-avatar.png","timestamp":"2026-01-09T05:59:47.480Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/20-avatar.png","timestamp":"2026-01-09T05:59:47.484Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/21-avatar.png","timestamp":"2026-01-09T05:59:47.485Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/22-avatar.png","timestamp":"2026-01-09T05:59:47.487Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/23-avatar.png","timestamp":"2026-01-09T05:59:47.489Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/24-avatar.png","timestamp":"2026-01-09T05:59:47.490Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/25-avatar.png","timestamp":"2026-01-09T05:59:47.493Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/26-avatar.png","timestamp":"2026-01-09T05:59:47.495Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/27-avatar.png","timestamp":"2026-01-09T05:59:47.496Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/28-avatar.png","timestamp":"2026-01-09T05:59:47.498Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/29-avatar.png","timestamp":"2026-01-09T05:59:47.502Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/30-avatar.png","timestamp":"2026-01-09T05:59:47.507Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/1-avatar.png","timestamp":"2026-01-09T05:59:54.345Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/2-avatar.png","timestamp":"2026-01-09T05:59:54.348Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/3-avatar.png","timestamp":"2026-01-09T05:59:54.349Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/4-avatar.png","timestamp":"2026-01-09T05:59:54.350Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/5-avatar.png","timestamp":"2026-01-09T05:59:54.352Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/6-avatar.png","timestamp":"2026-01-09T05:59:54.354Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/7-avatar.png","timestamp":"2026-01-09T05:59:54.355Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/8-avatar.png","timestamp":"2026-01-09T05:59:54.357Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/9-avatar.png","timestamp":"2026-01-09T05:59:54.358Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/10-avatar.png","timestamp":"2026-01-09T05:59:54.362Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/11-avatar.png","timestamp":"2026-01-09T05:59:54.365Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/12-avatar.png","timestamp":"2026-01-09T05:59:54.366Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/13-avatar.png","timestamp":"2026-01-09T05:59:54.369Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/14-avatar.png","timestamp":"2026-01-09T05:59:54.370Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/15-avatar.png","timestamp":"2026-01-09T05:59:54.372Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/16-avatar.png","timestamp":"2026-01-09T05:59:54.374Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/17-avatar.png","timestamp":"2026-01-09T05:59:54.375Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/18-avatar.png","timestamp":"2026-01-09T05:59:54.378Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/19-avatar.png","timestamp":"2026-01-09T05:59:54.383Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/20-avatar.png","timestamp":"2026-01-09T05:59:54.384Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/21-avatar.png","timestamp":"2026-01-09T05:59:54.385Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/22-avatar.png","timestamp":"2026-01-09T05:59:54.387Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/23-avatar.png","timestamp":"2026-01-09T05:59:54.389Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/24-avatar.png","timestamp":"2026-01-09T05:59:54.390Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/25-avatar.png","timestamp":"2026-01-09T05:59:54.392Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/26-avatar.png","timestamp":"2026-01-09T05:59:54.394Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/27-avatar.png","timestamp":"2026-01-09T05:59:54.396Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/28-avatar.png","timestamp":"2026-01-09T05:59:54.399Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/29-avatar.png","timestamp":"2026-01-09T05:59:54.401Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /static/artist-images/30-avatar.png","timestamp":"2026-01-09T05:59:54.404Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:01:16.596Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:01:16.600Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:01:16.600Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:01:16.601Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:01:16.602Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:01:16.603Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:01:16.603Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:01:16.604Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:01:16.604Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:01:16.605Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:01:16.605Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:01:16.606Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:01:16.606Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:01:16.606Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:01:16.607Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:01:16.607Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:01:16.607Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:01:16.612Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:01:31.631Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:01:31.635Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:01:31.635Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:01:31.636Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:01:31.637Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:01:31.637Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:01:31.637Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:01:31.638Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:01:31.638Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:01:31.638Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:01:31.639Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:01:31.640Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:01:31.640Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:01:31.640Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:01:31.641Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:01:31.641Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:01:31.642Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:01:31.651Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:01:42.727Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:01:42.729Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:01:42.730Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:01:42.731Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:01:42.732Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:01:42.732Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:01:42.733Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:01:42.733Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:01:42.733Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:01:42.734Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:01:42.734Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:01:42.735Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:01:42.735Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:01:42.736Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:01:42.737Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:01:42.737Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:01:42.738Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:01:42.744Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:13:00.369Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:13:00.372Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:13:00.372Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:13:00.374Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:13:00.375Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:13:00.375Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:13:00.376Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:13:00.376Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:13:00.376Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:13:00.377Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:13:00.377Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:13:00.377Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:13:00.378Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:13:00.378Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:13:00.379Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:13:00.379Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:13:00.380Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:13:00.385Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:13:02.587Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:13:02.590Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:13:02.590Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:13:02.591Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:13:02.592Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:13:02.593Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:13:02.593Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:13:02.593Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:13:02.594Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:13:02.594Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:13:02.595Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:13:02.595Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:13:02.595Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:13:02.595Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:13:02.596Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:13:02.596Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:13:02.597Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:13:02.606Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:24:14.590Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:24:14.592Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:24:14.593Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:24:14.593Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:24:14.594Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:24:14.595Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:24:14.596Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:24:14.596Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:24:14.596Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:24:14.597Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:24:14.597Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:24:14.598Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:24:14.598Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:24:14.598Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:24:14.598Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:24:14.599Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:24:14.599Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:24:14.607Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:27:34.030Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:27:34.034Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:27:34.034Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:27:34.035Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:27:34.036Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:27:34.037Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:27:34.037Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:27:34.038Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:27:34.038Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:27:34.039Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:27:34.039Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:27:34.039Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:27:34.040Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:27:34.040Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:27:34.040Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:27:34.040Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:27:34.041Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:27:34.041Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:27:34.046Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:27:35.756Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:27:35.759Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:27:35.759Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:27:35.760Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:27:35.761Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:27:35.761Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:27:35.762Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:27:35.762Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:27:35.763Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:27:35.763Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:27:35.764Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:27:35.764Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:27:35.765Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:27:35.765Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:27:35.766Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:27:35.766Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:27:35.766Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:27:35.767Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:27:35.773Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:27:46.407Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:27:46.409Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:27:46.410Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:27:46.410Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:27:46.411Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:27:46.412Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:27:46.412Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:27:46.413Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:27:46.413Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:27:46.413Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:27:46.414Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:27:46.415Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:27:46.415Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:27:46.415Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:27:46.416Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:27:46.416Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:27:46.416Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:27:46.417Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:27:46.422Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /api/library/scan?force=true","timestamp":"2026-01-09T06:28:43.419Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /favicon.ico","timestamp":"2026-01-09T06:28:43.482Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /api/library/scan?force=true","timestamp":"2026-01-09T06:29:18.161Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /api/library/scan?force=true","timestamp":"2026-01-09T06:29:18.755Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /api/library/scan?force=true","timestamp":"2026-01-09T06:29:18.949Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /api/library/scan?force=true","timestamp":"2026-01-09T06:29:19.153Z"}
+{"context":"AllExceptionsFilter","level":"warn","message":"Business Exception: 404 - Cannot GET /.well-known/appspecific/com.chrome.devtools.json","timestamp":"2026-01-09T06:30:43.953Z"}
+{"context":"MusicLibraryController","level":"info","message":"Received scan request. Force update: true","timestamp":"2026-01-09T06:31:02.376Z"}
+{"context":"MusicLibraryService","level":"info","message":"Starting music library scan... (Force Update: true)","timestamp":"2026-01-09T06:31:02.376Z"}
+{"context":"MusicLibraryService","level":"info","message":"Scanning artist directories...","timestamp":"2026-01-09T06:31:02.379Z"}
+{"context":"MusicLibraryService","level":"info","message":"Found 22 audio files. Processing...","timestamp":"2026-01-09T06:31:02.879Z"}
+{"context":"MusicLibraryService","level":"info","message":"Music library scan and save complete. Search index invalidated.","timestamp":"2026-01-09T06:31:02.999Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:33:26.779Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:33:26.781Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:33:26.782Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:33:26.782Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:33:26.783Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:33:26.784Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:33:26.784Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:33:26.785Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:33:26.785Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:33:26.786Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:33:26.786Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:33:26.787Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:33:26.787Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:33:26.787Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:33:26.788Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:33:26.788Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:33:26.788Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:33:26.789Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:33:26.794Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:33:38.428Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:33:38.430Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:33:38.431Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:33:38.432Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:33:38.433Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:33:38.435Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:33:38.435Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:33:38.436Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:33:38.436Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:33:38.436Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:33:38.437Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:33:38.437Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:33:38.438Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:33:38.438Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:33:38.439Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:33:38.439Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:33:38.439Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:33:38.440Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:33:38.447Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:33:41.196Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:33:41.198Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:33:41.199Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:33:41.200Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:33:41.200Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:33:41.201Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:33:41.202Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:33:41.202Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:33:41.203Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:33:41.203Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:33:41.204Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:33:41.205Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:33:41.205Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:33:41.205Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:33:41.206Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:33:41.206Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:33:41.207Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:33:41.207Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:33:41.212Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:34:31.866Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:34:31.870Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:34:31.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:34:31.872Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:34:31.873Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:34:31.874Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:34:31.875Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:34:31.875Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:34:31.876Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:34:31.877Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:34:31.878Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:34:31.879Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:34:31.879Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:34:31.879Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:34:31.880Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:34:31.880Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:34:31.881Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:34:31.881Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:34:31.887Z"}
+{"context":"RoutesResolver","level":"info","message":"AppController {/}:","timestamp":"2026-01-09T06:35:02.862Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/, GET} route","timestamp":"2026-01-09T06:35:02.864Z"}
+{"context":"RoutesResolver","level":"info","message":"MusicLibraryController {/api}:","timestamp":"2026-01-09T06:35:02.865Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan/progress, GET} route","timestamp":"2026-01-09T06:35:02.865Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/library/scan, POST} route","timestamp":"2026-01-09T06:35:02.866Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/covers/:id, GET} route","timestamp":"2026-01-09T06:35:02.867Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/random, GET} route","timestamp":"2026-01-09T06:35:02.868Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists, GET} route","timestamp":"2026-01-09T06:35:02.868Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/artists/:id, GET} route","timestamp":"2026-01-09T06:35:02.869Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums, GET} route","timestamp":"2026-01-09T06:35:02.869Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/albums/:id, GET} route","timestamp":"2026-01-09T06:35:02.870Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/songs/:id, GET} route","timestamp":"2026-01-09T06:35:02.870Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/search, GET} route","timestamp":"2026-01-09T06:35:02.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/stream/:id, GET} route","timestamp":"2026-01-09T06:35:02.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, GET} route","timestamp":"2026-01-09T06:35:02.871Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id, GET} route","timestamp":"2026-01-09T06:35:02.872Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists, POST} route","timestamp":"2026-01-09T06:35:02.872Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/playlists/:id/songs, POST} route","timestamp":"2026-01-09T06:35:02.872Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-01-09T06:35:02.879Z"}

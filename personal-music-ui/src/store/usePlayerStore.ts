@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { Song } from "@/types";
 import React from "react";
 
@@ -11,6 +12,7 @@ interface PlayerState {
   currentTime: number;
   duration: number;
   playQueue: Song[];
+  originalQueue: Song[];
   currentQueueIndex: number;
   playMode: PlayMode;
   isQueueOpen: boolean;
@@ -51,190 +53,278 @@ interface PlayerState {
   toggleMute: () => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set, get) => ({
-  isPlaying: false,
-  currentSong: null,
-  volume: 0.8,
-  currentTime: 0,
-  duration: 0,
-  playQueue: [],
-  currentQueueIndex: -1,
-  playMode: "normal",
-  isQueueOpen: false,
-  isSidebarCollapsed: false,
-  isLoading: false,
-  isFullScreen: false,
-  isMuted: false,
-  prevVolume: 0.8,
-  audioRef: null,
-  audioContext: null,
-  analyser: null,
-  bassLevel: 0,
+const shuffleArray = <T>(array: T[]): T[] => {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
 
-  playSong: (song, queue) => {
-    const state = get();
-    let newQueue = state.playQueue;
-    let newIndex = -1;
-
-    if (queue && queue.length > 0) {
-      newQueue = queue;
-      newIndex = newQueue.findIndex((s) => s.id === song.id);
-    } else if (state.playQueue.some((s) => s.id === song.id)) {
-      newIndex = state.playQueue.findIndex((s) => s.id === song.id);
-    } else {
-      newQueue = [...state.playQueue, song];
-      newIndex = newQueue.length - 1;
-    }
-
-    set({
-      currentSong: song,
-      playQueue: newQueue,
-      currentQueueIndex: newIndex,
-      isPlaying: true,
-      isLoading: true,
+export const usePlayerStore = create<PlayerState>()(
+  persist(
+    (set, get) => ({
+      isPlaying: false,
+      currentSong: null,
+      volume: 0.8,
       currentTime: 0,
-    });
-  },
+      duration: 0,
+      playQueue: [],
+      originalQueue: [],
+      currentQueueIndex: -1,
+      playMode: "normal",
+      isQueueOpen: false,
+      isSidebarCollapsed: false,
+      isLoading: false,
+      isFullScreen: false,
+      isMuted: false,
+      prevVolume: 0.8,
+      audioRef: null,
+      audioContext: null,
+      analyser: null,
+      bassLevel: 0,
 
-  togglePlayPause: () => {
-    const { isPlaying, currentSong, audioRef } = get();
-    if (!currentSong) return;
+      playSong: (song, queue) => {
+        const state = get();
+        let newQueue = state.playQueue;
+        let newOriginalQueue = state.originalQueue;
+        let newIndex = -1;
 
-    if (isPlaying) {
-      audioRef?.current?.pause();
-    } else {
-      audioRef?.current?.play();
-    }
-    set({ isPlaying: !isPlaying });
-  },
+        if (queue && queue.length > 0) {
+          if (state.playMode === "shuffle") {
+            newOriginalQueue = [...queue];
+            const others = queue.filter((s) => s.id !== song.id);
+            newQueue = [song, ...shuffleArray(others)];
+            newIndex = 0;
+          } else {
+            newQueue = queue;
+            newOriginalQueue = [];
+            newIndex = newQueue.findIndex((s) => s.id === song.id);
+          }
+        } else {
+          if (state.playQueue.some((s) => s.id === song.id)) {
+            newIndex = state.playQueue.findIndex((s) => s.id === song.id);
+          } else {
+            newQueue = [...state.playQueue, song];
+            if (
+              state.playMode === "shuffle" &&
+              state.originalQueue.length > 0
+            ) {
+              newOriginalQueue = [...state.originalQueue, song];
+            }
+            newIndex = newQueue.length - 1;
+          }
+        }
 
-  setVolume: (volume) => {
-    const { audioRef } = get();
-    if (audioRef?.current) {
-      audioRef.current.volume = volume;
-    }
-    set({ volume, isMuted: volume === 0 });
-  },
+        set({
+          currentSong: song,
+          playQueue: newQueue,
+          originalQueue: newOriginalQueue,
+          currentQueueIndex: newIndex,
+          isPlaying: true,
+          isLoading: true,
+          currentTime: 0,
+        });
+      },
 
-  setCurrentTime: (time) => set({ currentTime: time }),
-  setDuration: (duration) => set({ duration }),
-  setAudioRef: (ref) => set({ audioRef: ref }),
-  setAudioAnalysis: (context, analyser) =>
-    set({ audioContext: context, analyser }),
-  setBassLevel: (level) => set({ bassLevel: level }),
+      togglePlayPause: () => {
+        const { isPlaying, currentSong, audioRef } = get();
+        if (!currentSong) return;
 
-  seek: (time) => {
-    const { audioRef } = get();
-    if (audioRef?.current) {
-      audioRef.current.currentTime = time;
-    }
-    set({ currentTime: time });
-  },
+        if (isPlaying) {
+          audioRef?.current?.pause();
+        } else {
+          audioRef?.current?.play();
+        }
+        set({ isPlaying: !isPlaying });
+      },
 
-  playNext: () => {
-    const { playQueue, currentQueueIndex, playMode } = get();
-    if (playQueue.length === 0) return;
+      setVolume: (volume) => {
+        const { audioRef } = get();
+        if (audioRef?.current) {
+          audioRef.current.volume = volume;
+        }
+        set({ volume, isMuted: volume === 0 });
+      },
 
-    let nextIndex = -1;
+      setCurrentTime: (time) => set({ currentTime: time }),
+      setDuration: (duration) => set({ duration }),
+      setAudioRef: (ref) => set({ audioRef: ref }),
+      setAudioAnalysis: (context, analyser) =>
+        set({ audioContext: context, analyser }),
+      setBassLevel: (level) => set({ bassLevel: level }),
 
-    if (playMode === "shuffle") {
-      nextIndex = Math.floor(Math.random() * playQueue.length);
-      if (playQueue.length > 1 && nextIndex === currentQueueIndex) {
-        nextIndex = (nextIndex + 1) % playQueue.length;
-      }
-    } else {
-      nextIndex = (currentQueueIndex + 1) % playQueue.length;
+      seek: (time) => {
+        const { audioRef } = get();
+        if (audioRef?.current) {
+          audioRef.current.currentTime = time;
+        }
+        set({ currentTime: time });
+      },
 
-      if (
-        playMode === "normal" &&
-        nextIndex === 0 &&
-        currentQueueIndex === playQueue.length - 1
-      ) {
-        set({ isPlaying: false });
-        return;
-      }
-    }
+      playNext: () => {
+        const { playQueue, currentQueueIndex, playMode } = get();
+        if (playQueue.length === 0) return;
 
-    const nextSong = playQueue[nextIndex];
-    get().playSong(nextSong, playQueue);
-  },
+        let nextIndex = currentQueueIndex + 1;
 
-  playPrev: () => {
-    const { playQueue, currentQueueIndex, currentTime, audioRef } = get();
-    if (playQueue.length === 0) return;
+        if (nextIndex >= playQueue.length) {
+          if (playMode === "normal") {
+            set({ isPlaying: false });
+            return;
+          }
+          nextIndex = 0;
+        }
 
-    if (currentTime > 3 && audioRef?.current) {
-      audioRef.current.currentTime = 0;
-      return;
-    }
+        const nextSong = playQueue[nextIndex];
+        get().playSong(nextSong);
+      },
 
-    const prevIndex =
-      (currentQueueIndex - 1 + playQueue.length) % playQueue.length;
-    const prevSong = playQueue[prevIndex];
-    get().playSong(prevSong, playQueue);
-  },
+      playPrev: () => {
+        const { playQueue, currentQueueIndex, currentTime, audioRef } = get();
+        if (playQueue.length === 0) return;
 
-  insertNext: (song) => {
-    const { playQueue, currentQueueIndex } = get();
-    const newQueue = [...playQueue];
-    const insertIndex = currentQueueIndex + 1;
-    newQueue.splice(insertIndex, 0, song);
+        if (currentTime > 3 && audioRef?.current) {
+          audioRef.current.currentTime = 0;
+          return;
+        }
 
-    if (playQueue.length === 0) {
-      get().playSong(song, [song]);
-    } else {
-      set({ playQueue: newQueue });
-    }
-  },
+        const prevIndex =
+          (currentQueueIndex - 1 + playQueue.length) % playQueue.length;
+        const prevSong = playQueue[prevIndex];
+        get().playSong(prevSong);
+      },
 
-  addToQueue: (song) => {
-    set((state) => {
-      if (state.playQueue.some((s) => s.id === song.id)) return state;
-      return { playQueue: [...state.playQueue, song] };
-    });
-  },
+      insertNext: (song) => {
+        const { playQueue, originalQueue, currentQueueIndex } = get();
 
-  handleSongEnd: () => {
-    const { playMode, audioRef } = get();
-    if (playMode === "repeat-one" && audioRef?.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play();
-    } else {
-      get().playNext();
-    }
-  },
+        const newQueue = [...playQueue];
+        const insertIndex = currentQueueIndex + 1;
+        newQueue.splice(insertIndex, 0, song);
 
-  toggleShuffle: () =>
-    set((state) => ({
-      playMode: state.playMode === "shuffle" ? "normal" : "shuffle",
-    })),
+        const newOriginalQueue =
+          originalQueue.length > 0 ? [...originalQueue, song] : [];
 
-  toggleRepeat: () =>
-    set((state) => {
-      const modes: PlayMode[] = ["normal", "repeat-all", "repeat-one"];
-      const nextIndex = (modes.indexOf(state.playMode) + 1) % modes.length;
-      if (state.playMode === "shuffle") return { playMode: "repeat-all" };
-      return { playMode: modes[nextIndex] };
+        if (playQueue.length === 0) {
+          get().playSong(song, [song]);
+        } else {
+          set({
+            playQueue: newQueue,
+            originalQueue: newOriginalQueue,
+          });
+        }
+      },
+
+      addToQueue: (song) => {
+        set((state) => {
+          if (state.playQueue.some((s) => s.id === song.id)) return state;
+
+          const newQueue = [...state.playQueue, song];
+          const newOriginalQueue =
+            state.originalQueue.length > 0
+              ? [...state.originalQueue, song]
+              : [];
+
+          return {
+            playQueue: newQueue,
+            originalQueue: newOriginalQueue,
+          };
+        });
+      },
+
+      handleSongEnd: () => {
+        const { playMode, audioRef } = get();
+        if (playMode === "repeat-one" && audioRef?.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        } else {
+          get().playNext();
+        }
+      },
+
+      toggleShuffle: () => {
+        const state = get();
+        const { playMode, playQueue, currentSong, originalQueue } = state;
+
+        if (playMode === "shuffle") {
+          const targetQueue =
+            originalQueue.length > 0 ? originalQueue : playQueue;
+
+          let newIndex = targetQueue.findIndex((s) => s.id === currentSong?.id);
+          if (newIndex === -1) newIndex = 0;
+
+          set({
+            playMode: "normal",
+            playQueue: targetQueue,
+            currentQueueIndex: newIndex,
+            originalQueue: [],
+          });
+        } else {
+          if (playQueue.length === 0) {
+            set({ playMode: "shuffle" });
+            return;
+          }
+
+          const others = playQueue.filter((s) => s.id !== currentSong?.id);
+          const shuffledOthers = shuffleArray(others);
+          const shuffledQueue = currentSong
+            ? [currentSong, ...shuffledOthers]
+            : shuffledOthers;
+
+          set({
+            playMode: "shuffle",
+            playQueue: shuffledQueue,
+            originalQueue: playQueue,
+            currentQueueIndex: 0,
+          });
+        }
+      },
+
+      toggleRepeat: () =>
+        set((state) => {
+          const modes: PlayMode[] = ["normal", "repeat-all", "repeat-one"];
+
+          if (state.playMode === "shuffle") return { playMode: "repeat-all" };
+
+          const nextIndex = (modes.indexOf(state.playMode) + 1) % modes.length;
+          return { playMode: modes[nextIndex] };
+        }),
+
+      toggleQueue: () => set((state) => ({ isQueueOpen: !state.isQueueOpen })),
+      toggleSidebar: () =>
+        set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
+      setIsLoading: (loading) => set({ isLoading: loading }),
+
+      toggleFullScreen: () =>
+        set((state) => ({ isFullScreen: !state.isFullScreen })),
+      setFullScreen: (isFull) => set({ isFullScreen: isFull }),
+
+      toggleMute: () => {
+        const { isMuted, volume, prevVolume, setVolume } = get();
+        if (isMuted) {
+          setVolume(prevVolume || 0.8);
+          set({ isMuted: false });
+        } else {
+          set({ prevVolume: volume });
+          setVolume(0);
+          set({ isMuted: true });
+        }
+      },
     }),
-
-  toggleQueue: () => set((state) => ({ isQueueOpen: !state.isQueueOpen })),
-  toggleSidebar: () =>
-    set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
-  setIsLoading: (loading) => set({ isLoading: loading }),
-
-  toggleFullScreen: () =>
-    set((state) => ({ isFullScreen: !state.isFullScreen })),
-  setFullScreen: (isFull) => set({ isFullScreen: isFull }),
-
-  toggleMute: () => {
-    const { isMuted, volume, prevVolume, setVolume } = get();
-    if (isMuted) {
-      setVolume(prevVolume || 0.8);
-      set({ isMuted: false });
-    } else {
-      set({ prevVolume: volume });
-      setVolume(0);
-      set({ isMuted: true });
+    {
+      name: "player-storage",
+      partialize: (state) => ({
+        currentSong: state.currentSong,
+        volume: state.volume,
+        playQueue: state.playQueue,
+        originalQueue: state.originalQueue,
+        currentQueueIndex: state.currentQueueIndex,
+        playMode: state.playMode,
+        isSidebarCollapsed: state.isSidebarCollapsed,
+        isMuted: state.isMuted,
+        prevVolume: state.prevVolume,
+      }),
     }
-  },
-}));
+  )
+);

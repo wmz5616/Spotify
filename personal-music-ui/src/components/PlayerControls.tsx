@@ -58,7 +58,6 @@ const PlayerControls = () => {
   return (
     <>
       <footer className="col-start-1 col-span-2 bg-neutral-950 h-[90px] px-4 border-t border-neutral-800 grid grid-cols-3 items-center z-50 relative">
-        {/* 左侧：当前歌曲信息 - 点击触发全屏 */}
         <div className="flex items-center gap-3 truncate">
           <AnimatePresence mode="wait">
             <motion.div
@@ -74,10 +73,6 @@ const PlayerControls = () => {
                 className="flex items-center gap-3 truncate cursor-pointer hover:bg-neutral-800/50 p-1.5 rounded-md transition-colors group"
                 title="Expand Player"
               >
-                {/* [核心修改] 神奇移动源对象 
-                  1. 使用 motion.div
-                  2. 绑定 layoutId (必须与 FullScreenPlayer 中的 ID 一致)
-                */}
                 <motion.div
                   layoutId={`album-cover-${currentSong.id}`}
                   className="relative w-14 h-14 flex-shrink-0 shadow-md z-50 overflow-hidden rounded-md"
@@ -120,7 +115,6 @@ const PlayerControls = () => {
           </AnimatePresence>
         </div>
 
-        {/* 中间：播放控制和进度条 */}
         <div className="flex flex-col items-center justify-center gap-2 w-full max-w-[45%] mx-auto">
           <div className="flex items-center gap-6">
             <button
@@ -179,7 +173,6 @@ const PlayerControls = () => {
           <ProgressBar />
         </div>
 
-        {/* 右侧：队列按钮和其他控制 */}
         <div className="flex items-center justify-end gap-4">
           <QueueButton />
 
@@ -193,7 +186,6 @@ const PlayerControls = () => {
         </div>
       </footer>
 
-      {/* 全屏播放器挂载点 */}
       <FullScreenPlayer />
     </>
   );

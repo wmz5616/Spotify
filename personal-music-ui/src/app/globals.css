@@ -11,31 +11,37 @@ body {
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: transparent;
   border-radius: 10px;
 }
+
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background: #555;
 }
+
 .custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
 
-/* 新增的歌词滚动条样式 */
 .lyric-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
+
 .lyric-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .lyric-scrollbar::-webkit-scrollbar-thumb {
   background: transparent;
   border-radius: 10px;
 }
+
 .lyric-scrollbar:hover::-webkit-scrollbar-thumb {
   background: #555;
 }
@@ -43,5 +49,6 @@ body {
 .lyric-highlight {
   background: linear-gradient(90deg, #fff, #a7a7a7);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }

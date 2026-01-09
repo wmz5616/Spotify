@@ -2,14 +2,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator interfaces {
+  provider        = "prisma-generator-typescript-interfaces"
+  output          = "../../personal-music-ui/src/lib/prisma-types.ts"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model Artist {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
   albums      Album[]
   avatarUrl   String?
   headerUrl   String?
