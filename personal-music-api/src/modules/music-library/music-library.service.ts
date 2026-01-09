@@ -137,12 +137,74 @@ export class MusicLibraryService {
     return null;
   }
 
+  /**
+   * 独立的处理艺术家元数据（头像、Bio等）的逻辑
+   */
+  private async processArtistMetadata(
+    artist: Artist,
+    artistFolderPath: string,
+    artistImagesDir: string,
+  ): Promise<Artist> {
+    const avatarPath = path.join(artistFolderPath, '头像.png');
+    const headerPath = path.join(artistFolderPath, '封面图.png');
+    const bioTextPath = path.join(artistFolderPath, 'bio.txt');
+    const bioImagePath = path.join(artistFolderPath, 'bio.png');
+
+    const dataToUpdate: {
+      avatarUrl?: string;
+      headerUrl?: string;
+      bio?: string;
+      bioImageUrl?: string;
+    } = {};
+
+    // 辅助函数：处理图片复制
+    const processImage = async (
+      sourcePath: string,
+      type: 'avatar' | 'header' | 'bio',
+    ): Promise<string | undefined> => {
+      try {
+        await fs.access(sourcePath);
+        const targetFileName = `${artist.id}-${type}.png`;
+        const targetPath = path.join(artistImagesDir, targetFileName);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        await copy(sourcePath, targetPath, { overwrite: true });
+        return `/artist-images/${targetFileName}`;
+      } catch {
+        return undefined;
+      }
+    };
+
+    const newAvatarUrl = await processImage(avatarPath, 'avatar');
+    if (newAvatarUrl) dataToUpdate.avatarUrl = newAvatarUrl;
+
+    const newHeaderUrl = await processImage(headerPath, 'header');
+    if (newHeaderUrl) dataToUpdate.headerUrl = newHeaderUrl;
+
+    const newBioImageUrl = await processImage(bioImagePath, 'bio');
+    if (newBioImageUrl) dataToUpdate.bioImageUrl = newBioImageUrl;
+
+    try {
+      await fs.access(bioTextPath);
+      const bioContent = await fs.readFile(bioTextPath, 'utf-8');
+      if (bioContent) dataToUpdate.bio = bioContent;
+    } catch {
+      /* bio.txt does not exist, ignore */
+    }
+
+    if (Object.keys(dataToUpdate).length > 0) {
+      return this.prisma.artist.update({
+        where: { id: artist.id },
+        data: dataToUpdate,
+      });
+    }
+
+    return artist;
+  }
+
   async scanAndSaveMusic(directory: string, forceUpdate: boolean = false) {
     console.log(
       `Starting music library scan... (Force Update: ${forceUpdate})`,
     );
-    const filePaths = await this.getAudioFilePaths(directory);
-    console.log(`Found ${filePaths.length} audio files.`);
 
     const coversDir = path.join(process.cwd(), 'public', 'covers');
     const artistImagesDir = path.join(process.cwd(), 'public', 'artist-images');
@@ -154,6 +216,49 @@ export class MusicLibraryService {
     const artistCache = new Map<string, Artist>();
     const albumCache = new Map<string, Album & { coverAttempted?: boolean }>();
 
+    // -----------------------------------------------------------------------
+    // [Phase 1] 扫描根目录下的所有文件夹，优先创建艺术家记录
+    // 这样即使文件夹里没有歌，或者结构不完整，艺术家和头像也能被录入
+    // -----------------------------------------------------------------------
+    try {
+      const topLevelDirents = await fs.readdir(directory, {
+        withFileTypes: true,
+      });
+      console.log('Scanning artist directories...');
+
+      for (const dirent of topLevelDirents) {
+        if (dirent.isDirectory()) {
+          const artistName = this.sanitizeString(dirent.name);
+          if (!artistName) continue;
+
+          let artist = await this.prisma.artist.upsert({
+            where: { name: artistName },
+            create: { name: artistName },
+            update: {},
+          });
+
+          // 无论是否新建，都检查一次元数据（头像等），因为用户可能刚放进去
+          const artistFolderPath = path.join(directory, dirent.name);
+          artist = await this.processArtistMetadata(
+            artist,
+            artistFolderPath,
+            artistImagesDir,
+          );
+
+          artistCache.set(artistName, artist);
+          console.log(`[Artist] Processed directory: ${artistName}`);
+        }
+      }
+    } catch (e) {
+      console.error('Error scanning artist directories:', e);
+    }
+
+    // -----------------------------------------------------------------------
+    // [Phase 2] 扫描音频文件，构建专辑和歌曲，并关联到艺术家
+    // -----------------------------------------------------------------------
+    const filePaths = await this.getAudioFilePaths(directory);
+    console.log(`Found ${filePaths.length} audio files. Processing...`);
+
     for (const filePath of filePaths) {
       const pathInfo = this.parseInfoFromPath(filePath, directory);
       if (!pathInfo) continue;
@@ -164,6 +269,7 @@ export class MusicLibraryService {
       const artistName = this.sanitizeString(tags.artist);
       if (!artistName) continue;
 
+      // 获取或创建艺术家（通常 Phase 1 已经创建了，这里是兜底）
       let artist = artistCache.get(artistName);
       if (!artist) {
         artist = await this.prisma.artist.upsert({
@@ -171,71 +277,14 @@ export class MusicLibraryService {
           create: { name: artistName },
           update: {},
         });
-        artistCache.set(artistName, artist);
+        // 尝试从文件路径回溯处理头像（以防文件夹漏扫）
         const artistFolderPath = path.dirname(path.dirname(filePath));
-        const avatarPath = path.join(artistFolderPath, '头像.png');
-        const headerPath = path.join(artistFolderPath, '封面图.png');
-        const dataToUpdate: {
-          avatarUrl?: string;
-          headerUrl?: string;
-          bio?: string;
-          bioImageUrl?: string;
-        } = {};
-
-        const processArtistImage = async (
-          sourcePath: string,
-          type: 'avatar' | 'header',
-        ): Promise<string | undefined> => {
-          try {
-            await fs.access(sourcePath);
-            const targetFileName = `${artist!.id}-${type}.png`;
-            const targetPath = path.join(artistImagesDir, targetFileName);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            await copy(sourcePath, targetPath, { overwrite: true });
-            return `/artist-images/${targetFileName}`;
-          } catch {
-            return undefined;
-          }
-        };
-
-        const newAvatarUrl = await processArtistImage(avatarPath, 'avatar');
-        if (newAvatarUrl) {
-          dataToUpdate.avatarUrl = newAvatarUrl;
-        }
-
-        const newHeaderUrl = await processArtistImage(headerPath, 'header');
-        if (newHeaderUrl) {
-          dataToUpdate.headerUrl = newHeaderUrl;
-        }
-
-        const bioTextPath = path.join(artistFolderPath, 'bio.txt');
-        const bioImagePath = path.join(artistFolderPath, 'bio.png');
-
-        try {
-          await fs.access(bioTextPath);
-          const bioContent = await fs.readFile(bioTextPath, 'utf-8');
-          dataToUpdate.bio = bioContent;
-        } catch {
-          /* bio.txt does not exist, ignore */
-        }
-
-        try {
-          await fs.access(bioImagePath);
-          const targetFileName = `${artist.id}-bio.png`;
-          const targetPath = path.join(artistImagesDir, targetFileName);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          await copy(bioImagePath, targetPath, { overwrite: true });
-          dataToUpdate.bioImageUrl = `/artist-images/${targetFileName}`;
-        } catch {
-          /* bio.png does not exist, ignore */
-        }
-
-        if (Object.keys(dataToUpdate).length > 0) {
-          artist = await this.prisma.artist.update({
-            where: { id: artist.id },
-            data: dataToUpdate,
-          });
-        }
+        artist = await this.processArtistMetadata(
+          artist,
+          artistFolderPath,
+          artistImagesDir,
+        );
+        artistCache.set(artistName, artist);
       }
 
       const cleanAlbum = this.sanitizeString(tags.album);
@@ -259,10 +308,13 @@ export class MusicLibraryService {
         });
         albumCache.set(albumUniqueId, album);
       }
+
+      // 处理专辑封面
       if ((!album.coverPath || forceUpdate) && !album.coverAttempted) {
         let coverSaved = false;
         const albumFolderPath = path.dirname(filePath);
         const folderCoverPath = await this.findFolderCover(albumFolderPath);
+
         if (folderCoverPath) {
           const fileExtension = path.extname(folderCoverPath);
           const newCoverPath = path.join(
@@ -289,6 +341,7 @@ export class MusicLibraryService {
             );
           }
         }
+
         if (!coverSaved && tags.imageBuffer) {
           const newCoverPath = path.join(coversDir, `${album.id}.jpg`);
           try {
@@ -313,6 +366,7 @@ export class MusicLibraryService {
         album.coverAttempted = true;
       }
 
+      // 处理歌词
       const lrcPath = filePath.replace(/\.[^/.]+$/, '.lrc');
       let lyrics: string | null = null;
       try {
@@ -321,6 +375,7 @@ export class MusicLibraryService {
         /* lyrics not found */
       }
 
+      // 录入歌曲
       await this.prisma.song.upsert({
         where: { path: filePath },
         update: {
@@ -367,19 +422,16 @@ export class MusicLibraryService {
       threshold: 0.4,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     this.artistFuse = new Fuse(artists, {
       ...commonOptions,
       keys: ['name'],
     }) as unknown as FuseSearchInstance<ArtistSearchItem>;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     this.albumFuse = new Fuse(albums, {
       ...commonOptions,
       keys: ['title'],
     }) as unknown as FuseSearchInstance<AlbumSearchItem>;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     this.songFuse = new Fuse(songs, {
       ...commonOptions,
       keys: ['title'],
