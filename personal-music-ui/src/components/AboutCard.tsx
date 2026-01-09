@@ -1,38 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 
 interface AboutCardProps {
   bio: string;
-  imageUrl: string;
+  imageUrl?: string;
 }
 
-const AboutCard = ({ bio, imageUrl }: AboutCardProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const summary = bio.length > 300 ? bio.substring(0, 300) + "..." : bio;
-
+const AboutCard: React.FC<AboutCardProps> = ({ bio, imageUrl }) => {
   return (
     <section className="mb-12">
       <h2 className="text-2xl font-bold mb-6">About</h2>
-      <div className="relative rounded-lg overflow-hidden">
-        <Image
-          src={imageUrl}
-          alt="Artist biography image"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/70 to-transparent" />
-
-        <div className="relative p-8 text-white">
-          <p
-            className="text-sm leading-relaxed whitespace-pre-line"
-            onClick={() => setIsExpanded(!isExpanded)}
-            style={{ cursor: bio.length > 300 ? "pointer" : "default" }}
-          >
-            {isExpanded ? bio : summary}
-          </p>
+      <div className="relative rounded-lg bg-neutral-900/60 overflow-hidden group hover:bg-neutral-900 transition-colors">
+        <div className="flex flex-col md:flex-row h-full">
+          {imageUrl && (
+            <div className="relative w-full md:w-2/5 h-64 md:h-auto min-h-[300px]">
+              <Image
+                src={imageUrl}
+                alt="Artist Bio"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                unoptimized
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-neutral-900/60 md:to-neutral-900/90" />
+            </div>
+          )}
+          <div className="p-8 flex-1 flex flex-col justify-center">
+            <p className="text-neutral-300 leading-relaxed whitespace-pre-line text-lg max-h-[400px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-neutral-700">
+              {bio}
+            </p>
+          </div>
         </div>
       </div>
     </section>

@@ -10,6 +10,7 @@ import SongRowItem from "@/components/SongRowItem";
 import AlbumPageSkeleton from "@/components/AlbumPageSkeleton";
 import { formatDuration } from "@/lib/utils";
 import { useColor } from "color-thief-react";
+import { apiClient } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -31,7 +32,6 @@ const AlbumDetailPage = () => {
   const [album, setAlbum] = useState<AlbumDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const albumArtUrl = id
     ? `${API_BASE_URL}/api/covers/${id}?size=600`
     : "/placeholder.jpg";
@@ -48,19 +48,7 @@ const AlbumDetailPage = () => {
       try {
         setLoading(true);
         setError(null);
-
-        const res = await fetch(`${API_BASE_URL}/api/albums/${id}`, {
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          if (res.status === 404) {
-            throw new Error("Album not found");
-          }
-          throw new Error(`Failed to fetch album: ${res.statusText}`);
-        }
-
-        const data = await res.json();
+        const data = await apiClient<AlbumDetails>(`/api/albums/${id}`);
         setAlbum(data);
       } catch (err) {
         console.error("Error loading album:", err);

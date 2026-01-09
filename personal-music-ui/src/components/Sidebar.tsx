@@ -16,6 +16,7 @@ import {
 import clsx from "clsx";
 import type { Playlist, Artist } from "@/types";
 import { usePlayerStore } from "@/store/usePlayerStore";
+import { apiClient } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -33,7 +34,7 @@ const LibrarySkeleton = ({ collapsed }: { collapsed: boolean }) => (
         {!collapsed && (
           <div className="flex-1 space-y-2">
             <div className="h-4 bg-neutral-800 rounded w-2/3" />
-            <div className="h-3 bg-neutral-800 rounded w-1/3" />
+            <div className="h-3 bg-neutral-800 rounded w-1/2" />
           </div>
         )}
       </div>
@@ -44,31 +45,26 @@ const LibrarySkeleton = ({ collapsed }: { collapsed: boolean }) => (
 const Sidebar = () => {
   const pathname = usePathname();
   const { isSidebarCollapsed, toggleSidebar } = usePlayerStore();
-
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [playlistsRes, artistsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/playlists`),
-          fetch(`${API_BASE_URL}/api/artists`),
+        const [playlistsData, artistsData] = await Promise.all([
+          apiClient<Playlist[]>("/api/playlists"),
+          apiClient<Artist[]>("/api/artists"),
         ]);
 
-        if (playlistsRes.ok) {
-          const data = await playlistsRes.json();
-          setPlaylists(data);
-        }
-
-        if (artistsRes.ok) {
-          const data = await artistsRes.json();
-          setArtists(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch library data:", error);
+        setPlaylists(playlistsData);
+        setArtists(artistsData);
+        setError(false);
+      } catch (e) {
+        console.error("Sidebar data fetch failed:", e);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -95,87 +91,89 @@ const Sidebar = () => {
   return (
     <div
       className={clsx(
-        "flex flex-col gap-2 h-full p-2 transition-all duration-300 ease-in-out",
+        "flex flex-col h-full bg-black text-white transition-all duration-300 ease-in-out border-r border-neutral-800",
         isSidebarCollapsed ? "w-[80px]" : "w-[300px]"
       )}
     >
-      <div className="bg-neutral-900 rounded-lg p-5 flex flex-col gap-y-4">
+      <div className="p-6 space-y-4">
         {routes.map((route) => (
           <Link
-            key={route.label}
+            key={route.href}
             href={route.href}
-            title={isSidebarCollapsed ? route.label : undefined}
             className={clsx(
-              "flex items-center font-medium transition py-2 rounded-md",
-              isSidebarCollapsed ? "justify-center" : "gap-x-4 px-4",
-              route.active
-                ? "bg-white/10 text-white"
-                : "text-neutral-400 hover:text-white hover:bg-white/5"
+              "flex items-center gap-x-4 text-neutral-400 hover:text-white transition cursor-pointer",
+              route.active && "text-white",
+              isSidebarCollapsed && "justify-center"
             )}
           >
-            <route.icon size={26} />
-            {!isSidebarCollapsed && <p className="text-base">{route.label}</p>}
+            <route.icon size={24} />
+            {!isSidebarCollapsed && (
+              <p className="font-medium truncate">{route.label}</p>
+            )}
           </Link>
         ))}
       </div>
 
-      <div className="bg-neutral-900 rounded-lg h-full flex flex-col overflow-hidden">
-        <div
-          className={clsx(
-            "pt-4 pb-2 flex items-center shadow-md z-10",
-            isSidebarCollapsed ? "justify-center px-2" : "justify-between px-5"
-          )}
-        >
-          {!isSidebarCollapsed && (
-            <div className="flex items-center gap-x-2 text-neutral-400 hover:text-white transition cursor-pointer">
-              <Library size={26} />
-              <p className="font-bold text-base">Your Library</p>
-            </div>
-          )}
-
-          <button
-            onClick={toggleSidebar}
-            className="text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full p-1 transition"
-            title={isSidebarCollapsed ? "Expand Library" : "Collapse Library"}
-          >
-            {isSidebarCollapsed ? (
-              <ArrowRight size={26} />
-            ) : (
-              <ArrowLeft size={20} />
+      <div className="flex-1 overflow-y-auto bg-neutral-900/50 mx-2 mb-2 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="p-4">
+          <div
+            className={clsx(
+              "flex items-center justify-between mb-4 text-neutral-400",
+              isSidebarCollapsed && "flex-col gap-4"
             )}
-          </button>
-        </div>
+          >
+            <div
+              className={clsx(
+                "flex items-center gap-x-2",
+                isSidebarCollapsed && "justify-center"
+              )}
+            >
+              <Library size={24} />
+              {!isSidebarCollapsed && (
+                <p className="font-medium truncate">Your Library</p>
+              )}
+            </div>
+            <button
+              onClick={toggleSidebar}
+              className="hover:text-white transition p-1"
+              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              {isSidebarCollapsed ? (
+                <ArrowRight size={20} />
+              ) : (
+                <ArrowLeft size={20} />
+              )}
+            </button>
+          </div>
 
-        <div className="flex-1 overflow-y-auto px-2 py-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
           {loading ? (
             <LibrarySkeleton collapsed={isSidebarCollapsed} />
+          ) : error ? (
+            <div className="text-center text-red-400 text-sm mt-4">
+              {!isSidebarCollapsed && "无法加载媒体库"}
+            </div>
           ) : (
-            <div className="flex flex-col gap-y-1">
+            <div className="space-y-2">
               {playlists.map((playlist) => (
                 <Link
                   key={`playlist-${playlist.id}`}
                   href={`/playlist/${playlist.id}`}
-                  title={isSidebarCollapsed ? playlist.name : undefined}
                   className={clsx(
-                    "flex items-center p-2 rounded-md transition group",
-                    isSidebarCollapsed ? "justify-center" : "gap-x-3",
-                    pathname === `/playlist/${playlist.id}`
-                      ? "bg-white/10"
-                      : "hover:bg-neutral-800"
+                    "flex items-center gap-x-3 p-2 rounded-md hover:bg-neutral-800/50 cursor-pointer group transition",
+                    pathname === `/playlist/${playlist.id}` &&
+                      "bg-neutral-800 text-green-500",
+                    isSidebarCollapsed && "justify-center"
                   )}
                 >
-                  <div className="relative min-w-[48px] h-12 rounded-md overflow-hidden bg-neutral-800 flex items-center justify-center shrink-0">
-                    {playlist.songs?.[0]?.album?.coverPath ? (
-                      <Image
-                        src={`${API_BASE_URL}/static${playlist.songs[0].album.coverPath}`}
-                        fill
-                        alt={playlist.name}
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <ListMusic className="text-neutral-400" size={24} />
-                    )}
+                  <div className="w-12 h-12 bg-neutral-800 rounded-md flex items-center justify-center shrink-0 group-hover:bg-neutral-700 transition">
+                    <ListMusic
+                      className={clsx(
+                        "text-neutral-400 group-hover:text-white",
+                        pathname === `/playlist/${playlist.id}` &&
+                          "text-green-500"
+                      )}
+                      size={24}
+                    />
                   </div>
                   {!isSidebarCollapsed && (
                     <div className="flex flex-col overflow-hidden">
@@ -190,7 +188,7 @@ const Sidebar = () => {
                         {playlist.name}
                       </p>
                       <p className="text-sm text-neutral-400 truncate">
-                        Playlist • {playlist._count?.songs || 0} songs
+                        Playlist
                       </p>
                     </div>
                   )}
@@ -199,23 +197,21 @@ const Sidebar = () => {
 
               {artists.map((artist) => {
                 const avatarUrl = artist.avatarUrl
-                  ? `${API_BASE_URL}/static${artist.avatarUrl}`
+                  ? `${API_BASE_URL}/public${artist.avatarUrl}`
                   : null;
 
                 return (
                   <Link
                     key={`artist-${artist.id}`}
                     href={`/artist/${artist.id}`}
-                    title={isSidebarCollapsed ? artist.name : undefined}
                     className={clsx(
-                      "flex items-center p-2 rounded-md transition group",
-                      isSidebarCollapsed ? "justify-center" : "gap-x-3",
-                      pathname === `/artist/${artist.id}`
-                        ? "bg-white/10"
-                        : "hover:bg-neutral-800"
+                      "flex items-center gap-x-3 p-2 rounded-md hover:bg-neutral-800/50 cursor-pointer group transition",
+                      pathname === `/artist/${artist.id}` &&
+                        "bg-neutral-800 text-green-500",
+                      isSidebarCollapsed && "justify-center"
                     )}
                   >
-                    <div className="relative min-w-[48px] h-12 rounded-full overflow-hidden bg-neutral-800 flex items-center justify-center border border-transparent group-hover:border-neutral-700 shrink-0">
+                    <div className="w-12 h-12 relative rounded-full overflow-hidden bg-neutral-800 shrink-0">
                       {avatarUrl ? (
                         <Image
                           src={avatarUrl}
@@ -247,7 +243,7 @@ const Sidebar = () => {
               })}
               {!loading && playlists.length === 0 && artists.length === 0 && (
                 <div className="p-4 text-center text-neutral-400 text-sm">
-                  {!isSidebarCollapsed && "No music found."}
+                  {!isSidebarCollapsed && "暂无音乐"}
                 </div>
               )}
             </div>

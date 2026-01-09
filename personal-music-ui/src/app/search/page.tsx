@@ -6,6 +6,7 @@ import type { Artist, Album, Song } from "@/types";
 import SongRowItem from "@/components/SongRowItem";
 import AlbumCard from "@/components/AlbumCard";
 import ArtistSearchResultItem from "@/components/ArtistSearchResultItem";
+import { apiClient } from "@/lib/api-client";
 
 interface SearchResults {
   artists: (Artist & { albums: { id: number }[] })[];
@@ -25,15 +26,18 @@ const SearchContent = () => {
       return;
     }
 
-    fetch(`http://localhost:3001/api/search?q=${query}`)
-      .then((res) => res.json())
-      .then((data) => setResults(data));
+    apiClient<SearchResults>("/api/search", {
+      params: { q: query },
+    })
+      .then((data) => setResults(data))
+      .catch((err) => {
+        console.error("Search request failed:", err);
+        setResults(null);
+      });
   }, [query]);
 
   return (
     <div className="pt-12">
-      {" "}
-      {}
       {results ? (
         <div className="flex flex-col gap-8">
           {results.songs.length > 0 && (
@@ -66,6 +70,14 @@ const SearchContent = () => {
               </div>
             </section>
           )}
+
+          {results.songs.length === 0 &&
+            results.artists.length === 0 &&
+            results.albums.length === 0 && (
+              <div className="text-center text-neutral-500 mt-16">
+                <p>未找到相关结果 &quot;{query}&quot;</p>
+              </div>
+            )}
         </div>
       ) : (
         <div className="text-center text-neutral-500 mt-16">
@@ -77,7 +89,7 @@ const SearchContent = () => {
 };
 
 const SearchPage = () => (
-  <Suspense fallback={<div>Loading...</div>}>
+  <Suspense fallback={<div className="pt-12 pl-6">Loading search...</div>}>
     <SearchContent />
   </Suspense>
 );

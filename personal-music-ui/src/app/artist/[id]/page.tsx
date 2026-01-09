@@ -9,6 +9,7 @@ import AlbumCard from "@/components/AlbumCard";
 import PopularSongsList from "@/components/PopularSongsList";
 import AboutCard from "@/components/AboutCard";
 import clsx from "clsx";
+import { apiClient } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -63,19 +64,7 @@ const ArtistDetailPage = () => {
       try {
         setLoading(true);
         setError(null);
-
-        const res = await fetch(`${API_BASE_URL}/api/artists/${id}`, {
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          if (res.status === 404) {
-            throw new Error("Artist not found");
-          }
-          throw new Error(`Failed to fetch artist: ${res.statusText}`);
-        }
-
-        const data = await res.json();
+        const data = await apiClient<ArtistDetails>(`/api/artists/${id}`);
         setArtist(data);
       } catch (err) {
         console.error("Failed to fetch artist details:", err);
@@ -132,11 +121,11 @@ const ArtistDetailPage = () => {
     .slice(0, 5);
 
   const avatarUrl = artist.avatarUrl
-    ? `${API_BASE_URL}/static${artist.avatarUrl}`
+    ? `${API_BASE_URL}/public${artist.avatarUrl}`
     : null;
 
   const headerImageUrl = artist.headerUrl
-    ? `${API_BASE_URL}/static${artist.headerUrl}`
+    ? `${API_BASE_URL}/public${artist.headerUrl}`
     : avatarUrl || "/placeholder.jpg";
 
   const headerTextOpacity = Math.max(0, 1 - scrollY / 150);
@@ -236,7 +225,7 @@ const ArtistDetailPage = () => {
         {artist.bio && artist.bioImageUrl && (
           <AboutCard
             bio={artist.bio}
-            imageUrl={`${API_BASE_URL}/static${artist.bioImageUrl}`}
+            imageUrl={`${API_BASE_URL}/public${artist.bioImageUrl}`}
           />
         )}
 

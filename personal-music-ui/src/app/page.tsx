@@ -1,5 +1,6 @@
 import AlbumCard from "@/components/AlbumCard";
 import WelcomeHeader from "@/components/WelcomeHeader";
+import { apiClient } from "@/lib/api-client";
 
 type Album = {
   id: number;
@@ -19,27 +20,20 @@ const HomePage = async () => {
   let error: string | null = null;
 
   try {
-    const [albumsRes, randomAlbumsRes] = await Promise.all([
-      fetch("http://localhost:3001/api/albums", {
+    const [albumsData, randomAlbumsData] = await Promise.all([
+      apiClient<Album[]>("/api/albums", {
         cache: "no-store",
       }),
-      fetch("http://localhost:3001/api/albums/random?take=6", {
+      apiClient<Album[]>("/api/albums/random?take=6", {
         cache: "no-store",
       }),
     ]);
 
-    if (albumsRes.ok) {
-      albums = await albumsRes.json();
-    } else {
-      error = "Could not load albums from the library.";
-    }
-
-    if (randomAlbumsRes.ok) {
-      randomAlbums = await randomAlbumsRes.json();
-    }
+    albums = albumsData;
+    randomAlbums = randomAlbumsData;
   } catch (e) {
     console.error("Failed to fetch data for home page:", e);
-    error = "Failed to connect to the server.";
+    error = "无法连接到服务器或认证失败 (请检查 API Key)";
   }
 
   return (
@@ -48,7 +42,7 @@ const HomePage = async () => {
 
       {randomAlbums.length > 0 && (
         <section className="mb-12">
-          <h2 className="text-xl font-bold text-white mb-6">For You</h2>
+          <h2 className="text-xl font-bold text-white mb-6">为你推荐</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
             {randomAlbums.map((album) => (
               <AlbumCard key={album.id} album={album} />
@@ -58,12 +52,12 @@ const HomePage = async () => {
       )}
 
       <section>
-        <h2 className="text-xl font-bold text-white mb-6">All Albums</h2>
+        <h2 className="text-xl font-bold text-white mb-6">所有专辑</h2>
 
         {error ? (
-          <div className="text-red-400 bg-red-900/20 p-4 rounded-md">
-            <p className="font-bold">An error occurred:</p>
-            <p>{error}</p>
+          <div className="text-red-400 bg-red-900/20 p-4 rounded-md border border-red-900/50">
+            <p className="font-bold mb-1">加载失败</p>
+            <p className="text-sm opacity-90">{error}</p>
           </div>
         ) : albums.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
@@ -72,8 +66,8 @@ const HomePage = async () => {
             ))}
           </div>
         ) : (
-          <div className="text-neutral-500 mt-4">
-            No albums found. You might need to scan your music library first.
+          <div className="text-neutral-500 mt-4 text-center py-10">
+            暂无专辑。请先在服务器端扫描你的音乐库。
           </div>
         )}
       </section>

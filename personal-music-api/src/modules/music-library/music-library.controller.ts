@@ -14,6 +14,11 @@ import {
   Logger,
   Sse,
   MessageEvent,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  BadRequestException,
 } from '@nestjs/common';
 import { MusicLibraryService } from './music-library.service';
 import type { Request, Response } from 'express';
@@ -24,13 +29,22 @@ import * as mime from 'mime-types';
 import * as path from 'path';
 import sharp from 'sharp';
 import rangeParser from 'range-parser';
+import { ApiKeyGuard } from '../../common/guards/api-key.guard';
+import {
+  CreatePlaylistDto,
+  AddSongsDto,
+  SearchQueryDto,
+  GetCoverQueryDto,
+} from './dto/music-library.dto';
 
 @Controller('api')
 export class MusicLibraryController {
   private readonly logger = new Logger(MusicLibraryController.name);
+  private isScanning = false;
 
   constructor(private readonly musicLibraryService: MusicLibraryService) {}
 
+  @UseGuards(ApiKeyGuard)
   @Sse('library/scan/progress')
   scanProgress(): Observable<MessageEvent> {
     return this.musicLibraryService.getProgressStream().pipe(
@@ -40,12 +54,31 @@ export class MusicLibraryController {
     );
   }
 
+  @UseGuards(ApiKeyGuard)
   @Post('library/scan')
   async scanLibrary(@Query('force') force: string) {
-    const musicDirectory = process.env.MUSIC_DIRECTORY || 'D:\\Music';
+    // 解决问题 18：检查是否正在扫描
+    if (this.isScanning) {
+      throw new HttpException('扫描正在进行中，请稍后', HttpStatus.CONFLICT);
+    }
+
+    const musicDirectory = process.env.MUSIC_DIRECTORY;
+    if (!musicDirectory) {
+      throw new HttpException(
+        '服务器未配置 MUSIC_DIRECTORY 环境变量',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     const forceUpdate = force === 'true';
     this.logger.log(`Received scan request. Force update: ${forceUpdate}`);
-    this.musicLibraryService.scanAndSaveMusic(musicDirectory, forceUpdate);
+
+    this.isScanning = true;
+    this.musicLibraryService
+      .scanAndSaveMusic(musicDirectory, forceUpdate)
+      .finally(() => {
+        this.isScanning = false;
+      });
 
     return {
       message:
@@ -54,11 +87,22 @@ export class MusicLibraryController {
   }
 
   @Get('covers/:id')
+  @UsePipes(new ValidationPipe({ transform: true }))
   async getAlbumCover(
     @Param('id', ParseIntPipe) id: number,
-    @Query('size') size: string | undefined,
+    @Query() query: GetCoverQueryDto,
     @Res() response: Response,
   ) {
+    let width: number | undefined;
+    if (query.size) {
+      width = parseInt(query.size);
+      if (isNaN(width) || width > 2048) {
+        width = 2048;
+      } else if (width <= 0) {
+        width = undefined;
+      }
+    }
+
     const projectRoot = process.cwd();
     const placeholderPath = path.join(projectRoot, 'public', 'placeholder.jpg');
     let targetPath = placeholderPath;
@@ -88,20 +132,24 @@ export class MusicLibraryController {
     try {
       const pipeline = sharp(targetPath);
 
-      if (size) {
-        const width = parseInt(size);
-        if (!isNaN(width) && width > 0) {
-          pipeline.resize(width, width, { fit: 'cover' });
-        }
+      if (width) {
+        pipeline.resize(width, width, { fit: 'cover' });
       }
 
-      pipeline.jpeg({ quality: 80, mozjpeg: true }).pipe(response);
+      pipeline
+        .jpeg({ quality: 80, mozjpeg: true })
+        .on('error', (err) => {
+          this.logger.error('Sharp processing error', err);
+          response.end();
+        })
+        .pipe(response);
     } catch (error) {
       this.logger.error('Error processing image:', error);
       createReadStream(targetPath).pipe(response);
     }
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('albums/random')
   findRandomAlbums(
     @Query('take', new ParseIntPipe({ optional: true })) take: number = 6,
@@ -109,11 +157,13 @@ export class MusicLibraryController {
     return this.musicLibraryService.findRandomAlbums(take);
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('artists')
   findAllArtists() {
     return this.musicLibraryService.findAllArtists();
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('artists/:id')
   async findArtistById(@Param('id', ParseIntPipe) id: number) {
     const artist = await this.musicLibraryService.findArtistById(id);
@@ -123,11 +173,13 @@ export class MusicLibraryController {
     return artist;
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('albums')
   findAllAlbums() {
     return this.musicLibraryService.findAllAlbums();
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('albums/:id')
   async findAlbumById(@Param('id', ParseIntPipe) id: number) {
     const album = await this.musicLibraryService.findAlbumById(id);
@@ -137,6 +189,7 @@ export class MusicLibraryController {
     return album;
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('songs/:id')
   async findSongById(@Param('id', ParseIntPipe) id: number) {
     const song = await this.musicLibraryService.findSongById(id);
@@ -146,9 +199,11 @@ export class MusicLibraryController {
     return song;
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('search')
-  search(@Query('q') query: string) {
-    return this.musicLibraryService.search(query || '');
+  @UsePipes(new ValidationPipe({ transform: true }))
+  search(@Query() query: SearchQueryDto) {
+    return this.musicLibraryService.search(query.q || '');
   }
 
   @Get('stream/:id')
@@ -172,10 +227,21 @@ export class MusicLibraryController {
     const { size } = statSync(songPath);
     const rangeHeader = request.headers.range;
 
-    if (rangeHeader) {
-      const ranges = rangeParser(size, rangeHeader);
+    const handleStreamError = (stream: any) => {
+      stream.on('error', (err: any) => {
+        if (err.code !== 'ECONNRESET') {
+          this.logger.error(`Stream error for file ${songPath}:`, err);
+        }
+        if (!response.headersSent) {
+          response.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      });
+    };
 
-      if (ranges === -1) {
+    if (rangeHeader) {
+      const ranges = rangeParser(size, rangeHeader, { combine: true });
+
+      if (ranges === -1 || ranges === -2) {
         throw new HttpException(
           'Range Not Satisfiable',
           HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,
@@ -185,34 +251,39 @@ export class MusicLibraryController {
       if (Array.isArray(ranges) && ranges.length > 0) {
         const { start, end } = ranges[0];
         const chunksize = end - start + 1;
-        const file = createReadStream(songPath, { start, end });
 
-        const head = {
+        response.writeHead(206, {
           'Content-Range': `bytes ${start}-${end}/${size}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize,
           'Content-Type': mimeType,
-        };
+        });
 
-        response.writeHead(206, head);
+        const file = createReadStream(songPath, { start, end });
+        handleStreamError(file);
         file.pipe(response);
         return;
       }
     }
 
-    const head = {
+    response.writeHead(200, {
       'Content-Length': size,
       'Content-Type': mimeType,
-    };
-    response.writeHead(200, head);
-    createReadStream(songPath).pipe(response);
+      'Accept-Ranges': 'bytes',
+    });
+
+    const file = createReadStream(songPath);
+    handleStreamError(file);
+    file.pipe(response);
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('playlists')
   findAllPlaylists() {
     return this.musicLibraryService.findAllPlaylists();
   }
 
+  @UseGuards(ApiKeyGuard)
   @Get('playlists/:id')
   async findPlaylistById(@Param('id', ParseIntPipe) id: number) {
     const playlist = await this.musicLibraryService.findPlaylistById(id);
@@ -222,20 +293,22 @@ export class MusicLibraryController {
     return playlist;
   }
 
+  @UseGuards(ApiKeyGuard)
   @Post('playlists')
-  createPlaylist(
-    @Body() createPlaylistDto: { name: string; description?: string },
-  ) {
+  @UsePipes(new ValidationPipe())
+  createPlaylist(@Body() createPlaylistDto: CreatePlaylistDto) {
     return this.musicLibraryService.createPlaylist(
       createPlaylistDto.name,
       createPlaylistDto.description,
     );
   }
 
+  @UseGuards(ApiKeyGuard)
   @Post('playlists/:id/songs')
+  @UsePipes(new ValidationPipe())
   addSongsToPlaylist(
     @Param('id', ParseIntPipe) id: number,
-    @Body() addSongsDto: { songIds: number[] },
+    @Body() addSongsDto: AddSongsDto,
   ) {
     return this.musicLibraryService.addSongsToPlaylist(id, addSongsDto.songIds);
   }

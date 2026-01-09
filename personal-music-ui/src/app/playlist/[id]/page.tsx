@@ -5,9 +5,10 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import type { Playlist, Song } from "@/types";
-import { Clock, Play } from "lucide-react";
+import { Clock, Play, AlertCircle } from "lucide-react";
 import SongRowItem from "@/components/SongRowItem";
 import { FixedSizeList as List } from "react-window";
+import { apiClient } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -30,20 +31,21 @@ const PlaylistDetailPage = () => {
   const { playSong } = usePlayerStore();
   const [listHeight, setListHeight] = useState(600);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     const fetchPlaylistData = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/playlists/${id}`, {
-          cache: "no-store",
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setPlaylist(data);
-        }
+        setLoading(true);
+        const data = await apiClient<PlaylistDetails>(`/api/playlists/${id}`);
+        setPlaylist(data);
       } catch (error) {
         console.error("Failed to fetch playlist details:", error);
+        setError("无法加载歌单");
+      } finally {
+        setLoading(false);
       }
     };
     fetchPlaylistData();
@@ -63,10 +65,19 @@ const PlaylistDetailPage = () => {
     return () => window.removeEventListener("resize", updateHeight);
   }, [playlist]);
 
-  if (!playlist) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-neutral-400">Loading playlist...</p>
+      </div>
+    );
+  }
+
+  if (error || !playlist) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-neutral-400">
+        <AlertCircle size={48} className="mb-4 text-red-500" />
+        <p>{error || "歌单不存在"}</p>
       </div>
     );
   }
@@ -79,7 +90,7 @@ const PlaylistDetailPage = () => {
 
   const coverArtUrl =
     playlist.songs.length > 0 && playlist.songs[0].album.coverPath
-      ? `${API_BASE_URL}/static${playlist.songs[0].album.coverPath}`
+      ? `${API_BASE_URL}/public${playlist.songs[0].album.coverPath}`
       : "/placeholder.jpg";
 
   return (
@@ -129,7 +140,7 @@ const PlaylistDetailPage = () => {
 
       <div ref={containerRef} className="flex-1 w-full">
         <List
-          height={listHeight}
+          height={listHeight || 600}
           itemCount={playlist.songs.length}
           itemSize={64}
           width="100%"
