@@ -1,8 +1,30 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "secret-token-123";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
+if (typeof window !== "undefined" && !API_KEY) {
+  console.error(
+    "配置错误: 缺少 NEXT_PUBLIC_API_KEY 环境变量。API 请求将会失败。"
+  );
+}
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string | number>;
+}
+
+/**
+ * @param path
+ */
+export function getAuthenticatedSrc(path: string): string {
+  if (!path) return "";
+  if (!API_KEY) {
+    console.warn("getAuthenticatedSrc: 缺少 API Key");
+    return "";
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const separator = normalizedPath.includes("?") ? "&" : "?";
+
+  return `${API_BASE_URL}${normalizedPath}${separator}key=${API_KEY}`;
 }
 
 export async function apiClient<T>(
@@ -30,7 +52,7 @@ export async function apiClient<T>(
     ...customConfig,
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": API_KEY,
+      "x-api-key": API_KEY || "",
       ...headers,
     },
   };

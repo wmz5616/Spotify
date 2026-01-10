@@ -2,12 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { usePlayerStore } from "@/store/usePlayerStore";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+import { getAuthenticatedSrc } from "@/lib/api-client";
 
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const analysisRafId = useRef<number | null>(null);
+  const isSourceConnected = useRef(false);
 
   const {
     currentSong,
@@ -56,7 +56,7 @@ const AudioPlayer = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isPlaying && !audioContext && !analyser) {
+    if (isPlaying && !audioContext && !analyser && !isSourceConnected.current) {
       try {
         const AudioContextClass =
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,12 +69,11 @@ const AudioPlayer = () => {
           const source = context.createMediaElementSource(audio);
           source.connect(newAnalyser);
           newAnalyser.connect(context.destination);
+
+          isSourceConnected.current = true;
           setAudioAnalysis(context, newAnalyser);
         } catch (e) {
-          console.log(
-            "MediaElementSource already connected or context error",
-            e
-          );
+          console.warn("MediaElementSource connection warning:", e);
         }
       } catch (e) {
         console.error("AudioContext init failed", e);
@@ -103,7 +102,9 @@ const AudioPlayer = () => {
 
     if (isPlaying && analyser) {
       if (audioContext?.state === "suspended") {
-        audioContext.resume();
+        audioContext
+          .resume()
+          .catch((e) => console.warn("Context resume failed", e));
       }
       runAnalysis();
     } else {
@@ -121,10 +122,12 @@ const AudioPlayer = () => {
 
   if (!currentSong) return null;
 
+  const streamUrl = getAuthenticatedSrc(`api/stream/${currentSong.id}`);
+
   return (
     <audio
       ref={audioRef}
-      src={`${API_BASE_URL}/api/stream/${currentSong.id}`}
+      src={streamUrl}
       crossOrigin="anonymous"
       preload="auto"
       onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}

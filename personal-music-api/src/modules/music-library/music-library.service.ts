@@ -6,7 +6,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as mm from 'music-metadata';
 import { ensureDir, ensureSymlink, pathExists, remove, copy } from 'fs-extra';
 import { Artist, Album } from '@prisma/client';
-import Fuse from 'fuse.js';
 import { Subject, Observable } from 'rxjs';
 
 export interface ScanProgress {
@@ -23,35 +22,16 @@ interface ParsedInfo {
   trackNumber?: number;
   imageBuffer?: Buffer;
   duration?: number;
-}
-
-interface ArtistSearchItem {
-  id: number;
-  name: string;
-}
-
-interface AlbumSearchItem {
-  id: number;
-  title: string;
-}
-
-interface SongSearchItem {
-  id: number;
-  title: string;
-}
-
-interface FuseSearchInstance<T> {
-  search(pattern: string): { item: T }[];
+  filePath: string;
+  embeddedLyrics?: string;
 }
 
 @Injectable()
 export class MusicLibraryService {
   private readonly logger = new Logger(MusicLibraryService.name);
-  private artistFuse: FuseSearchInstance<ArtistSearchItem> | null = null;
-  private albumFuse: FuseSearchInstance<AlbumSearchItem> | null = null;
-  private songFuse: FuseSearchInstance<SongSearchItem> | null = null;
-
   private progressSubject = new Subject<ScanProgress>();
+  private artistIdCache = new Map<string, number>();
+  private albumIdCache = new Map<string, number>();
 
   constructor(private prisma: PrismaService) {}
 
@@ -59,22 +39,433 @@ export class MusicLibraryService {
     return this.progressSubject.asObservable();
   }
 
+  async scanAndSaveMusic(directory: string, forceUpdate: boolean = false) {
+    this.logger.log(`Starting optimized scan... (Force: ${forceUpdate})`);
+    const startTime = Date.now();
+
+    this.progressSubject.next({ percentage: 0, message: 'Initializing...' });
+    const coversDir = path.join(process.cwd(), 'public', 'covers');
+    const artistImagesDir = path.join(process.cwd(), 'public', 'artist-images');
+    await ensureDir(coversDir);
+    await ensureDir(artistImagesDir);
+
+    this.artistIdCache.clear();
+    this.albumIdCache.clear();
+    this.progressSubject.next({
+      percentage: 5,
+      message: 'Scanning artist directories...',
+    });
+
+    try {
+      const dirents = await fs.readdir(directory, { withFileTypes: true });
+      for (const dirent of dirents) {
+        if (dirent.isDirectory()) {
+          const artistName = this.sanitizeString(dirent.name);
+          if (!artistName) continue;
+
+          const artist = await this.prisma.artist.upsert({
+            where: { name: artistName },
+            create: { name: artistName },
+            update: {},
+          });
+
+          const artistPath = path.join(directory, dirent.name);
+          await this.processArtistImage(artist.id, artistPath, artistImagesDir);
+          this.artistIdCache.set(artistName, artist.id);
+        }
+      }
+    } catch (e) {
+      this.logger.warn(`Error scanning top-level directories: ${e}`);
+    }
+
+    const filePaths = await this.getAudioFilePaths(directory);
+    const totalFiles = filePaths.length;
+    this.logger.log(
+      `Found ${totalFiles} audio files. Starting batch processing...`,
+    );
+
+    const BATCH_SIZE = 50;
+    let processedCount = 0;
+
+    for (let i = 0; i < totalFiles; i += BATCH_SIZE) {
+      const batchPaths = filePaths.slice(i, i + BATCH_SIZE);
+
+      const parsedBatch = await Promise.all(
+        batchPaths.map(async (filePath) => {
+          try {
+            return await this.extractMetadata(filePath, directory);
+          } catch (e) {
+            this.logger.warn(`Failed to parse ${filePath}: ${e}`);
+            return null;
+          }
+        }),
+      );
+
+      for (const info of parsedBatch) {
+        if (!info) continue;
+        await this.saveTrackToDb(
+          info,
+          directory,
+          coversDir,
+          artistImagesDir,
+          forceUpdate,
+        );
+        processedCount++;
+      }
+
+      const percentage = Math.round((processedCount / totalFiles) * 80) + 10;
+      this.progressSubject.next({
+        percentage,
+        message: `Processing: ${processedCount}/${totalFiles}`,
+        current: processedCount,
+        total: totalFiles,
+      });
+    }
+
+    this.progressSubject.next({
+      percentage: 95,
+      message: 'Cleaning up library...',
+    });
+    await this.cleanupOrphanedRecords(filePaths);
+
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+    this.logger.log(`Scan complete in ${duration}s.`);
+    this.progressSubject.next({
+      percentage: 100,
+      message: 'Done!',
+      current: totalFiles,
+      total: totalFiles,
+    });
+
+    this.artistIdCache.clear();
+    this.albumIdCache.clear();
+  }
+
+  private async extractMetadata(
+    filePath: string,
+    rootDir: string,
+  ): Promise<ParsedInfo | null> {
+    const relativePath = path.relative(rootDir, filePath);
+    const parts = relativePath.split(path.sep);
+    if (parts.length < 3) return null;
+
+    const artistName = this.sanitizeString(parts[0]);
+    const albumTitle = this.sanitizeString(parts[1]);
+    if (!artistName || !albumTitle) return null;
+
+    let title = path.basename(filePath, path.extname(filePath));
+    title = title.replace(/^\d+\s*[-.]?\s*/, '');
+
+    let trackNumber: number | undefined;
+    let duration: number | undefined;
+    let imageBuffer: Buffer | undefined;
+    let embeddedLyrics: string | undefined;
+
+    try {
+      const metadata = await mm.parseFile(filePath, { skipCovers: false });
+      trackNumber = metadata.common.track.no ?? undefined;
+      duration = metadata.format.duration;
+      title =
+        this.sanitizeString(metadata.common.title) ||
+        this.sanitizeString(title);
+
+      if (metadata.common.picture && metadata.common.picture.length > 0) {
+        imageBuffer = Buffer.from(metadata.common.picture[0].data);
+      }
+
+      if (metadata.common.lyrics && metadata.common.lyrics.length > 0) {
+        const lyricEntry = metadata.common.lyrics[0];
+        embeddedLyrics =
+          typeof lyricEntry === 'string' ? lyricEntry : lyricEntry.text;
+      }
+    } catch {
+      /* ignore */
+    }
+
+    return {
+      artist: artistName,
+      album: albumTitle,
+      title,
+      trackNumber,
+      duration,
+      imageBuffer,
+      filePath,
+      embeddedLyrics,
+    };
+  }
+
+  private async saveTrackToDb(
+    info: ParsedInfo,
+    rootDir: string,
+    coversDir: string,
+    artistImagesDir: string,
+    forceUpdate: boolean,
+  ) {
+    await this.prisma.$transaction(async (tx) => {
+      let artistId = this.artistIdCache.get(info.artist);
+      if (!artistId) {
+        const artist = await tx.artist.upsert({
+          where: { name: info.artist },
+          create: { name: info.artist },
+          update: {},
+        });
+        artistId = artist.id;
+        this.artistIdCache.set(info.artist, artistId);
+
+        const artistDir = path.dirname(path.dirname(info.filePath));
+        this.processArtistImage(artistId, artistDir, artistImagesDir).catch(
+          () => {},
+        );
+      }
+
+      const albumUniqueId = `${info.album}___${info.artist}`;
+      let albumId = this.albumIdCache.get(albumUniqueId);
+
+      if (!albumId) {
+        const album = await tx.album.upsert({
+          where: { uniqueId: albumUniqueId },
+          create: {
+            title: info.album,
+            uniqueId: albumUniqueId,
+            artists: { connect: { id: artistId } },
+          },
+          update: {
+            artists: { connect: { id: artistId } },
+          },
+        });
+        albumId = album.id;
+        this.albumIdCache.set(albumUniqueId, albumId);
+
+        if (!album.coverPath || forceUpdate) {
+          const albumDir = path.dirname(info.filePath);
+          await this.processAlbumCover(
+            album.id,
+            albumDir,
+            coversDir,
+            info.imageBuffer,
+            tx,
+          );
+        }
+      }
+
+      const lrcPath = info.filePath.replace(/\.[^/.]+$/, '.lrc');
+      let finalLyrics: string | null = null;
+      try {
+        if (await pathExists(lrcPath)) {
+          finalLyrics = await fs.readFile(lrcPath, 'utf-8');
+        } else if (info.embeddedLyrics) {
+          finalLyrics = info.embeddedLyrics;
+        }
+      } catch {
+        /* ignore */
+      }
+
+      await tx.song.upsert({
+        where: { path: info.filePath },
+        update: {
+          title: info.title,
+          trackNumber: info.trackNumber,
+          duration: info.duration,
+          albumId: albumId,
+          ...(finalLyrics ? { lyrics: finalLyrics } : {}),
+        },
+        create: {
+          path: info.filePath,
+          title: info.title,
+          trackNumber: info.trackNumber,
+          duration: info.duration,
+          albumId: albumId!,
+          lyrics: finalLyrics,
+        },
+      });
+    });
+  }
+
+  private async processAlbumCover(
+    albumId: number,
+    albumDir: string,
+    coversDir: string,
+    buffer: Buffer | undefined,
+    tx: any,
+  ) {
+    let coverPathForDb: string | null = null;
+
+    const folderCover = await this.findFolderCover(albumDir);
+    if (folderCover) {
+      const ext = path.extname(folderCover);
+      const targetName = `${albumId}${ext}`;
+      const targetPath = path.join(coversDir, targetName);
+      if (await this.safeLinkOrCopy(folderCover, targetPath)) {
+        coverPathForDb = `/covers/${targetName}`;
+      }
+    }
+
+    if (!coverPathForDb && buffer) {
+      const targetName = `${albumId}.jpg`;
+      const targetPath = path.join(coversDir, targetName);
+      try {
+        await fs.writeFile(targetPath, buffer);
+        coverPathForDb = `/covers/${targetName}`;
+      } catch (e) {
+        this.logger.warn(`Failed to write embedded cover for album ${albumId}`);
+      }
+    }
+
+    if (coverPathForDb) {
+      await tx.album.update({
+        where: { id: albumId },
+        data: { coverPath: coverPathForDb },
+      });
+    }
+  }
+
+  private async safeLinkOrCopy(src: string, dest: string): Promise<boolean> {
+    try {
+      if (await pathExists(dest)) await remove(dest);
+      await ensureSymlink(src, dest);
+      return true;
+    } catch (e: any) {
+      try {
+        await copy(src, dest, { overwrite: true });
+        return true;
+      } catch (copyErr) {
+        return false;
+      }
+    }
+  }
+
+  private async findFolderCover(albumPath: string): Promise<string | null> {
+    try {
+      const files = await fs.readdir(albumPath);
+      const candidates = ['cover.jpg', 'cover.png', 'folder.jpg', 'folder.png'];
+      for (const f of files) {
+        if (candidates.includes(f.toLowerCase()))
+          return path.join(albumPath, f);
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  private async processArtistImage(
+    artistId: number,
+    artistDir: string,
+    targetDir: string,
+  ) {
+    const candidates = ['avatar.jpg', 'avatar.png', 'artist.jpg'];
+    let found: string | null = null;
+    try {
+      const files = await fs.readdir(artistDir);
+      for (const f of files) {
+        if (candidates.includes(f.toLowerCase())) {
+          found = path.join(artistDir, f);
+          break;
+        }
+      }
+    } catch {
+      return;
+    }
+
+    if (found) {
+      const ext = path.extname(found);
+      const target = path.join(targetDir, `${artistId}-avatar${ext}`);
+      if (await this.safeLinkOrCopy(found, target)) {
+        await this.prisma.artist
+          .update({
+            where: { id: artistId },
+            data: { avatarUrl: `/artist-images/${artistId}-avatar${ext}` },
+          })
+          .catch(() => {});
+      }
+    }
+  }
+
+  private async cleanupOrphanedRecords(currentValidPaths: string[]) {
+    const validPathsSet = new Set(currentValidPaths);
+    const allSongs = await this.prisma.song.findMany({
+      select: { id: true, path: true },
+    });
+    const songIdsToDelete = allSongs
+      .filter((s) => !validPathsSet.has(s.path))
+      .map((s) => s.id);
+
+    if (songIdsToDelete.length > 0) {
+      this.logger.log(`Deleting ${songIdsToDelete.length} orphaned songs...`);
+      await this.prisma.song.deleteMany({
+        where: { id: { in: songIdsToDelete } },
+      });
+    }
+
+    const emptyAlbums = await this.prisma.album.findMany({
+      where: { songs: { none: {} } },
+      select: { id: true },
+    });
+    if (emptyAlbums.length > 0) {
+      await this.prisma.album.deleteMany({
+        where: { id: { in: emptyAlbums.map((a) => a.id) } },
+      });
+    }
+
+    const emptyArtists = await this.prisma.artist.findMany({
+      where: {
+        albums: { none: {} },
+        avatarUrl: null,
+      },
+      select: { id: true },
+    });
+    if (emptyArtists.length > 0) {
+      await this.prisma.artist.deleteMany({
+        where: { id: { in: emptyArtists.map((a) => a.id) } },
+      });
+    }
+  }
+
+  async search(query: string) {
+    if (!query || !query.trim()) return { artists: [], albums: [], songs: [] };
+    const q = query.trim();
+
+    const [artists, albums, songs] = await Promise.all([
+      this.prisma.artist.findMany({
+        where: { name: { contains: q } },
+        take: 5,
+        include: { albums: { take: 1 } },
+      }),
+      this.prisma.album.findMany({
+        where: { title: { contains: q } },
+        take: 5,
+        include: { artists: true },
+      }),
+      this.prisma.song.findMany({
+        where: { title: { contains: q } },
+        take: 10,
+        select: {
+          id: true,
+          title: true,
+          trackNumber: true,
+          duration: true,
+          albumId: true,
+          lyrics: true,
+          album: { include: { artists: true } },
+        },
+      }),
+    ]);
+    return { artists, albums, songs };
+  }
+
   async getAlbumArtBuffer(id: number): Promise<Buffer | null> {
     const album = await this.prisma.album.findUnique({
       where: { id },
       select: { coverPath: true },
     });
-
-    if (!album || !album.coverPath) {
-      return null;
-    }
-
-    const projectRoot = process.cwd();
-    const relativePath = album.coverPath.startsWith('/')
-      ? album.coverPath.slice(1)
-      : album.coverPath;
-    const fullPath = path.join(projectRoot, 'public', relativePath);
-
+    if (!album?.coverPath) return null;
+    const fullPath = path.join(
+      process.cwd(),
+      'public',
+      album.coverPath.startsWith('/')
+        ? album.coverPath.slice(1)
+        : album.coverPath,
+    );
     try {
       return await fs.readFile(fullPath);
     } catch {
@@ -82,564 +473,48 @@ export class MusicLibraryService {
     }
   }
 
-  private sanitizeString(str: string): string {
-    if (!str) return '';
-    // eslint-disable-next-line no-control-regex
-    return str.replace(/\u0000/g, '').trim();
-  }
+  async getAudioFilePaths(dir: string): Promise<string[]> {
+    const files: string[] = [];
+    const stack: string[] = [path.resolve(dir)];
+    const visited = new Set<string>();
 
-  parseInfoFromPath(
-    filePath: string,
-    musicDirectory: string,
-  ): Omit<ParsedInfo, 'imageBuffer' | 'duration' | 'trackNumber'> | null {
-    const relativePath = path.relative(musicDirectory, filePath);
-    const parts = relativePath.split(path.sep);
-
-    if (parts.length < 3) {
-      this.logger.warn(
-        `Skipping file with invalid path structure: ${filePath}`,
-      );
-      return null;
-    }
-
-    const artist = parts[0];
-    const album = parts[1];
-    const songFileName = path.basename(
-      parts[parts.length - 1],
-      path.extname(parts[parts.length - 1]),
-    );
-
-    const titleWithArtists = songFileName.replace(/^\d+\s*[-.]?\s*/, '');
-    const separator = ' - ';
-    const separatorIndex = titleWithArtists.lastIndexOf(separator);
-    let title;
-
-    if (separatorIndex !== -1) {
-      title = titleWithArtists.substring(separatorIndex + separator.length);
-    } else {
-      title = titleWithArtists;
-    }
-
-    if (!artist || !album || !title) {
-      return null;
-    }
-
-    return { artist, album, title };
-  }
-
-  async getSupplementaryMetadata(
-    filePath: string,
-  ): Promise<Pick<ParsedInfo, 'imageBuffer' | 'duration' | 'trackNumber'>> {
-    try {
-      const metadata = await mm.parseFile(filePath);
-      const track = metadata.common.track.no;
-      const picture = metadata.common.picture?.[0];
-
-      return {
-        imageBuffer: picture ? Buffer.from(picture.data) : undefined,
-        duration: metadata.format.duration,
-        trackNumber: track && !isNaN(track) ? track : undefined,
-      };
-    } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(
-          `Error parsing metadata for ${filePath}: ${error.message}`,
-        );
-      } else {
-        this.logger.error(
-          `An unknown error occurred while parsing ${filePath}`,
-          error,
-        );
-      }
-      return {};
-    }
-  }
-
-  private async findFolderCover(albumPath: string): Promise<string | null> {
-    try {
-      const files = await fs.readdir(albumPath);
-      const targetNames = new Set([
-        'cover.jpg',
-        'cover.png',
-        'cover.jpeg',
-        'folder.jpg',
-        'folder.png',
-        'folder.jpeg',
-      ]);
-
-      for (const file of files) {
-        if (targetNames.has(file.toLowerCase())) {
-          return path.join(albumPath, file);
-        }
-      }
-    } catch (e) {
-      this.logger.warn(
-        `Failed to read directory for cover search: ${albumPath}`,
-      );
-    }
-    return null;
-  }
-
-  private async processArtistImage(
-    artist: Artist,
-    artistFolderPath: string,
-    artistImagesDir: string,
-  ): Promise<Artist> {
-    const bioTextPath = path.join(artistFolderPath, 'bio.txt');
-    const dataToUpdate: {
-      avatarUrl?: string;
-      headerUrl?: string;
-      bio?: string;
-      bioImageUrl?: string;
-    } = {};
-
-    let files: string[] = [];
-    try {
-      files = await fs.readdir(artistFolderPath);
-    } catch {
-      return artist;
-    }
-
-    const processImage = async (
-      type: 'avatar' | 'header' | 'bio',
-      candidates: string[],
-    ): Promise<string | undefined> => {
-      const foundFile = files.find((f) => candidates.includes(f.toLowerCase()));
-      if (!foundFile) return undefined;
-
-      const sourcePath = path.join(artistFolderPath, foundFile);
-      const ext = path.extname(foundFile);
-      const targetFileName = `${artist.id}-${type}${ext}`;
-      const targetPath = path.join(artistImagesDir, targetFileName);
-
+    while (stack.length > 0) {
+      const currentPath = stack.pop()!;
       try {
-        if (await pathExists(targetPath)) {
-          await remove(targetPath);
+        const realPath = await fs.realpath(currentPath);
+        if (visited.has(realPath)) continue;
+        visited.add(realPath);
+
+        const dirents = await fs.readdir(realPath, { withFileTypes: true });
+        for (const dirent of dirents) {
+          const res = path.resolve(realPath, dirent.name);
+          if (dirent.isDirectory()) stack.push(res);
+          else if (
+            ['.mp3', '.flac', '.m4a'].includes(path.extname(res).toLowerCase())
+          )
+            files.push(res);
         }
-
-        await ensureSymlink(sourcePath, targetPath);
-        return `/artist-images/${targetFileName}`;
-      } catch (e: any) {
-        if (e.code === 'EPERM') {
-          try {
-            await copy(sourcePath, targetPath, { overwrite: true });
-            this.logger.debug(
-              `[Fallback] Copied artist image due to permissions: ${targetFileName}`,
-            );
-            return `/artist-images/${targetFileName}`;
-          } catch (copyErr) {
-            this.logger.error(
-              `Failed to copy artist image fallback: ${copyErr}`,
-            );
-            return undefined;
-          }
-        }
-        this.logger.error(`Failed to symlink artist image: ${e}`);
-        return undefined;
+      } catch (e) {
+        /* ignore */
       }
-    };
-
-    const newAvatarUrl = await processImage('avatar', [
-      '头像.png',
-      'avatar.jpg',
-      'avatar.png',
-    ]);
-    if (newAvatarUrl) dataToUpdate.avatarUrl = newAvatarUrl;
-
-    const newHeaderUrl = await processImage('header', [
-      '封面图.png',
-      'header.jpg',
-      'banner.jpg',
-    ]);
-    if (newHeaderUrl) dataToUpdate.headerUrl = newHeaderUrl;
-
-    const newBioImageUrl = await processImage('bio', ['bio.png', 'bio.jpg']);
-    if (newBioImageUrl) dataToUpdate.bioImageUrl = newBioImageUrl;
-
-    try {
-      if (await pathExists(bioTextPath)) {
-        const bioContent = await fs.readFile(bioTextPath, 'utf-8');
-        if (bioContent) dataToUpdate.bio = bioContent;
-      }
-    } catch {
-      /* ignore */
     }
-
-    if (Object.keys(dataToUpdate).length > 0) {
-      return this.prisma.artist.update({
-        where: { id: artist.id },
-        data: dataToUpdate,
-      });
-    }
-
-    return artist;
-  }
-
-  async scanAndSaveMusic(directory: string, forceUpdate: boolean = false) {
-    this.logger.log(
-      `Starting music library scan... (Force Update: ${forceUpdate})`,
-    );
-
-    this.progressSubject.next({
-      percentage: 0,
-      message: 'Initializing scan...',
-      current: 0,
-      total: 0,
-    });
-
-    const coversDir = path.join(process.cwd(), 'public', 'covers');
-    const artistImagesDir = path.join(process.cwd(), 'public', 'artist-images');
-
-    await ensureDir(coversDir);
-    await ensureDir(artistImagesDir);
-
-    const artistCache = new Map<string, Artist>();
-    const albumCache = new Map<string, Album & { coverAttempted?: boolean }>();
-
-    try {
-      const topLevelDirents = await fs.readdir(directory, {
-        withFileTypes: true,
-      });
-      this.logger.log('Scanning artist directories...');
-
-      for (const dirent of topLevelDirents) {
-        if (dirent.isDirectory()) {
-          const artistName = this.sanitizeString(dirent.name);
-          if (!artistName) continue;
-
-          let artist = await this.prisma.artist.upsert({
-            where: { name: artistName },
-            create: { name: artistName },
-            update: {},
-          });
-
-          const artistFolderPath = path.join(directory, dirent.name);
-          artist = await this.processArtistImage(
-            artist,
-            artistFolderPath,
-            artistImagesDir,
-          );
-
-          artistCache.set(artistName, artist);
-        }
-      }
-    } catch (e) {
-      this.logger.error('Error scanning artist directories:', e);
-    }
-
-    this.progressSubject.next({
-      percentage: 10,
-      message: 'Discovering audio files...',
-    });
-
-    const filePaths = await this.getAudioFilePaths(directory);
-    const totalFiles = filePaths.length;
-    this.logger.log(`Found ${totalFiles} audio files. Processing...`);
-
-    let processedCount = 0;
-
-    for (const filePath of filePaths) {
-      processedCount++;
-      const percentage = Math.round((processedCount / totalFiles) * 80) + 10;
-
-      if (processedCount % 5 === 0 || processedCount === totalFiles) {
-        this.progressSubject.next({
-          percentage,
-          message: `Processing: ${path.basename(filePath)}`,
-          current: processedCount,
-          total: totalFiles,
-        });
-      }
-
-      const pathInfo = this.parseInfoFromPath(filePath, directory);
-      if (!pathInfo) continue;
-
-      const supplementaryInfo = await this.getSupplementaryMetadata(filePath);
-      const tags = { ...pathInfo, ...supplementaryInfo };
-
-      const artistName = this.sanitizeString(tags.artist);
-      if (!artistName) continue;
-
-      let artist = artistCache.get(artistName);
-      if (!artist) {
-        artist = await this.prisma.artist.upsert({
-          where: { name: artistName },
-          create: { name: artistName },
-          update: {},
-        });
-        const artistFolderPath = path.dirname(path.dirname(filePath));
-        artist = await this.processArtistImage(
-          artist,
-          artistFolderPath,
-          artistImagesDir,
-        );
-        artistCache.set(artistName, artist);
-      }
-
-      const cleanAlbum = this.sanitizeString(tags.album);
-      const cleanTitle = this.sanitizeString(tags.title);
-      if (!cleanAlbum || !cleanTitle) continue;
-
-      const albumUniqueId = `${cleanAlbum}___${artist.name}`;
-
-      let album = albumCache.get(albumUniqueId);
-      if (!album) {
-        album = await this.prisma.album.upsert({
-          where: { uniqueId: albumUniqueId },
-          create: {
-            title: cleanAlbum,
-            uniqueId: albumUniqueId,
-            artists: { connect: { id: artist.id } },
-          },
-          update: {
-            artists: { connect: { id: artist.id } },
-          },
-        });
-        albumCache.set(albumUniqueId, album);
-      }
-
-      if ((!album.coverPath || forceUpdate) && !album.coverAttempted) {
-        let coverSaved = false;
-        const albumFolderPath = path.dirname(filePath);
-        const folderCoverPath = await this.findFolderCover(albumFolderPath);
-
-        if (folderCoverPath) {
-          const fileExtension = path.extname(folderCoverPath);
-          const newCoverPath = path.join(
-            coversDir,
-            `${album.id}${fileExtension}`,
-          );
-          try {
-            if (await pathExists(newCoverPath)) await remove(newCoverPath);
-            await ensureSymlink(folderCoverPath, newCoverPath);
-            const coverPathForDb = `/covers/${album.id}${fileExtension}`;
-            const updatedAlbum = await this.prisma.album.update({
-              where: { id: album.id },
-              data: { coverPath: coverPathForDb },
-            });
-            album.coverPath = updatedAlbum.coverPath;
-            coverSaved = true;
-          } catch (e: any) {
-            if (e.code === 'EPERM') {
-              try {
-                await copy(folderCoverPath, newCoverPath, { overwrite: true });
-                const coverPathForDb = `/covers/${album.id}${fileExtension}`;
-                const updatedAlbum = await this.prisma.album.update({
-                  where: { id: album.id },
-                  data: { coverPath: coverPathForDb },
-                });
-                album.coverPath = updatedAlbum.coverPath;
-                coverSaved = true;
-              } catch (copyErr) {
-                this.logger.error(`Failed to copy cover fallback: ${copyErr}`);
-              }
-            } else {
-              this.logger.error(
-                `Failed to link folder cover for album ID ${album.id}:`,
-                e,
-              );
-            }
-          }
-        }
-
-        if (!coverSaved && tags.imageBuffer) {
-          const newCoverPath = path.join(coversDir, `${album.id}.jpg`);
-          try {
-            await fs.writeFile(newCoverPath, tags.imageBuffer);
-            const coverPathForDb = `/covers/${album.id}.jpg`;
-            const updatedAlbum = await this.prisma.album.update({
-              where: { id: album.id },
-              data: { coverPath: coverPathForDb },
-            });
-            album.coverPath = updatedAlbum.coverPath;
-            coverSaved = true;
-          } catch (e) {
-            this.logger.error(
-              `Failed to write embedded cover for album ID ${album.id}:`,
-              e,
-            );
-          }
-        }
-        album.coverAttempted = true;
-      }
-
-      const lrcPath = filePath.replace(/\.[^/.]+$/, '.lrc');
-      let lyrics: string | null = null;
-      try {
-        lyrics = await fs.readFile(lrcPath, 'utf-8');
-      } catch {
-        /* lyrics not found */
-      }
-
-      await this.prisma.song.upsert({
-        where: { path: filePath },
-        update: {
-          title: cleanTitle,
-          trackNumber: tags.trackNumber,
-          albumId: album.id,
-          duration: tags.duration,
-          lyrics: lyrics,
-        },
-        create: {
-          path: filePath,
-          title: cleanTitle,
-          trackNumber: tags.trackNumber,
-          albumId: album.id,
-          duration: tags.duration,
-          lyrics: lyrics,
-        },
-      });
-    }
-
-    this.progressSubject.next({
-      percentage: 95,
-      message: 'Cleaning up deleted songs...',
-    });
-
-    const validPathsSet = new Set(filePaths);
-    const allSongs = await this.prisma.song.findMany({
-      select: { path: true },
-    });
-    const pathsToDelete = allSongs
-      .map((s) => s.path)
-      .filter((p) => !validPathsSet.has(p));
-
-    if (pathsToDelete.length > 0) {
-      await this.prisma.song.deleteMany({
-        where: { path: { in: pathsToDelete } },
-      });
-    }
-
-    this.artistFuse = null;
-    this.albumFuse = null;
-    this.songFuse = null;
-
-    this.progressSubject.next({
-      percentage: 100,
-      message: 'Scan complete!',
-      current: totalFiles,
-      total: totalFiles,
-    });
-
-    this.logger.log(
-      'Music library scan and save complete. Search index invalidated.',
-    );
-  }
-
-  private async ensureSearchIndex() {
-    if (this.artistFuse && this.albumFuse && this.songFuse) return;
-
-    this.logger.debug('Building in-memory search index...');
-
-    const [artists, albums, songs] = await Promise.all([
-      this.prisma.artist.findMany({ select: { id: true, name: true } }),
-      this.prisma.album.findMany({ select: { id: true, title: true } }),
-      this.prisma.song.findMany({ select: { id: true, title: true } }),
-    ]);
-
-    const commonOptions = { includeScore: true, threshold: 0.4 };
-
-    this.artistFuse = new Fuse(artists, {
-      ...commonOptions,
-      keys: ['name'],
-    }) as unknown as FuseSearchInstance<ArtistSearchItem>;
-    this.albumFuse = new Fuse(albums, {
-      ...commonOptions,
-      keys: ['title'],
-    }) as unknown as FuseSearchInstance<AlbumSearchItem>;
-    this.songFuse = new Fuse(songs, {
-      ...commonOptions,
-      keys: ['title'],
-    }) as unknown as FuseSearchInstance<SongSearchItem>;
-
-    this.logger.debug('Search index built successfully.');
-  }
-
-  async search(query: string) {
-    if (!query || !query.trim()) {
-      return { artists: [], albums: [], songs: [] };
-    }
-
-    await this.ensureSearchIndex();
-
-    const artistResults = this.artistFuse
-      ? this.artistFuse.search(query).slice(0, 5)
-      : [];
-    const albumResults = this.albumFuse
-      ? this.albumFuse.search(query).slice(0, 5)
-      : [];
-    const songResults = this.songFuse
-      ? this.songFuse.search(query).slice(0, 10)
-      : [];
-
-    const artistIds = artistResults.map((r) => r.item.id);
-    const albumIds = albumResults.map((r) => r.item.id);
-    const songIds = songResults.map((r) => r.item.id);
-
-    const [artists, albums, songs] = await Promise.all([
-      artistIds.length > 0
-        ? this.prisma.artist.findMany({
-            where: { id: { in: artistIds } },
-            include: { albums: { take: 1 } },
-          })
-        : ([] as any),
-      albumIds.length > 0
-        ? this.prisma.album.findMany({
-            where: { id: { in: albumIds } },
-            include: { artists: true, _count: { select: { songs: true } } },
-          })
-        : ([] as any),
-      songIds.length > 0
-        ? this.prisma.song.findMany({
-            where: { id: { in: songIds } },
-            include: { album: { include: { artists: true } } },
-          })
-        : ([] as any),
-    ]);
-
-    const sortedArtists = artistIds
-      .map((id) => artists.find((a: any) => a.id === id))
-      .filter((a: any) => a !== undefined);
-    const sortedAlbums = albumIds
-      .map((id) => albums.find((a: any) => a.id === id))
-      .filter((a: any) => a !== undefined);
-    const sortedSongs = songIds
-      .map((id) => songs.find((a: any) => a.id === id))
-      .filter((a: any) => a !== undefined);
-
-    return { artists: sortedArtists, albums: sortedAlbums, songs: sortedSongs };
+    return files;
   }
 
   async findAllArtists() {
-    return this.prisma.artist.findMany({
-      select: {
-        id: true,
-        name: true,
-        avatarUrl: true,
-        _count: { select: { albums: true } },
-        albums: { take: 1, select: { id: true } },
-      },
-    });
+    return this.prisma.artist.findMany({ take: 50, orderBy: { name: 'asc' } });
   }
 
   async findArtistById(id: number) {
     return this.prisma.artist.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        avatarUrl: true,
-        headerUrl: true,
-        bio: true,
-        bioImageUrl: true,
+      include: {
         albums: {
-          select: {
-            id: true,
-            title: true,
-            coverPath: true,
-            artists: { select: { id: true, name: true } },
-            songs: { orderBy: { trackNumber: 'asc' } },
-            _count: { select: { songs: true } },
+          include: {
+            songs: {
+              orderBy: { trackNumber: 'asc' },
+              select: { id: true, title: true, duration: true },
+            },
           },
         },
       },
@@ -658,37 +533,18 @@ export class MusicLibraryService {
     });
   }
 
-  async findRandomAlbums(take: number) {
-    const albumCount = await this.prisma.album.count();
-    const skip = Math.max(0, Math.floor(Math.random() * albumCount) - take);
-    return this.prisma.album.findMany({
-      take,
-      skip,
-      select: {
-        id: true,
-        title: true,
-        coverPath: true,
-        artists: { select: { id: true, name: true } },
-        _count: { select: { songs: true } },
-      },
-    });
-  }
-
   async findAlbumById(id: number) {
     return this.prisma.album.findUnique({
       where: { id },
-      select: {
-        id: true,
-        title: true,
-        coverPath: true,
-        artists: { select: { id: true, name: true } },
+      include: {
+        artists: true,
         songs: {
           orderBy: { trackNumber: 'asc' },
           select: {
             id: true,
             title: true,
-            trackNumber: true,
             duration: true,
+            trackNumber: true,
             lyrics: true,
           },
         },
@@ -697,7 +553,24 @@ export class MusicLibraryService {
   }
 
   async findSongById(id: number) {
-    return this.prisma.song.findUnique({ where: { id } });
+    return this.prisma.song.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        duration: true,
+        lyrics: true,
+        album: { include: { artists: true } },
+      },
+    });
+  }
+
+  async findSongPath(id: number) {
+    const s = await this.prisma.song.findUnique({
+      where: { id },
+      select: { path: true },
+    });
+    return s?.path ?? null;
   }
 
   async findAlbumArt(id: number) {
@@ -707,48 +580,30 @@ export class MusicLibraryService {
     });
   }
 
-  async findSongPath(id: number): Promise<string | null> {
-    const song = await this.prisma.song.findUnique({
-      where: { id },
-      select: { path: true },
+  async findRandomAlbums(take: number) {
+    const count = await this.prisma.album.count();
+    const skip = Math.max(0, Math.floor(Math.random() * count) - take);
+    return this.prisma.album.findMany({
+      take,
+      skip,
+      include: { artists: true },
     });
-    return song?.path ?? null;
   }
 
-  async getAudioFilePaths(
-    dir: string,
-    visited = new Set<string>(),
-  ): Promise<string[]> {
-    const realPath = await fs.realpath(dir);
-    if (visited.has(realPath)) return [];
-    visited.add(realPath);
-
-    const dirents = await fs.readdir(dir, { withFileTypes: true });
-    const files = await Promise.all(
-      dirents.map(async (dirent) => {
-        const res = path.resolve(dir, dirent.name);
-
-        if (dirent.isSymbolicLink()) {
-          return null;
-        }
-
-        if (dirent.isDirectory()) {
-          return this.getAudioFilePaths(res, visited);
-        } else if (
-          ['.mp3', '.flac', '.m4a'].includes(path.extname(res).toLowerCase())
-        ) {
-          return res;
-        }
-        return null;
-      }),
-    );
-    return files.flat().filter((file): file is string => !!file);
+  async findAllPlaylists() {
+    return this.prisma.playlist.findMany({
+      include: { _count: { select: { songs: true } } },
+    });
   }
-
   async createPlaylist(name: string, description?: string) {
     return this.prisma.playlist.create({ data: { name, description } });
   }
-
+  async findPlaylistById(id: number) {
+    return this.prisma.playlist.findUnique({
+      where: { id },
+      include: { songs: { include: { album: true } } },
+    });
+  }
   async addSongsToPlaylist(playlistId: number, songIds: number[]) {
     return this.prisma.playlist.update({
       where: { id: playlistId },
@@ -756,21 +611,8 @@ export class MusicLibraryService {
     });
   }
 
-  async findAllPlaylists() {
-    return this.prisma.playlist.findMany({
-      include: {
-        songs: { take: 1, include: { album: true } },
-        _count: { select: { songs: true } },
-      },
-    });
-  }
-
-  async findPlaylistById(id: number) {
-    return this.prisma.playlist.findUnique({
-      where: { id },
-      include: {
-        songs: { include: { album: { include: { artists: true } } } },
-      },
-    });
+  private sanitizeString(str: string | undefined): string {
+    // eslint-disable-next-line no-control-regex
+    return str ? str.replace(/\u0000/g, '').trim() : '';
   }
 }

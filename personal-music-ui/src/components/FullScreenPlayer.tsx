@@ -18,8 +18,29 @@ import {
 import { usePlayerStore } from "@/store/usePlayerStore";
 import LyricDisplay from "./LyricDisplay";
 import Image from "next/image";
+import { getAuthenticatedSrc } from "@/lib/api-client";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+interface SafeArtist {
+  id: number;
+  name: string;
+}
+
+interface SafeAlbum {
+  id: number;
+  title: string;
+  coverPath?: string;
+  artist?: string;
+  artists?: SafeArtist[];
+}
+
+interface SafeSong {
+  id: number;
+  title: string;
+  artist?: string;
+  artists?: SafeArtist[];
+  coverPath?: string;
+  album?: SafeAlbum;
+}
 
 const LikeButton = ({
   isLiked,
@@ -140,12 +161,11 @@ const FullScreenPlayer = () => {
 
   if (!currentSong) return null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const songData = currentSong as any;
+  const songData = currentSong as unknown as SafeSong;
 
   const getCoverUrl = () => {
     if (songData.album?.id) {
-      return `${API_BASE_URL}/api/covers/${songData.album.id}`;
+      return getAuthenticatedSrc(`api/covers/${songData.album.id}?size=600`);
     }
 
     const path = songData.album?.coverPath || songData.coverPath;
@@ -155,11 +175,12 @@ const FullScreenPlayer = () => {
     if (path.startsWith("http")) return path;
 
     const cleanPath = path.startsWith("/") ? path : `/${path}`;
+
     if (cleanPath.startsWith("/static")) {
-      return `${API_BASE_URL}${cleanPath}`;
+      return getAuthenticatedSrc(cleanPath);
     }
 
-    return `${API_BASE_URL}/static${cleanPath}`;
+    return getAuthenticatedSrc(`/static${cleanPath}`);
   };
 
   const albumCover = getCoverUrl();
@@ -169,13 +190,11 @@ const FullScreenPlayer = () => {
     if (songData.album?.artist) return songData.album.artist;
 
     if (songData.artists && Array.isArray(songData.artists)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return songData.artists.map((a: any) => a.name).join(", ");
+      return songData.artists.map((a) => a.name).join(", ");
     }
 
     if (songData.album?.artists && Array.isArray(songData.album.artists)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return songData.album.artists.map((a: any) => a.name).join(", ");
+      return songData.album.artists.map((a) => a.name).join(", ");
     }
 
     return "Unknown Artist";
@@ -289,11 +308,11 @@ const FullScreenPlayer = () => {
             <div className="w-12" />
           </div>
 
-          <div className="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-12 overflow-hidden">
-            <div className="hidden md:flex flex-col justify-center items-center h-full gap-8">
+          <div className="relative z-10 flex-1 flex flex-col md:grid md:grid-cols-2 gap-8 p-6 md:p-12 overflow-hidden">
+            <div className="flex flex-col justify-center items-center h-full gap-4 md:gap-8 w-full">
               <motion.div
                 layoutId={`album-cover-${currentSong.id}`}
-                className="relative aspect-square w-auto h-full max-h-[45vh] rounded-xl overflow-hidden bg-neutral-800 border border-white/10 shrink-1 origin-center shadow-2xl"
+                className="relative aspect-square w-full max-w-[280px] md:max-w-none md:w-auto md:h-full md:max-h-[45vh] rounded-xl overflow-hidden bg-neutral-800 border border-white/10 shrink-0 origin-center shadow-2xl"
                 animate={{
                   scale: isPlaying ? 1 : 0.85,
                   boxShadow: isPlaying
@@ -332,10 +351,10 @@ const FullScreenPlayer = () => {
               >
                 <div className="flex justify-between items-end">
                   <div className="space-y-1 overflow-hidden flex-1 mr-4">
-                    <h2 className="text-3xl font-bold truncate drop-shadow-lg">
+                    <h2 className="text-2xl md:text-3xl font-bold truncate drop-shadow-lg">
                       {currentSong.title}
                     </h2>
-                    <p className="text-xl text-neutral-300 truncate font-medium">
+                    <p className="text-lg md:text-xl text-neutral-300 truncate font-medium">
                       {artistName}
                     </p>
                   </div>
@@ -385,15 +404,15 @@ const FullScreenPlayer = () => {
                         : "text-neutral-300 hover:text-white"
                     }`}
                   >
-                    <Shuffle className="w-6 h-6" />
+                    <Shuffle className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
 
-                  <div className="flex items-center gap-8">
+                  <div className="flex items-center gap-6 md:gap-8">
                     <button
                       onClick={playPrev}
                       className="text-white transition-colors hover:scale-110 active:scale-95 drop-shadow-md"
                     >
-                      <SkipBack className="w-10 h-10 fill-current" />
+                      <SkipBack className="w-8 h-8 md:w-10 md:h-10 fill-current" />
                     </button>
 
                     <PlayPauseButton
@@ -405,13 +424,13 @@ const FullScreenPlayer = () => {
                       onClick={playNext}
                       className="text-white transition-colors hover:scale-110 active:scale-95 drop-shadow-md"
                     >
-                      <SkipForward className="w-10 h-10 fill-current" />
+                      <SkipForward className="w-8 h-8 md:w-10 md:h-10 fill-current" />
                     </button>
                   </div>
 
                   <button
                     onClick={toggleRepeat}
-                    className={`transition-colors hover:scale-110 active:scale-95 ${
+                    className={`transition-colors hover:scale-105 active:scale-95 ${
                       playMode.includes("repeat")
                         ? "text-green-500"
                         : "text-neutral-300 hover:text-white"
@@ -453,7 +472,7 @@ const FullScreenPlayer = () => {
               </motion.div>
             </div>
 
-            <div className="h-full w-full rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/5 shadow-2xl">
+            <div className="hidden md:block h-full w-full rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/5 shadow-2xl">
               <LyricDisplay />
             </div>
           </div>

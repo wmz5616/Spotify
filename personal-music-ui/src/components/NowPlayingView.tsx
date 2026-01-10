@@ -10,8 +10,7 @@ import LyricDisplay from "./LyricDisplay";
 import clsx from "clsx";
 import SongRowItem from "./SongRowItem";
 import { useColor } from "color-thief-react";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+import { getAuthenticatedSrc } from "@/lib/api-client";
 
 const NowPlayingView = () => {
   const {
@@ -29,7 +28,7 @@ const NowPlayingView = () => {
   }, [currentSong?.id]);
 
   const albumArtUrl = currentSong?.album?.id
-    ? `${API_BASE_URL}/static/covers/${currentSong.album.id}.jpg`
+    ? getAuthenticatedSrc(`api/covers/${currentSong.album.id}`)
     : "/placeholder.jpg";
 
   const { data: dominantColor } = useColor(albumArtUrl, "hex", {

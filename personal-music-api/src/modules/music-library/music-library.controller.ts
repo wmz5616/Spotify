@@ -17,12 +17,12 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  BadRequestException,
+  InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { MusicLibraryService } from './music-library.service';
 import type { Request, Response } from 'express';
-import { createReadStream, statSync, existsSync } from 'fs';
+import { createReadStream, statSync, existsSync, mkdirSync } from 'fs';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as mime from 'mime-types';
@@ -44,6 +44,18 @@ export class MusicLibraryController {
 
   constructor(private readonly musicLibraryService: MusicLibraryService) {}
 
+  private validateQueryToken(key?: string) {
+    const validApiKey = process.env.API_KEY;
+    if (!validApiKey) {
+      throw new InternalServerErrorException(
+        'Server configuration error: API_KEY is missing',
+      );
+    }
+    if (key !== validApiKey) {
+      throw new UnauthorizedException('Invalid or missing API Key');
+    }
+  }
+
   @UseGuards(ApiKeyGuard)
   @Sse('library/scan/progress')
   scanProgress(): Observable<MessageEvent> {
@@ -57,7 +69,6 @@ export class MusicLibraryController {
   @UseGuards(ApiKeyGuard)
   @Post('library/scan')
   async scanLibrary(@Query('force') force: string) {
-    // 解决问题 18：检查是否正在扫描
     if (this.isScanning) {
       throw new HttpException('扫描正在进行中，请稍后', HttpStatus.CONFLICT);
     }
@@ -91,8 +102,11 @@ export class MusicLibraryController {
   async getAlbumCover(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: GetCoverQueryDto,
+    @Query('key') key: string,
     @Res() response: Response,
   ) {
+    this.validateQueryToken(key);
+
     let width: number | undefined;
     if (query.size) {
       width = parseInt(query.size);
@@ -104,9 +118,21 @@ export class MusicLibraryController {
     }
 
     const projectRoot = process.cwd();
+    const cacheDir = path.join(projectRoot, 'public', 'cache', 'covers');
+    const cacheKey = width ? `${id}_w${width}.jpg` : `${id}_full.jpg`;
+    const cachePath = path.join(cacheDir, cacheKey);
+
+    if (existsSync(cachePath)) {
+      response.setHeader('Content-Type', 'image/jpeg');
+      response.setHeader('Cache-Control', 'public, max-age=31536000');
+      createReadStream(cachePath).pipe(response);
+      return;
+    }
+
     const placeholderPath = path.join(projectRoot, 'public', 'placeholder.jpg');
     let targetPath = placeholderPath;
     let isPlaceholder = true;
+
     const album = await this.musicLibraryService.findAlbumArt(id);
     if (album && album.coverPath) {
       const relativePath = album.coverPath.startsWith('/')
@@ -121,28 +147,27 @@ export class MusicLibraryController {
     }
 
     if (!existsSync(targetPath)) {
-      this.logger.warn(`Missing placeholder image at ${targetPath}`);
       throw new NotFoundException('Cover image not found');
     }
 
-    response.setHeader('Content-Type', 'image/jpeg');
-    const cacheAge = isPlaceholder ? 3600 : 31536000;
-    response.setHeader('Cache-Control', `public, max-age=${cacheAge}`);
-
     try {
-      const pipeline = sharp(targetPath);
+      if (!existsSync(cacheDir)) {
+        mkdirSync(cacheDir, { recursive: true });
+      }
 
+      const pipeline = sharp(targetPath);
       if (width) {
         pipeline.resize(width, width, { fit: 'cover' });
       }
+      pipeline.jpeg({ quality: 80, mozjpeg: true });
 
-      pipeline
-        .jpeg({ quality: 80, mozjpeg: true })
-        .on('error', (err) => {
-          this.logger.error('Sharp processing error', err);
-          response.end();
-        })
-        .pipe(response);
+      await pipeline.toFile(cachePath);
+
+      response.setHeader('Content-Type', 'image/jpeg');
+      const cacheAge = isPlaceholder ? 3600 : 31536000;
+      response.setHeader('Cache-Control', `public, max-age=${cacheAge}`);
+
+      createReadStream(cachePath).pipe(response);
     } catch (error) {
       this.logger.error('Error processing image:', error);
       createReadStream(targetPath).pipe(response);
@@ -209,9 +234,13 @@ export class MusicLibraryController {
   @Get('stream/:id')
   async getAudioStream(
     @Param('id', ParseIntPipe) id: number,
+    @Query('key') key: string,
     @Req() request: Request,
     @Res() response: Response,
   ) {
+    // 1. 鉴权
+    this.validateQueryToken(key);
+
     const songPath = await this.musicLibraryService.findSongPath(id);
 
     if (!songPath) {

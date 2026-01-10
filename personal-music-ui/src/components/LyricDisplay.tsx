@@ -12,6 +12,8 @@ import { parseLRC, type LyricLine } from "@/lib/lrc-parser";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { VariableSizeList as List } from "react-window";
+import { apiClient } from "@/lib/api-client";
+import { Song } from "@/types";
 
 const Interlude = () => (
   <div className="flex justify-center items-center gap-1.5 h-full opacity-80">
@@ -32,10 +34,29 @@ const LyricDisplay = () => {
   const listRef = useRef<List>(null);
   const outerRef = useRef<HTMLElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [fetchedLyrics, setFetchedLyrics] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFetchedLyrics(null);
+
+    if (currentSong && !currentSong.lyrics) {
+      apiClient<Song>(`/api/songs/${currentSong.id}`)
+        .then((data) => {
+          if (data.lyrics) {
+            setFetchedLyrics(data.lyrics);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch lyrics:", err);
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSong?.id, currentSong?.lyrics]);
 
   const lyrics: LyricLine[] = useMemo(() => {
-    return currentSong?.lyrics ? parseLRC(currentSong.lyrics) : [];
-  }, [currentSong?.lyrics]);
+    const rawLyrics = currentSong?.lyrics || fetchedLyrics;
+    return rawLyrics ? parseLRC(rawLyrics) : [];
+  }, [currentSong?.lyrics, fetchedLyrics]);
 
   useEffect(() => {
     if (!containerRef.current) return;

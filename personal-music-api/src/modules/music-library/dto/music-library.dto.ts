@@ -35,4 +35,7 @@ export class GetCoverQueryDto {
   @IsOptional()
   @IsString()
   size?: string;
+  @IsOptional()
+  @IsString()
+  key?: string;
 }

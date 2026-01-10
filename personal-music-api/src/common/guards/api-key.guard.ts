@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Injectable,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
@@ -13,10 +14,16 @@ export class ApiKeyGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const apiKey = request.headers['x-api-key'];
-    const validApiKey = process.env.API_KEY || 'secret-token-123';
+    const validApiKey = process.env.API_KEY;
+
+    if (!validApiKey) {
+      throw new InternalServerErrorException(
+        'Server configuration error: API_KEY is missing',
+      );
+    }
 
     if (apiKey !== validApiKey) {
-      throw new UnauthorizedException('缺少有效的 API Key (x-api-key)');
+      throw new UnauthorizedException('Invalid or missing API Key');
     }
 
     return true;

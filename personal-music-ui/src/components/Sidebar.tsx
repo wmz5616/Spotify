@@ -16,9 +16,7 @@ import {
 import clsx from "clsx";
 import type { Playlist, Artist } from "@/types";
 import { usePlayerStore } from "@/store/usePlayerStore";
-import { apiClient } from "@/lib/api-client";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 
 const LibrarySkeleton = ({ collapsed }: { collapsed: boolean }) => (
   <div className="space-y-4 p-2 animate-pulse">
@@ -59,8 +57,8 @@ const Sidebar = () => {
           apiClient<Artist[]>("/api/artists"),
         ]);
 
-        setPlaylists(playlistsData);
-        setArtists(artistsData);
+        setPlaylists(playlistsData || []);
+        setArtists(artistsData || []);
         setError(false);
       } catch (e) {
         console.error("Sidebar data fetch failed:", e);
@@ -196,9 +194,13 @@ const Sidebar = () => {
               ))}
 
               {artists.map((artist) => {
-                const avatarUrl = artist.avatarUrl
-                  ? `${API_BASE_URL}/public${artist.avatarUrl}`
-                  : null;
+                let avatarUrl = null;
+                if (artist.avatarUrl) {
+                  const pathWithPublic = artist.avatarUrl.startsWith("/public")
+                    ? artist.avatarUrl
+                    : `/public${artist.avatarUrl}`;
+                  avatarUrl = getAuthenticatedSrc(pathWithPublic);
+                }
 
                 return (
                   <Link
@@ -211,7 +213,7 @@ const Sidebar = () => {
                       isSidebarCollapsed && "justify-center"
                     )}
                   >
-                    <div className="w-12 h-12 relative rounded-full overflow-hidden bg-neutral-800 shrink-0">
+                    <div className="w-12 h-12 relative rounded-full overflow-hidden bg-neutral-800 shrink-0 flex items-center justify-center">
                       {avatarUrl ? (
                         <Image
                           src={avatarUrl}
@@ -235,6 +237,9 @@ const Sidebar = () => {
                           )}
                         >
                           {artist.name}
+                        </p>
+                        <p className="text-sm text-neutral-400 truncate">
+                          Artist
                         </p>
                       </div>
                     )}

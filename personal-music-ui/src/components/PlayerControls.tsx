@@ -18,8 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 import QueueButton from "./QueueButton";
 import FullScreenPlayer from "./FullScreenPlayer";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+import { getAuthenticatedSrc } from "@/lib/api-client";
 
 const PlayerControls = () => {
   const {
@@ -41,11 +40,11 @@ const PlayerControls = () => {
       </footer>
     );
   }
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const albumData = currentSong.album as any;
+
   const albumArtUrl = albumData?.id
-    ? `${API_BASE_URL}/api/covers/${albumData.id}?size=128`
+    ? getAuthenticatedSrc(`api/covers/${albumData.id}?size=128`)
     : "/placeholder.jpg";
 
   const renderRepeatIcon = () => {

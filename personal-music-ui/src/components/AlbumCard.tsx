@@ -6,17 +6,16 @@ import React, { useState } from "react";
 import { Play, LoaderCircle } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import type { Song } from "@/types";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 
 type AlbumForCard = {
   id: number;
   title: string;
-  artists: {
+  artists?: {
     id: number;
     name: string;
   }[];
-  _count: {
+  _count?: {
     songs: number;
   };
 };
@@ -28,7 +27,7 @@ type AlbumWithSongs = AlbumForCard & {
 const AlbumCard = ({ album }: { album: AlbumForCard }) => {
   const { playSong } = usePlayerStore();
   const [isLoading, setIsLoading] = useState(false);
-  const albumArtUrl = `${API_BASE_URL}/api/covers/${album.id}?size=300`;
+  const albumArtUrl = getAuthenticatedSrc(`api/covers/${album.id}?size=300`);
 
   const handlePlayClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -36,18 +35,17 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/albums/${album.id}`);
-      if (!res.ok) return;
+      const fullAlbum = await apiClient<AlbumWithSongs>(
+        `/api/albums/${album.id}`
+      );
 
-      const fullAlbum: AlbumWithSongs = await res.json();
-
-      if (fullAlbum.songs && fullAlbum.songs.length > 0) {
+      if (fullAlbum && fullAlbum.songs && fullAlbum.songs.length > 0) {
         const queue = fullAlbum.songs.map((song) => ({
           ...song,
           album: {
             id: fullAlbum.id,
             title: fullAlbum.title,
-            artists: fullAlbum.artists,
+            artists: fullAlbum.artists || [],
           },
         }));
         playSong(queue[0], queue);
@@ -78,7 +76,8 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
         <div className="mt-4">
           <h3 className="font-bold truncate text-white">{album.title}</h3>
           <p className="text-sm text-neutral-400 truncate">
-            {album.artists.map((artist) => artist.name).join(", ")}
+            {album.artists?.map((artist) => artist.name).join(", ") ||
+              "Unknown Artist"}
           </p>
         </div>
       </div>
