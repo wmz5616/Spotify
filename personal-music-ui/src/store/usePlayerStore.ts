@@ -23,9 +23,6 @@ interface PlayerState {
   prevVolume: number;
 
   audioRef: React.RefObject<HTMLAudioElement | null> | null;
-  audioContext: AudioContext | null;
-  analyser: AnalyserNode | null;
-  bassLevel: number;
 
   playSong: (song: Song, queue?: Song[]) => void;
   togglePlayPause: () => void;
@@ -33,8 +30,6 @@ interface PlayerState {
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setAudioRef: (ref: React.RefObject<HTMLAudioElement | null>) => void;
-  setAudioAnalysis: (context: AudioContext, analyser: AnalyserNode) => void;
-  setBassLevel: (level: number) => void;
   seek: (time: number) => void;
 
   playNext: () => void;
@@ -81,9 +76,6 @@ export const usePlayerStore = create<PlayerState>()(
       isMuted: false,
       prevVolume: 0.8,
       audioRef: null,
-      audioContext: null,
-      analyser: null,
-      bassLevel: 0,
 
       playSong: (song, queue) => {
         const state = get();
@@ -151,9 +143,6 @@ export const usePlayerStore = create<PlayerState>()(
       setCurrentTime: (time) => set({ currentTime: time }),
       setDuration: (duration) => set({ duration }),
       setAudioRef: (ref) => set({ audioRef: ref }),
-      setAudioAnalysis: (context, analyser) =>
-        set({ audioContext: context, analyser }),
-      setBassLevel: (level) => set({ bassLevel: level }),
 
       seek: (time) => {
         const { audioRef } = get();
@@ -317,9 +306,6 @@ export const usePlayerStore = create<PlayerState>()(
       partialize: (state) => ({
         currentSong: state.currentSong,
         volume: state.volume,
-        playQueue: state.playQueue,
-        originalQueue: state.originalQueue,
-        currentQueueIndex: state.currentQueueIndex,
         playMode: state.playMode,
         isSidebarCollapsed: state.isSidebarCollapsed,
         isMuted: state.isMuted,

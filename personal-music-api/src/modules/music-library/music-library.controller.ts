@@ -221,6 +221,9 @@ export class MusicLibraryController {
     if (!song) {
       throw new NotFoundException(`Song with ID ${id} not found`);
     }
+    this.logger.log(
+      `Fetching song ${id}: ${song.title}, Has Lyrics: ${!!song.lyrics}, Length: ${song.lyrics?.length}`,
+    );
     return song;
   }
 

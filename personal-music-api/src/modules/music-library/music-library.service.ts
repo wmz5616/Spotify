@@ -5,7 +5,6 @@ import * as path from 'path';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as mm from 'music-metadata';
 import { ensureDir, ensureSymlink, pathExists, remove, copy } from 'fs-extra';
-import { Artist, Album } from '@prisma/client';
 import { Subject, Observable } from 'rxjs';
 
 export interface ScanProgress {
@@ -30,8 +29,6 @@ interface ParsedInfo {
 export class MusicLibraryService {
   private readonly logger = new Logger(MusicLibraryService.name);
   private progressSubject = new Subject<ScanProgress>();
-  private artistIdCache = new Map<string, number>();
-  private albumIdCache = new Map<string, number>();
 
   constructor(private prisma: PrismaService) {}
 
@@ -49,13 +46,6 @@ export class MusicLibraryService {
     await ensureDir(coversDir);
     await ensureDir(artistImagesDir);
 
-    this.artistIdCache.clear();
-    this.albumIdCache.clear();
-    this.progressSubject.next({
-      percentage: 5,
-      message: 'Scanning artist directories...',
-    });
-
     try {
       const dirents = await fs.readdir(directory, { withFileTypes: true });
       for (const dirent of dirents) {
@@ -63,15 +53,20 @@ export class MusicLibraryService {
           const artistName = this.sanitizeString(dirent.name);
           if (!artistName) continue;
 
-          const artist = await this.prisma.artist.upsert({
-            where: { name: artistName },
-            create: { name: artistName },
-            update: {},
+          await this.prisma.$transaction(async (tx) => {
+            const artist = await tx.artist.upsert({
+              where: { name: artistName },
+              create: { name: artistName },
+              update: {},
+            });
+            const artistPath = path.join(directory, dirent.name);
+            await this.processArtistImage(
+              artist.id,
+              artistPath,
+              artistImagesDir,
+              tx,
+            );
           });
-
-          const artistPath = path.join(directory, dirent.name);
-          await this.processArtistImage(artist.id, artistPath, artistImagesDir);
-          this.artistIdCache.set(artistName, artist.id);
         }
       }
     } catch (e) {
@@ -101,18 +96,20 @@ export class MusicLibraryService {
         }),
       );
 
-      for (const info of parsedBatch) {
-        if (!info) continue;
-        await this.saveTrackToDb(
-          info,
-          directory,
+      const validInfos = parsedBatch.filter(
+        (info): info is ParsedInfo => info !== null,
+      );
+
+      if (validInfos.length > 0) {
+        await this.saveBatch(
+          validInfos,
           coversDir,
           artistImagesDir,
           forceUpdate,
         );
-        processedCount++;
       }
 
+      processedCount += batchPaths.length;
       const percentage = Math.round((processedCount / totalFiles) * 80) + 10;
       this.progressSubject.next({
         percentage,
@@ -126,7 +123,7 @@ export class MusicLibraryService {
       percentage: 95,
       message: 'Cleaning up library...',
     });
-    await this.cleanupOrphanedRecords(filePaths);
+    await this.cleanupOrphanedRecords(filePaths, coversDir, artistImagesDir);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     this.logger.log(`Scan complete in ${duration}s.`);
@@ -136,9 +133,6 @@ export class MusicLibraryService {
       current: totalFiles,
       total: totalFiles,
     });
-
-    this.artistIdCache.clear();
-    this.albumIdCache.clear();
   }
 
   private async extractMetadata(
@@ -194,91 +188,81 @@ export class MusicLibraryService {
     };
   }
 
-  private async saveTrackToDb(
-    info: ParsedInfo,
-    rootDir: string,
+  private async saveBatch(
+    infos: ParsedInfo[],
     coversDir: string,
     artistImagesDir: string,
     forceUpdate: boolean,
   ) {
-    await this.prisma.$transaction(async (tx) => {
-      let artistId = this.artistIdCache.get(info.artist);
-      if (!artistId) {
-        const artist = await tx.artist.upsert({
-          where: { name: info.artist },
-          create: { name: info.artist },
-          update: {},
-        });
-        artistId = artist.id;
-        this.artistIdCache.set(info.artist, artistId);
+    await this.prisma.$transaction(
+      async (tx) => {
+        for (const info of infos) {
+          const artist = await tx.artist.upsert({
+            where: { name: info.artist },
+            create: { name: info.artist },
+            update: {},
+          });
 
-        const artistDir = path.dirname(path.dirname(info.filePath));
-        this.processArtistImage(artistId, artistDir, artistImagesDir).catch(
-          () => {},
-        );
-      }
+          const albumUniqueId = `${info.album}___${info.artist}`;
+          const album = await tx.album.upsert({
+            where: { uniqueId: albumUniqueId },
+            create: {
+              title: info.album,
+              uniqueId: albumUniqueId,
+              artists: { connect: { id: artist.id } },
+            },
+            update: {
+              artists: { connect: { id: artist.id } },
+            },
+          });
 
-      const albumUniqueId = `${info.album}___${info.artist}`;
-      let albumId = this.albumIdCache.get(albumUniqueId);
+          if (!album.coverPath || forceUpdate) {
+            const albumDir = path.dirname(info.filePath);
+            await this.processAlbumCover(
+              album.id,
+              albumDir,
+              coversDir,
+              info.imageBuffer,
+              tx,
+            );
+          }
 
-      if (!albumId) {
-        const album = await tx.album.upsert({
-          where: { uniqueId: albumUniqueId },
-          create: {
-            title: info.album,
-            uniqueId: albumUniqueId,
-            artists: { connect: { id: artistId } },
-          },
-          update: {
-            artists: { connect: { id: artistId } },
-          },
-        });
-        albumId = album.id;
-        this.albumIdCache.set(albumUniqueId, albumId);
+          const lrcPath = info.filePath.replace(/\.[^/.]+$/, '.lrc');
+          let finalLyrics: string | null = null;
+          try {
+            if (await pathExists(lrcPath)) {
+              finalLyrics = await fs.readFile(lrcPath, 'utf-8');
+            } else if (info.embeddedLyrics) {
+              finalLyrics = info.embeddedLyrics;
+            }
+          } catch {
+            /* ignore */
+          }
 
-        if (!album.coverPath || forceUpdate) {
-          const albumDir = path.dirname(info.filePath);
-          await this.processAlbumCover(
-            album.id,
-            albumDir,
-            coversDir,
-            info.imageBuffer,
-            tx,
-          );
+          await tx.song.upsert({
+            where: { path: info.filePath },
+            update: {
+              title: info.title,
+              trackNumber: info.trackNumber,
+              duration: info.duration,
+              albumId: album.id,
+              ...(finalLyrics ? { lyrics: finalLyrics } : {}),
+            },
+            create: {
+              path: info.filePath,
+              title: info.title,
+              trackNumber: info.trackNumber,
+              duration: info.duration,
+              albumId: album.id,
+              lyrics: finalLyrics,
+            },
+          });
         }
-      }
-
-      const lrcPath = info.filePath.replace(/\.[^/.]+$/, '.lrc');
-      let finalLyrics: string | null = null;
-      try {
-        if (await pathExists(lrcPath)) {
-          finalLyrics = await fs.readFile(lrcPath, 'utf-8');
-        } else if (info.embeddedLyrics) {
-          finalLyrics = info.embeddedLyrics;
-        }
-      } catch {
-        /* ignore */
-      }
-
-      await tx.song.upsert({
-        where: { path: info.filePath },
-        update: {
-          title: info.title,
-          trackNumber: info.trackNumber,
-          duration: info.duration,
-          albumId: albumId,
-          ...(finalLyrics ? { lyrics: finalLyrics } : {}),
-        },
-        create: {
-          path: info.filePath,
-          title: info.title,
-          trackNumber: info.trackNumber,
-          duration: info.duration,
-          albumId: albumId!,
-          lyrics: finalLyrics,
-        },
-      });
-    });
+      },
+      {
+        timeout: 20000,
+      },
+    );
   }
 
   private async processAlbumCover(
@@ -324,12 +308,17 @@ export class MusicLibraryService {
       if (await pathExists(dest)) await remove(dest);
       await ensureSymlink(src, dest);
       return true;
-    } catch (e: any) {
+    } catch (e) {
       try {
-        await copy(src, dest, { overwrite: true });
+        await fs.link(src, dest);
         return true;
-      } catch (copyErr) {
-        return false;
+      } catch (e2) {
+        try {
+          await copy(src, dest, { overwrite: true });
+          return true;
+        } catch (copyErr) {
+          return false;
+        }
       }
     }
   }
@@ -352,6 +341,7 @@ export class MusicLibraryService {
     artistId: number,
     artistDir: string,
     targetDir: string,
+    tx: any,
   ) {
     const candidates = ['avatar.jpg', 'avatar.png', 'artist.jpg'];
     let found: string | null = null;
@@ -371,7 +361,7 @@ export class MusicLibraryService {
       const ext = path.extname(found);
       const target = path.join(targetDir, `${artistId}-avatar${ext}`);
       if (await this.safeLinkOrCopy(found, target)) {
-        await this.prisma.artist
+        await tx.artist
           .update({
             where: { id: artistId },
             data: { avatarUrl: `/artist-images/${artistId}-avatar${ext}` },
@@ -381,7 +371,11 @@ export class MusicLibraryService {
     }
   }
 
-  private async cleanupOrphanedRecords(currentValidPaths: string[]) {
+  private async cleanupOrphanedRecords(
+    currentValidPaths: string[],
+    coversDir: string,
+    artistImagesDir: string,
+  ) {
     const validPathsSet = new Set(currentValidPaths);
     const allSongs = await this.prisma.song.findMany({
       select: { id: true, path: true },
@@ -408,16 +402,55 @@ export class MusicLibraryService {
     }
 
     const emptyArtists = await this.prisma.artist.findMany({
-      where: {
-        albums: { none: {} },
-        avatarUrl: null,
-      },
+      where: { albums: { none: {} } },
       select: { id: true },
     });
     if (emptyArtists.length > 0) {
       await this.prisma.artist.deleteMany({
         where: { id: { in: emptyArtists.map((a) => a.id) } },
       });
+    }
+
+    try {
+      const allAlbums = await this.prisma.album.findMany({
+        select: { coverPath: true },
+      });
+      const validCovers = new Set(
+        allAlbums
+          .map((a) => a.coverPath)
+          .filter((p): p is string => !!p)
+          .map((p) => path.basename(p)),
+      );
+
+      if (await pathExists(coversDir)) {
+        const files = await fs.readdir(coversDir);
+        for (const file of files) {
+          if (!validCovers.has(file) && file !== 'placeholder.jpg') {
+            await remove(path.join(coversDir, file));
+          }
+        }
+      }
+
+      const allArtists = await this.prisma.artist.findMany({
+        select: { avatarUrl: true },
+      });
+      const validAvatars = new Set(
+        allArtists
+          .map((a) => a.avatarUrl)
+          .filter((p): p is string => !!p)
+          .map((p) => path.basename(p)),
+      );
+
+      if (await pathExists(artistImagesDir)) {
+        const files = await fs.readdir(artistImagesDir);
+        for (const file of files) {
+          if (!validAvatars.has(file)) {
+            await remove(path.join(artistImagesDir, file));
+          }
+        }
+      }
+    } catch (e) {
+      this.logger.warn(`Cleanup files error: ${e}`);
     }
   }
 

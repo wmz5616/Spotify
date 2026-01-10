@@ -38,8 +38,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       } else if (typeof response === 'string') {
         message = response;
       }
-    } else {
-      this.logger.error('Unhandled System Exception:', exception);
     }
 
     const path = httpAdapter.getRequestUrl(ctx.getRequest()) as string;
@@ -50,8 +48,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: path,
     };
-    // eslint-disable-next-line no-empty
+
     if (httpStatus >= 500) {
+      this.logger.error(
+        `System Exception: ${httpStatus} - ${message}`,
+        exception instanceof Error ? exception.stack : String(exception),
+      );
     } else {
       this.logger.warn(`Business Exception: ${httpStatus} - ${message}`);
     }

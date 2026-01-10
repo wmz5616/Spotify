@@ -14,14 +14,18 @@ import { motion } from "framer-motion";
 import { VariableSizeList as List } from "react-window";
 import { apiClient } from "@/lib/api-client";
 import { Song } from "@/types";
+import { Mic2 } from "lucide-react";
 
 const Interlude = () => (
-  <div className="flex justify-center items-center gap-1.5 h-full opacity-80">
+  <div className="flex justify-center items-center gap-1.5 h-full opacity-80 py-4">
     {[0, 1, 2, 3].map((i) => (
       <span
         key={i}
-        className="w-1.5 h-8 bg-white rounded-full animate-music-bars shadow-[0_0_15px_rgba(255,255,255,0.9)]"
-        style={{ animationDelay: `${i * 150}ms`, animationDuration: "1.2s" }}
+        className="w-1.5 h-6 bg-white rounded-full animate-music-bars shadow-[0_0_10px_rgba(255,255,255,0.8)]"
+        style={{
+          animation: "music-bars 1s ease-in-out infinite",
+          animationDelay: `${i * 150}ms`,
+        }}
       />
     ))}
   </div>
@@ -35,19 +39,25 @@ const LyricDisplay = () => {
   const outerRef = useRef<HTMLElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [fetchedLyrics, setFetchedLyrics] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setFetchedLyrics(null);
+    if (!currentSong) return;
 
-    if (currentSong && !currentSong.lyrics) {
+    if (!currentSong.lyrics) {
+      setIsLoading(true);
       apiClient<Song>(`/api/songs/${currentSong.id}`)
         .then((data) => {
-          if (data.lyrics) {
+          if (data && data.lyrics) {
             setFetchedLyrics(data.lyrics);
           }
         })
         .catch((err) => {
           console.error("Failed to fetch lyrics:", err);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,60 +70,69 @@ const LyricDisplay = () => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const updateSize = () => {
-      if (containerRef.current) {
-        setContainerSize({
-          width: containerRef.current.offsetWidth,
-          height: containerRef.current.offsetHeight,
-        });
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect) {
+          setContainerSize({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          });
+        }
       }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
     };
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
   }, []);
 
   useEffect(() => {
     if (!lyrics.length) return;
+
     const newIndex = lyrics.findIndex(
       (line, i) =>
         currentTime >= line.time &&
         (i === lyrics.length - 1 || currentTime < lyrics[i + 1].time)
     );
-    if (newIndex !== -1) {
+
+    if (newIndex !== -1 && newIndex !== currentLineIndex) {
       setCurrentLineIndex(newIndex);
     }
-  }, [currentTime, lyrics]);
+  }, [currentTime, lyrics, currentLineIndex]);
 
   const getItemHeight = useCallback(
-    (index: number, activeIndex: number) => {
+    (index: number) => {
       if (index === 0 || index === lyrics.length + 1) {
         return containerSize.height / 2;
       }
+
       const lyricIndex = index - 1;
       const line = lyrics[lyricIndex];
-      if (!line) return 100;
+      if (!line) return 80;
 
-      const isActive = lyricIndex === activeIndex;
+      const isActive = lyricIndex === currentLineIndex;
       const hasTranslation = line.text.includes("\n");
+      const baseHeight = hasTranslation ? 120 : 80;
 
-      let size = 90;
-      if (isActive) size += 100;
-      if (hasTranslation) size += 40;
-      return size;
+      return isActive ? baseHeight + 60 : baseHeight;
     },
-    [lyrics, containerSize.height]
+    [lyrics, containerSize.height, currentLineIndex]
   );
 
   useEffect(() => {
     if (listRef.current && outerRef.current && currentLineIndex !== -1) {
       listRef.current.resetAfterIndex(0);
+
       const targetIndex = currentLineIndex + 1;
+
       let offset = 0;
       for (let i = 0; i < targetIndex; i++) {
-        offset += getItemHeight(i, currentLineIndex);
+        offset += getItemHeight(i);
       }
-      const targetItemHeight = getItemHeight(targetIndex, currentLineIndex);
+      const targetItemHeight = getItemHeight(targetIndex);
       const centerOffset =
         offset + targetItemHeight / 2 - containerSize.height / 2;
 
@@ -131,22 +150,28 @@ const LyricDisplay = () => {
     }
   }, [currentSong?.id]);
 
-  const itemSize = (index: number) => getItemHeight(index, currentLineIndex);
-
   return (
-    <div className="h-full overflow-hidden relative select-none font-sans">
+    <div
+      className="h-full w-full overflow-hidden relative select-none font-sans"
+      ref={containerRef}
+    >
       <div
         className="absolute inset-0 z-20 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 25%, transparent 75%, rgba(0,0,0,0.8) 100%)",
         }}
       />
 
       <div className="relative z-10 w-full h-full">
-        {lyrics.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-neutral-600 space-y-6">
-            <p className="text-3xl font-bold tracking-[0.3em] uppercase glow-text-md">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full text-neutral-400">
+            <span className="animate-pulse">Loading Lyrics...</span>
+          </div>
+        ) : lyrics.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-neutral-500 space-y-4">
+            <Mic2 size={48} className="opacity-50" />
+            <p className="text-xl font-bold tracking-widest uppercase">
               Pure Music
             </p>
           </div>
@@ -155,9 +180,8 @@ const LyricDisplay = () => {
             key={currentSong?.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.5 }}
             className="w-full h-full"
-            ref={containerRef}
           >
             {containerSize.height > 0 && (
               <List
@@ -166,7 +190,7 @@ const LyricDisplay = () => {
                 height={containerSize.height}
                 width={containerSize.width}
                 itemCount={lyrics.length + 2}
-                itemSize={itemSize}
+                itemSize={getItemHeight}
                 className="lyric-list [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 itemData={lyrics}
                 style={{ scrollBehavior: "smooth" }}
@@ -188,27 +212,27 @@ const LyricDisplay = () => {
                   return (
                     <div
                       style={style}
-                      className="flex items-center justify-center w-full px-8 py-4"
+                      className="flex items-center justify-center w-full px-4 py-2"
                     >
                       <div
                         className={clsx(
-                          "flex flex-col items-center gap-5 transition-all duration-700 ease-[cubic-bezier(0.25,0.4,0.25,1)] w-full max-w-[95%]",
+                          "flex flex-col items-center gap-2 transition-all duration-500 w-full max-w-4xl text-center",
                           isActive
-                            ? "opacity-100 scale-105 blur-0 origin-center"
-                            : "opacity-40 scale-95 blur-[1px] origin-center"
+                            ? "opacity-100 scale-105 blur-0"
+                            : "opacity-40 scale-95 blur-[0.5px] hover:opacity-60 cursor-pointer"
                         )}
-                        style={{
-                          textShadow: isActive
-                            ? "0 0 30px rgba(255, 255, 255, 0.7), 0 0 80px rgba(255, 255, 255, 0.4)"
-                            : "none",
+                        onClick={() => {
+                          const playerStore = usePlayerStore.getState();
+                          playerStore.seek(line.time);
+                          playerStore.setCurrentTime(line.time);
                         }}
                       >
                         <span
                           className={clsx(
-                            "text-center leading-tight transition-all duration-700 break-words w-full",
+                            "leading-tight transition-all duration-500 font-bold",
                             isActive
-                              ? "text-white text-4xl md:text-6xl font-black tracking-tight"
-                              : "text-neutral-300 text-2xl md:text-3xl font-bold"
+                              ? "text-white text-3xl md:text-5xl drop-shadow-lg"
+                              : "text-neutral-300 text-xl md:text-2xl"
                           )}
                         >
                           {originalText || <Interlude />}
@@ -217,10 +241,10 @@ const LyricDisplay = () => {
                         {translationText && (
                           <span
                             className={clsx(
-                              "text-center transition-all duration-700 font-medium tracking-wide break-words w-full",
+                              "transition-all duration-500 font-medium",
                               isActive
-                                ? "text-neutral-200 text-xl md:text-2xl"
-                                : "text-neutral-500 text-base md:text-lg"
+                                ? "text-green-400 text-lg md:text-xl"
+                                : "text-neutral-500 text-sm md:text-base"
                             )}
                           >
                             {translationText}

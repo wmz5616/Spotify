@@ -9,11 +9,13 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger('Bootstrap');
 
+  const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
   app.enableCors({
-    origin: '*',
+    origin: corsOrigin.includes(',') ? corsOrigin.split(',') : corsOrigin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
+    credentials: true,
   });
 
   const publicPath = join(process.cwd(), 'public');
@@ -41,8 +43,6 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`Application is running on: http://localhost:${port}`);
-  logger.log(
-    `Check static files at: http://localhost:${port}/public/placeholder.jpg`,
-  );
+  logger.log(`CORS allowed origin: ${corsOrigin}`);
 }
 bootstrap();

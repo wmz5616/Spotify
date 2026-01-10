@@ -19,28 +19,7 @@ import { usePlayerStore } from "@/store/usePlayerStore";
 import LyricDisplay from "./LyricDisplay";
 import Image from "next/image";
 import { getAuthenticatedSrc } from "@/lib/api-client";
-
-interface SafeArtist {
-  id: number;
-  name: string;
-}
-
-interface SafeAlbum {
-  id: number;
-  title: string;
-  coverPath?: string;
-  artist?: string;
-  artists?: SafeArtist[];
-}
-
-interface SafeSong {
-  id: number;
-  title: string;
-  artist?: string;
-  artists?: SafeArtist[];
-  coverPath?: string;
-  album?: SafeAlbum;
-}
+import { Song } from "@/types";
 
 const LikeButton = ({
   isLiked,
@@ -161,14 +140,12 @@ const FullScreenPlayer = () => {
 
   if (!currentSong) return null;
 
-  const songData = currentSong as unknown as SafeSong;
-
   const getCoverUrl = () => {
-    if (songData.album?.id) {
-      return getAuthenticatedSrc(`api/covers/${songData.album.id}?size=600`);
+    if (currentSong.album?.id) {
+      return getAuthenticatedSrc(`api/covers/${currentSong.album.id}?size=600`);
     }
 
-    const path = songData.album?.coverPath || songData.coverPath;
+    const path = currentSong.album?.coverPath;
 
     if (!path || path === "undefined" || path === "null") return null;
 
@@ -186,16 +163,15 @@ const FullScreenPlayer = () => {
   const albumCover = getCoverUrl();
 
   const getArtistName = () => {
-    if (songData.artist) return songData.artist;
-    if (songData.album?.artist) return songData.album.artist;
-
-    if (songData.artists && Array.isArray(songData.artists)) {
-      return songData.artists.map((a) => a.name).join(", ");
+    if (
+      currentSong.album?.artists &&
+      Array.isArray(currentSong.album.artists) &&
+      currentSong.album.artists.length > 0
+    ) {
+      return currentSong.album.artists.map((a) => a.name).join(", ");
     }
 
-    if (songData.album?.artists && Array.isArray(songData.album.artists)) {
-      return songData.album.artists.map((a) => a.name).join(", ");
-    }
+    if (currentSong.artist) return currentSong.artist;
 
     return "Unknown Artist";
   };
@@ -308,8 +284,8 @@ const FullScreenPlayer = () => {
             <div className="w-12" />
           </div>
 
-          <div className="relative z-10 flex-1 flex flex-col md:grid md:grid-cols-2 gap-8 p-6 md:p-12 overflow-hidden">
-            <div className="flex flex-col justify-center items-center h-full gap-4 md:gap-8 w-full">
+          <div className="relative z-10 flex-1 flex flex-col md:grid md:grid-cols-2 gap-8 p-6 md:p-12 overflow-y-auto md:overflow-hidden scrollbar-hide">
+            <div className="flex flex-col justify-center items-center md:h-full gap-4 md:gap-8 w-full min-h-min pb-8 md:pb-0">
               <motion.div
                 layoutId={`album-cover-${currentSong.id}`}
                 className="relative aspect-square w-full max-w-[280px] md:max-w-none md:w-auto md:h-full md:max-h-[45vh] rounded-xl overflow-hidden bg-neutral-800 border border-white/10 shrink-0 origin-center shadow-2xl"

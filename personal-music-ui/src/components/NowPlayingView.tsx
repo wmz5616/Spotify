@@ -19,7 +19,6 @@ const NowPlayingView = () => {
     currentSong,
     playQueue,
     isPlaying,
-    bassLevel,
   } = usePlayerStore();
   const [activeView, setActiveView] = useState<"lyrics" | "queue">("lyrics");
 
@@ -27,9 +26,27 @@ const NowPlayingView = () => {
     setActiveView("lyrics");
   }, [currentSong?.id]);
 
-  const albumArtUrl = currentSong?.album?.id
-    ? getAuthenticatedSrc(`api/covers/${currentSong.album.id}`)
-    : "/placeholder.jpg";
+  const getCoverUrl = () => {
+    if (!currentSong) return "/placeholder.jpg";
+
+    if (currentSong.album?.id) {
+      return getAuthenticatedSrc(`api/covers/${currentSong.album.id}`);
+    }
+
+    const path = currentSong.album?.coverPath;
+    if (path && path !== "undefined" && path !== "null") {
+      if (path.startsWith("http")) return path;
+      const cleanPath = path.startsWith("/") ? path : `/${path}`;
+      if (cleanPath.startsWith("/static")) {
+        return getAuthenticatedSrc(cleanPath);
+      }
+      return getAuthenticatedSrc(`/static${cleanPath}`);
+    }
+
+    return "/placeholder.jpg";
+  };
+
+  const albumArtUrl = getCoverUrl();
 
   const { data: dominantColor } = useColor(albumArtUrl, "hex", {
     crossOrigin: "anonymous",
@@ -53,8 +70,8 @@ const NowPlayingView = () => {
   const glowOpacity = useSpring(0, { stiffness: 100, damping: 20 });
 
   useEffect(() => {
-    glowOpacity.set(isPlaying ? bassLevel : 0);
-  }, [bassLevel, isPlaying, glowOpacity]);
+    glowOpacity.set(0);
+  }, [isPlaying, glowOpacity]);
 
   const { album } = currentSong || {};
 
@@ -107,13 +124,14 @@ const NowPlayingView = () => {
                   height={56}
                   className="rounded-md shadow-lg"
                   unoptimized
+                  priority
                 />
                 <div>
                   <h3 className="font-bold text-white line-clamp-1">
                     {currentSong.title}
                   </h3>
                   <div className="text-sm text-neutral-300 line-clamp-1">
-                    {album &&
+                    {album?.artists && Array.isArray(album.artists) ? (
                       album.artists.map((artist, index) => (
                         <React.Fragment key={artist.id}>
                           <Link
@@ -125,7 +143,10 @@ const NowPlayingView = () => {
                           </Link>
                           {index < album.artists.length - 1 && ", "}
                         </React.Fragment>
-                      ))}
+                      ))
+                    ) : (
+                      <span>Unknown Artist</span>
+                    )}
                   </div>
                 </div>
               </div>

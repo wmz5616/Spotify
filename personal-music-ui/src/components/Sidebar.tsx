@@ -12,11 +12,13 @@ import {
   ArrowRight,
   ListMusic,
   Mic2,
+  RefreshCw,
 } from "lucide-react";
 import clsx from "clsx";
 import type { Playlist, Artist } from "@/types";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
+import { useToastStore } from "@/store/useToastStore";
 
 const LibrarySkeleton = ({ collapsed }: { collapsed: boolean }) => (
   <div className="space-y-4 p-2 animate-pulse">
@@ -43,33 +45,51 @@ const LibrarySkeleton = ({ collapsed }: { collapsed: boolean }) => (
 const Sidebar = () => {
   const pathname = usePathname();
   const { isSidebarCollapsed, toggleSidebar } = usePlayerStore();
+  const { addToast } = useToastStore();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [playlistsData, artistsData] = await Promise.all([
+        apiClient<Playlist[]>("/api/playlists"),
+        apiClient<Artist[]>("/api/artists"),
+      ]);
+
+      setPlaylists(playlistsData || []);
+      setArtists(artistsData || []);
+      setError(false);
+    } catch (e) {
+      console.error("Sidebar data fetch failed:", e);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [playlistsData, artistsData] = await Promise.all([
-          apiClient<Playlist[]>("/api/playlists"),
-          apiClient<Artist[]>("/api/artists"),
-        ]);
-
-        setPlaylists(playlistsData || []);
-        setArtists(artistsData || []);
-        setError(false);
-      } catch (e) {
-        console.error("Sidebar data fetch failed:", e);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
+
+  const handleScan = async () => {
+    if (isScanning) return;
+    setIsScanning(true);
+    addToast("正在发起全量扫描...", <RefreshCw className="animate-spin" />);
+
+    try {
+      await apiClient("/api/library/scan?force=true", { method: "POST" });
+      addToast("扫描任务已在后台启动");
+    } catch (e) {
+      console.error("Scan trigger failed:", e);
+      addToast("扫描启动失败，请检查控制台");
+    } finally {
+      setTimeout(() => setIsScanning(false), 2000);
+    }
+  };
 
   const routes = [
     {
@@ -110,6 +130,21 @@ const Sidebar = () => {
             )}
           </Link>
         ))}
+
+        <button
+          onClick={handleScan}
+          disabled={isScanning}
+          className={clsx(
+            "flex items-center gap-x-4 text-neutral-400 hover:text-white transition cursor-pointer w-full",
+            isScanning && "opacity-50 cursor-not-allowed",
+            isSidebarCollapsed && "justify-center"
+          )}
+        >
+          <RefreshCw size={24} className={clsx(isScanning && "animate-spin")} />
+          {!isSidebarCollapsed && (
+            <p className="font-medium truncate">Refresh Library</p>
+          )}
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto bg-neutral-900/50 mx-2 mb-2 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
