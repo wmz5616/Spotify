@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@radix-ui/react-context-menu": "^2.2.16",
     "clsx": "^2.1.1",
     "color-thief-react": "^2.1.0",
     "framer-motion": "^12.23.12",

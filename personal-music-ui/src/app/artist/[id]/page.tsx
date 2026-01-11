@@ -121,11 +121,11 @@ const ArtistDetailPage = () => {
     .slice(0, 5);
 
   const avatarUrl = artist.avatarUrl
-    ? `${API_BASE_URL}/public${artist.avatarUrl}`
+    ? `${API_BASE_URL}/static${artist.avatarUrl}`
     : null;
 
   const headerImageUrl = artist.headerUrl
-    ? `${API_BASE_URL}/public${artist.headerUrl}`
+    ? `${API_BASE_URL}/static${artist.headerUrl}`
     : avatarUrl || "/placeholder.jpg";
 
   const headerTextOpacity = Math.max(0, 1 - scrollY / 150);
@@ -225,7 +225,8 @@ const ArtistDetailPage = () => {
         {artist.bio && artist.bioImageUrl && (
           <AboutCard
             bio={artist.bio}
-            imageUrl={`${API_BASE_URL}/public${artist.bioImageUrl}`}
+            // 修复：也需要更新这里的 Bio 图片路径为 /static
+            imageUrl={`${API_BASE_URL}/static${artist.bioImageUrl}`}
           />
         )}
 

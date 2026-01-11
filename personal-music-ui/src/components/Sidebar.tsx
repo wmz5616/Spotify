@@ -109,25 +109,23 @@ const Sidebar = () => {
   return (
     <div
       className={clsx(
-        "hidden md:flex flex-col h-full bg-black text-white transition-all duration-300 ease-in-out border-r border-neutral-800",
+        "hidden md:flex flex-col h-full bg-black p-2 gap-2 transition-all duration-300 ease-in-out z-40",
         isSidebarCollapsed ? "w-[80px]" : "w-[300px]"
       )}
     >
-      <div className="p-6 space-y-4">
+      <div className="rounded-xl bg-[#121212] px-5 py-4 flex flex-col gap-y-4 shadow-lg border border-white/5">
         {routes.map((route) => (
           <Link
             key={route.href}
             href={route.href}
             className={clsx(
-              "flex items-center gap-x-4 text-neutral-400 hover:text-white transition cursor-pointer",
+              "flex items-center gap-x-4 text-neutral-400 hover:text-white transition cursor-pointer font-bold",
               route.active && "text-white",
               isSidebarCollapsed && "justify-center"
             )}
           >
-            <route.icon size={24} />
-            {!isSidebarCollapsed && (
-              <p className="font-medium truncate">{route.label}</p>
-            )}
+            <route.icon size={26} />
+            {!isSidebarCollapsed && <p className="truncate">{route.label}</p>}
           </Link>
         ))}
 
@@ -135,40 +133,38 @@ const Sidebar = () => {
           onClick={handleScan}
           disabled={isScanning}
           className={clsx(
-            "flex items-center gap-x-4 text-neutral-400 hover:text-white transition cursor-pointer w-full",
+            "flex items-center gap-x-4 text-neutral-400 hover:text-white transition cursor-pointer w-full font-bold",
             isScanning && "opacity-50 cursor-not-allowed",
             isSidebarCollapsed && "justify-center"
           )}
         >
-          <RefreshCw size={24} className={clsx(isScanning && "animate-spin")} />
-          {!isSidebarCollapsed && (
-            <p className="font-medium truncate">Refresh Library</p>
-          )}
+          <RefreshCw size={26} className={clsx(isScanning && "animate-spin")} />
+          {!isSidebarCollapsed && <p className="truncate">Refresh</p>}
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto bg-neutral-900/50 mx-2 mb-2 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <div className="p-4">
+      <div className="flex-1 rounded-xl bg-[#121212] overflow-hidden flex flex-col shadow-lg border border-white/5">
+        <div className="p-4 shadow-md z-10">
           <div
             className={clsx(
-              "flex items-center justify-between mb-4 text-neutral-400",
+              "flex items-center justify-between text-neutral-400",
               isSidebarCollapsed && "flex-col gap-4"
             )}
           >
             <div
               className={clsx(
-                "flex items-center gap-x-2",
+                "flex items-center gap-x-2 hover:text-white transition cursor-pointer",
                 isSidebarCollapsed && "justify-center"
               )}
             >
-              <Library size={24} />
+              <Library size={26} />
               {!isSidebarCollapsed && (
-                <p className="font-medium truncate">Your Library</p>
+                <p className="font-bold truncate">Your Library</p>
               )}
             </div>
             <button
               onClick={toggleSidebar}
-              className="hover:text-white transition p-1"
+              className="hover:text-white transition p-2 hover:bg-neutral-800 rounded-full"
               title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
               {isSidebarCollapsed ? (
@@ -178,27 +174,29 @@ const Sidebar = () => {
               )}
             </button>
           </div>
+        </div>
 
+        <div className="flex-1 overflow-y-auto p-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hover:[&::-webkit-scrollbar]:block hover:[scrollbar-width:thin]">
           {loading ? (
             <LibrarySkeleton collapsed={isSidebarCollapsed} />
           ) : error ? (
             <div className="text-center text-red-400 text-sm mt-4">
-              {!isSidebarCollapsed && "无法加载媒体库"}
+              {!isSidebarCollapsed && "Error loading library"}
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-1">
               {playlists.map((playlist) => (
                 <Link
                   key={`playlist-${playlist.id}`}
                   href={`/playlist/${playlist.id}`}
                   className={clsx(
-                    "flex items-center gap-x-3 p-2 rounded-md hover:bg-neutral-800/50 cursor-pointer group transition",
+                    "flex items-center gap-x-3 p-2 rounded-md hover:bg-[#1f1f1f] cursor-pointer group transition",
                     pathname === `/playlist/${playlist.id}` &&
-                      "bg-neutral-800 text-green-500",
+                      "bg-[#232323] text-green-500",
                     isSidebarCollapsed && "justify-center"
                   )}
                 >
-                  <div className="w-12 h-12 bg-neutral-800 rounded-md flex items-center justify-center shrink-0 group-hover:bg-neutral-700 transition">
+                  <div className="w-12 h-12 bg-neutral-800 rounded-md flex items-center justify-center shrink-0 group-hover:bg-neutral-700 transition shadow-sm border border-white/5">
                     <ListMusic
                       className={clsx(
                         "text-neutral-400 group-hover:text-white",
@@ -212,7 +210,7 @@ const Sidebar = () => {
                     <div className="flex flex-col overflow-hidden">
                       <p
                         className={clsx(
-                          "truncate font-medium",
+                          "truncate font-medium text-[15px]",
                           pathname === `/playlist/${playlist.id}`
                             ? "text-green-500"
                             : "text-white"
@@ -242,13 +240,13 @@ const Sidebar = () => {
                     key={`artist-${artist.id}`}
                     href={`/artist/${artist.id}`}
                     className={clsx(
-                      "flex items-center gap-x-3 p-2 rounded-md hover:bg-neutral-800/50 cursor-pointer group transition",
+                      "flex items-center gap-x-3 p-2 rounded-md hover:bg-[#1f1f1f] cursor-pointer group transition",
                       pathname === `/artist/${artist.id}` &&
-                        "bg-neutral-800 text-green-500",
+                        "bg-[#232323] text-green-500",
                       isSidebarCollapsed && "justify-center"
                     )}
                   >
-                    <div className="w-12 h-12 relative rounded-full overflow-hidden bg-neutral-800 shrink-0 flex items-center justify-center">
+                    <div className="w-12 h-12 relative rounded-full overflow-hidden bg-neutral-800 shrink-0 flex items-center justify-center border border-white/5 shadow-sm">
                       {avatarUrl ? (
                         <Image
                           src={avatarUrl}
@@ -265,7 +263,7 @@ const Sidebar = () => {
                       <div className="flex flex-col overflow-hidden">
                         <p
                           className={clsx(
-                            "truncate font-medium",
+                            "truncate font-medium text-[15px]",
                             pathname === `/artist/${artist.id}`
                               ? "text-green-500"
                               : "text-white"

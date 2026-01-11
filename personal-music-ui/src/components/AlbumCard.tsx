@@ -7,6 +7,7 @@ import { Play, LoaderCircle } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import type { Song } from "@/types";
 import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
+import { motion } from "framer-motion";
 
 type AlbumForCard = {
   id: number;
@@ -60,22 +61,28 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
   return (
     <Link
       href={`/album/${album.id}`}
-      className="block group relative p-4 rounded-lg bg-neutral-900/50 hover:bg-neutral-800/80 transition-colors duration-300"
+      className="block group relative p-4 rounded-lg bg-[#181818] hover:bg-[#282828] transition-colors duration-300"
     >
-      <div className="relative transform group-hover:scale-105 transition-transform duration-300 ease-in-out">
-        <div className="relative w-full aspect-square shadow-lg">
+      <div className="relative">
+        <motion.div
+          layoutId={`album-cover-${album.id}`}
+          className="relative w-full aspect-square shadow-lg mb-4 rounded-md overflow-hidden"
+          transition={{ duration: 0.3 }}
+        >
           <Image
             src={albumArtUrl}
             alt={`Cover for ${album.title}`}
             fill
-            className="object-cover rounded-md"
+            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
             unoptimized
             sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 20vw"
+            priority={false}
           />
-        </div>
-        <div className="mt-4">
+        </motion.div>
+
+        <div className="flex flex-col gap-1">
           <h3 className="font-bold truncate text-white">{album.title}</h3>
-          <p className="text-sm text-neutral-400 truncate">
+          <p className="text-sm text-[#a7a7a7] truncate font-medium">
             {album.artists?.map((artist) => artist.name).join(", ") ||
               "Unknown Artist"}
           </p>
@@ -87,8 +94,8 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
         disabled={isLoading}
         className="absolute bottom-[100px] right-6 flex items-center justify-center bg-green-500 p-3 rounded-full shadow-lg 
                    opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 
-                   transition-all duration-300 ease-in-out
-                   focus:outline-none hover:scale-110 hover:bg-green-400"
+                   transition-all duration-300 ease-in-out z-20
+                   focus:outline-none hover:scale-110 hover:bg-green-400 active:scale-95"
         aria-label={`Play ${album.title}`}
       >
         {isLoading ? (

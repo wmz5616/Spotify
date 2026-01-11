@@ -60,7 +60,7 @@ export class MusicLibraryService {
               update: {},
             });
             const artistPath = path.join(directory, dirent.name);
-            await this.processArtistImage(
+            await this.processArtistImages(
               artist.id,
               artistPath,
               artistImagesDir,
@@ -337,37 +337,72 @@ export class MusicLibraryService {
     return null;
   }
 
-  private async processArtistImage(
+  private async processArtistImages(
     artistId: number,
     artistDir: string,
     targetDir: string,
     tx: any,
   ) {
-    const candidates = ['avatar.jpg', 'avatar.png', 'artist.jpg'];
-    let found: string | null = null;
+    const avatarCandidates = [
+      'avatar.jpg',
+      'avatar.png',
+      'artist.jpg',
+      'artist.png',
+    ];
+    const headerCandidates = [
+      'header.jpg',
+      'header.png',
+      'banner.jpg',
+      'banner.png',
+      'background.jpg',
+      'background.png',
+    ];
+
+    let avatarFound: string | null = null;
+    let headerFound: string | null = null;
+
     try {
       const files = await fs.readdir(artistDir);
       for (const f of files) {
-        if (candidates.includes(f.toLowerCase())) {
-          found = path.join(artistDir, f);
-          break;
+        const lower = f.toLowerCase();
+        if (!avatarFound && avatarCandidates.includes(lower)) {
+          avatarFound = path.join(artistDir, f);
+        }
+        if (!headerFound && headerCandidates.includes(lower)) {
+          headerFound = path.join(artistDir, f);
         }
       }
     } catch {
       return;
     }
 
-    if (found) {
-      const ext = path.extname(found);
-      const target = path.join(targetDir, `${artistId}-avatar${ext}`);
-      if (await this.safeLinkOrCopy(found, target)) {
-        await tx.artist
-          .update({
-            where: { id: artistId },
-            data: { avatarUrl: `/artist-images/${artistId}-avatar${ext}` },
-          })
-          .catch(() => {});
+    const updateData: Record<string, string> = {};
+
+    if (avatarFound) {
+      const ext = path.extname(avatarFound);
+      const targetName = `${artistId}-avatar${ext}`;
+      const target = path.join(targetDir, targetName);
+      if (await this.safeLinkOrCopy(avatarFound, target)) {
+        updateData.avatarUrl = `/artist-images/${targetName}`;
       }
+    }
+
+    if (headerFound) {
+      const ext = path.extname(headerFound);
+      const targetName = `${artistId}-header${ext}`;
+      const target = path.join(targetDir, targetName);
+      if (await this.safeLinkOrCopy(headerFound, target)) {
+        updateData.headerUrl = `/artist-images/${targetName}`;
+      }
+    }
+
+    if (Object.keys(updateData).length > 0) {
+      await tx.artist
+        .update({
+          where: { id: artistId },
+          data: updateData,
+        })
+        .catch(() => {});
     }
   }
 
@@ -432,19 +467,19 @@ export class MusicLibraryService {
       }
 
       const allArtists = await this.prisma.artist.findMany({
-        select: { avatarUrl: true },
+        select: { avatarUrl: true, headerUrl: true },
       });
-      const validAvatars = new Set(
-        allArtists
-          .map((a) => a.avatarUrl)
-          .filter((p): p is string => !!p)
-          .map((p) => path.basename(p)),
-      );
+
+      const validImages = new Set<string>();
+      allArtists.forEach((a) => {
+        if (a.avatarUrl) validImages.add(path.basename(a.avatarUrl));
+        if (a.headerUrl) validImages.add(path.basename(a.headerUrl));
+      });
 
       if (await pathExists(artistImagesDir)) {
         const files = await fs.readdir(artistImagesDir);
         for (const file of files) {
-          if (!validAvatars.has(file)) {
+          if (!validImages.has(file)) {
             await remove(path.join(artistImagesDir, file));
           }
         }

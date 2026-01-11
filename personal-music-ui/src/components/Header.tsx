@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Search, ChevronLeft, ChevronRight, User, Bell } from "lucide-react";
+import { clsx } from "clsx";
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -28,47 +31,68 @@ const Header = () => {
       if (query) {
         router.push(`/search?q=${query}`);
       }
-    }, 300);
-
+    }, 500);
     return () => clearTimeout(debounceTimer);
   }, [query, router]);
 
+  const showSearchBar = pathname === "/search";
+
   return (
     <header
-      className={`sticky top-0 z-40 p-4 transition-colors duration-300 ${
-        isScrolled ? "bg-black/80 backdrop-blur-md" : "bg-transparent"
-      }`}
+      className={clsx(
+        "sticky top-0 z-50 h-16 px-6 flex items-center justify-between transition-all duration-400 ease-in-out",
+        isScrolled
+          ? "bg-[#121212]/95 backdrop-blur-md shadow-lg"
+          : "bg-transparent"
+      )}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.back()}
-            className="bg-black/50 p-2 rounded-full hover:bg-black/80 transition"
-            aria-label="Go back"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            onClick={() => router.forward()}
-            className="bg-black/50 p-2 rounded-full hover:bg-black/80 transition"
-            aria-label="Go forward"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </div>
+      <div className="flex items-center gap-2 min-w-[80px]">
+        <button
+          onClick={() => router.back()}
+          className="bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full transition disabled:opacity-50 cursor-pointer"
+          title="Go back"
+        >
+          <ChevronLeft size={22} />
+        </button>
+        <button
+          onClick={() => router.forward()}
+          className="bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full transition disabled:opacity-50 cursor-pointer"
+          title="Go forward"
+        >
+          <ChevronRight size={22} />
+        </button>
+      </div>
 
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-          <input
-            type="text"
-            placeholder="What do you want to listen to?"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-80 bg-neutral-800/80 rounded-full py-3 pl-12 pr-4 text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-white"
-          />
-        </div>
+      <div className="flex-1 max-w-md px-4">
+        {showSearchBar ? (
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-white transition-colors">
+              <Search size={20} />
+            </div>
+            <input
+              type="text"
+              placeholder="What do you want to play?"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full bg-[#242424] hover:bg-[#2a2a2a] focus:bg-[#242424] rounded-full py-3 pl-10 pr-4 text-sm text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all border border-transparent focus:border-white/10"
+              autoFocus
+            />
+          </div>
+        ) : (
+          <div />
+        )}
+      </div>
 
-        <div>{}</div>
+      <div className="flex items-center gap-4 min-w-[80px] justify-end">
+        <button className="text-neutral-400 hover:text-white transition p-2 hover:bg-neutral-800 rounded-full">
+          <Bell size={20} />
+        </button>
+
+        <button className="bg-neutral-800 p-1.5 rounded-full hover:scale-105 transition border-2 border-black">
+          <div className="w-7 h-7 bg-orange-600 rounded-full flex items-center justify-center">
+            <span className="font-bold text-xs text-black">U</span>
+          </div>
+        </button>
       </div>
     </header>
   );
