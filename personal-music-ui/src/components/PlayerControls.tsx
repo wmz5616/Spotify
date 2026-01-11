@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Play,
   Pause,
@@ -33,13 +33,28 @@ const PlayerControls = () => {
     toggleFullScreen,
   } = usePlayerStore();
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // 1. 在挂载前，返回一个占位符以防止布局跳动，但避免渲染具体内容导致 mismatch
+  if (!isMounted) {
+    return (
+      <div className="col-start-1 col-span-2 h-[80px] md:h-[90px] bg-neutral-950 border-t border-neutral-800 mb-16 md:mb-0" />
+    );
+  }
+
+  // 2. 挂载后，如果没有歌曲，显示提示
   if (!currentSong) {
     return (
-      <footer className="col-start-1 col-span-2 bg-neutral-950 h-[90px] px-4 border-t border-neutral-800 flex items-center justify-center">
+      <footer className="col-start-1 col-span-2 bg-neutral-950 h-[80px] md:h-[90px] px-4 border-t border-neutral-800 flex items-center justify-center mb-16 md:mb-0">
         <div className="text-neutral-500">Select a song to play</div>
       </footer>
     );
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const albumData = currentSong.album as any;
 
@@ -56,7 +71,8 @@ const PlayerControls = () => {
 
   return (
     <>
-      <footer className="col-start-1 col-span-2 bg-neutral-950 h-[90px] px-4 border-t border-neutral-800 grid grid-cols-3 items-center z-50 relative">
+      <footer className="col-start-1 col-span-2 bg-neutral-950 h-[80px] md:h-[90px] px-4 border-t border-neutral-800 flex justify-between md:grid md:grid-cols-3 items-center z-50 relative mb-16 md:mb-0">
+        {/* 左侧：歌曲信息 */}
         <div className="flex items-center gap-3 truncate">
           <AnimatePresence mode="wait">
             <motion.div
@@ -74,7 +90,7 @@ const PlayerControls = () => {
               >
                 <motion.div
                   layoutId={`album-cover-${currentSong.id}`}
-                  className="relative w-14 h-14 flex-shrink-0 shadow-md z-50 overflow-hidden rounded-md"
+                  className="relative w-12 h-12 md:w-14 md:h-14 flex-shrink-0 shadow-md z-50 overflow-hidden rounded-md"
                 >
                   <Image
                     src={albumArtUrl}
@@ -114,7 +130,8 @@ const PlayerControls = () => {
           </AnimatePresence>
         </div>
 
-        <div className="flex flex-col items-center justify-center gap-2 w-full max-w-[45%] mx-auto">
+        {/* 中间：桌面端控制条 */}
+        <div className="hidden md:flex flex-col items-center justify-center gap-2 w-full max-w-[45%] mx-auto">
           <div className="flex items-center gap-6">
             <button
               onClick={toggleShuffle}
@@ -172,7 +189,8 @@ const PlayerControls = () => {
           <ProgressBar />
         </div>
 
-        <div className="flex items-center justify-end gap-4">
+        {/* 右侧：桌面端功能键 */}
+        <div className="hidden md:flex items-center justify-end gap-4">
           <QueueButton />
 
           <button
@@ -181,6 +199,23 @@ const PlayerControls = () => {
             title="Expand to Full Screen"
           >
             <ChevronUp size={20} />
+          </button>
+        </div>
+
+        {/* 移动端专属：简易播放按钮 */}
+        <div className="flex md:hidden items-center">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlayPause();
+            }}
+            className="p-3 text-white hover:text-green-400 transition-colors"
+          >
+            {isPlaying ? (
+              <Pause size={28} fill="currentColor" />
+            ) : (
+              <Play size={28} fill="currentColor" />
+            )}
           </button>
         </div>
       </footer>

@@ -19,6 +19,7 @@ import { usePlayerStore } from "@/store/usePlayerStore";
 import LyricDisplay from "./LyricDisplay";
 import Image from "next/image";
 import { getAuthenticatedSrc } from "@/lib/api-client";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Song } from "@/types";
 
 const LikeButton = ({

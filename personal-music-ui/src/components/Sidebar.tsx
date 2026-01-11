@@ -14,7 +14,7 @@ import {
   Mic2,
   RefreshCw,
 } from "lucide-react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { Playlist, Artist } from "@/types";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
@@ -109,7 +109,7 @@ const Sidebar = () => {
   return (
     <div
       className={clsx(
-        "flex flex-col h-full bg-black text-white transition-all duration-300 ease-in-out border-r border-neutral-800",
+        "hidden md:flex flex-col h-full bg-black text-white transition-all duration-300 ease-in-out border-r border-neutral-800",
         isSidebarCollapsed ? "w-[80px]" : "w-[300px]"
       )}
     >

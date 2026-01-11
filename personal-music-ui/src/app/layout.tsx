@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import NowPlayingView from "@/components/NowPlayingView";
 import GlobalKeyboardShortcuts from "@/components/GlobalKeyboardShortcuts";
 import ToastContainer from "@/components/ToastContainer";
+import MobileNavBar from "@/components/MobileNavBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,10 +30,13 @@ export default function RootLayout({
             <Sidebar />
             <main id="main-content" className="flex-1 overflow-y-auto relative">
               <Header />
-              <div className="p-6">{children}</div>
+              <div className="p-6 pb-32 md:pb-6">{children}</div>
             </main>
           </div>
+
+          <MobileNavBar />
           <PlayerControls />
+
           <AudioPlayer />
           <NowPlayingView />
           <GlobalKeyboardShortcuts />
