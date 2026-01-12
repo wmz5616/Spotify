@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 type AlbumForCard = {
   id: number;
   title: string;
+  coverPath?: string | null;
   artists?: {
     id: number;
     name: string;
@@ -28,7 +29,15 @@ type AlbumWithSongs = AlbumForCard & {
 const AlbumCard = ({ album }: { album: AlbumForCard }) => {
   const { playSong } = usePlayerStore();
   const [isLoading, setIsLoading] = useState(false);
-  const albumArtUrl = getAuthenticatedSrc(`api/covers/${album.id}?size=300`);
+
+  const getCoverUrl = () => {
+    if (album.id) {
+      return getAuthenticatedSrc(`api/covers/${album.id}?size=300`);
+    }
+    return "/placeholder.jpg";
+  };
+
+  const albumArtUrl = getCoverUrl();
 
   const handlePlayClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -41,33 +50,36 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
       );
 
       if (fullAlbum && fullAlbum.songs && fullAlbum.songs.length > 0) {
+        const artistNames =
+          fullAlbum.artists?.map((a) => a.name).join(", ") || "";
+
         const queue = fullAlbum.songs.map((song) => ({
           ...song,
+          artist: artistNames,
           album: {
             id: fullAlbum.id,
             title: fullAlbum.title,
             artists: fullAlbum.artists || [],
+            coverPath: fullAlbum.coverPath,
           },
         }));
+
         playSong(queue[0], queue);
       }
     } catch (error) {
-      console.error("Failed to fetch album for playback:", error);
+      console.error("Failed to play album:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Link
-      href={`/album/${album.id}`}
-      className="block group relative p-4 rounded-lg bg-[#181818] hover:bg-[#282828] transition-colors duration-300"
-    >
-      <div className="relative">
+    <Link href={`/album/${album.id}`} className="block group">
+      <div className="bg-[#181818] p-4 rounded-md hover:bg-[#282828] transition-colors duration-300 ease-in-out h-full relative group">
         <motion.div
-          layoutId={`album-cover-${album.id}`}
-          className="relative w-full aspect-square shadow-lg mb-4 rounded-md overflow-hidden"
-          transition={{ duration: 0.3 }}
+          className="relative aspect-square w-full mb-4 rounded-md shadow-lg overflow-hidden"
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
         >
           <Image
             src={albumArtUrl}
@@ -81,11 +93,28 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
         </motion.div>
 
         <div className="flex flex-col gap-1">
-          <h3 className="font-bold truncate text-white">{album.title}</h3>
-          <p className="text-sm text-[#a7a7a7] truncate font-medium">
-            {album.artists?.map((artist) => artist.name).join(", ") ||
-              "Unknown Artist"}
-          </p>
+          <h3 className="font-bold truncate text-white" title={album.title}>
+            {album.title}
+          </h3>
+
+          <div className="text-sm text-[#a7a7a7] truncate font-medium relative z-10 h-5">
+            {album.artists && album.artists.length > 0 ? (
+              album.artists.map((artist, i) => (
+                <React.Fragment key={artist.id}>
+                  <Link
+                    href={`/artist/${artist.id}`}
+                    className="hover:underline hover:text-white transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {artist.name}
+                  </Link>
+                  {i < (album.artists?.length || 0) - 1 && ", "}
+                </React.Fragment>
+              ))
+            ) : (
+              <span>Unknown Artist</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -99,9 +128,9 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
         aria-label={`Play ${album.title}`}
       >
         {isLoading ? (
-          <LoaderCircle size={24} className="text-black animate-spin" />
+          <LoaderCircle className="animate-spin text-black" size={24} />
         ) : (
-          <Play size={24} className="text-black translate-x-0.5" fill="black" />
+          <Play fill="black" className="text-black translate-x-0.5" size={24} />
         )}
       </button>
     </Link>

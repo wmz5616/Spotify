@@ -225,7 +225,6 @@ const ArtistDetailPage = () => {
         {artist.bio && artist.bioImageUrl && (
           <AboutCard
             bio={artist.bio}
-            // 修复：也需要更新这里的 Bio 图片路径为 /static
             imageUrl={`${API_BASE_URL}/static${artist.bioImageUrl}`}
           />
         )}
