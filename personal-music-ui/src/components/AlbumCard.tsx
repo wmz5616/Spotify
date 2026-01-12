@@ -74,10 +74,13 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
   };
 
   return (
-    <Link href={`/album/${album.id}`} className="block group">
-      <div className="bg-[#181818] p-4 rounded-md hover:bg-[#282828] transition-colors duration-300 ease-in-out h-full relative group">
+    <div className="group relative block h-full bg-[#181818] p-4 rounded-md hover:bg-[#282828] transition-colors duration-300 ease-in-out">
+      <Link
+        href={`/album/${album.id}`}
+        className="block relative aspect-square w-full mb-4 rounded-md shadow-lg overflow-hidden"
+      >
         <motion.div
-          className="relative aspect-square w-full mb-4 rounded-md shadow-lg overflow-hidden"
+          className="w-full h-full relative"
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
         >
@@ -91,30 +94,34 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
             priority={false}
           />
         </motion.div>
+      </Link>
 
-        <div className="flex flex-col gap-1">
-          <h3 className="font-bold truncate text-white" title={album.title}>
+      <div className="flex flex-col gap-1">
+        <Link href={`/album/${album.id}`} className="block w-fit max-w-full">
+          <h3
+            className="font-bold truncate text-white hover:underline"
+            title={album.title}
+          >
             {album.title}
           </h3>
+        </Link>
 
-          <div className="text-sm text-[#a7a7a7] truncate font-medium relative z-10 h-5">
-            {album.artists && album.artists.length > 0 ? (
-              album.artists.map((artist, i) => (
-                <React.Fragment key={artist.id}>
-                  <Link
-                    href={`/artist/${artist.id}`}
-                    className="hover:underline hover:text-white transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {artist.name}
-                  </Link>
-                  {i < (album.artists?.length || 0) - 1 && ", "}
-                </React.Fragment>
-              ))
-            ) : (
-              <span>Unknown Artist</span>
-            )}
-          </div>
+        <div className="text-sm text-[#a7a7a7] truncate font-medium relative z-10 h-5">
+          {album.artists && album.artists.length > 0 ? (
+            album.artists.map((artist, i) => (
+              <React.Fragment key={artist.id}>
+                <Link
+                  href={`/artist/${artist.id}`}
+                  className="hover:underline hover:text-white transition-colors"
+                >
+                  {artist.name}
+                </Link>
+                {i < (album.artists?.length || 0) - 1 && ", "}
+              </React.Fragment>
+            ))
+          ) : (
+            <span>Unknown Artist</span>
+          )}
         </div>
       </div>
 
@@ -133,7 +140,7 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
           <Play fill="black" className="text-black translate-x-0.5" size={24} />
         )}
       </button>
-    </Link>
+    </div>
   );
 };
 
