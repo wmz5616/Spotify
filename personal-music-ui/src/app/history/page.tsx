@@ -25,7 +25,7 @@ interface HistoryItem {
 }
 
 export default function HistoryPage() {
-    const { token, isAuthenticated } = useUserStore();
+    const { token, isAuthenticated, hasHydrated } = useUserStore();
     const { playSong, currentSong } = usePlayerStore();
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -105,7 +105,7 @@ export default function HistoryPage() {
         return date.toLocaleDateString("zh-CN");
     };
 
-    if (!isHydrated) {
+    if (!isHydrated || !hasHydrated) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full" />

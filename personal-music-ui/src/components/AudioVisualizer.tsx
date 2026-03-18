@@ -15,7 +15,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     isPlaying,
     barCount = 60,
     height = 32,
-    color = "#1db954",
+    color = "#1ed760",
     className,
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -57,10 +57,14 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
             const effectiveBarWidth = Math.max(1, barWidth - gap);
 
             const gradient = ctx.createLinearGradient(0, height, 0, 0);
-            gradient.addColorStop(0, "rgba(29, 185, 84, 0.2)");
-            gradient.addColorStop(0.5, "rgba(29, 185, 84, 0.8)");
-            gradient.addColorStop(1, "#1db954");
+            gradient.addColorStop(0, "rgba(30, 215, 96, 0.3)");
+            gradient.addColorStop(0.5, "rgba(30, 215, 96, 0.9)");
+            gradient.addColorStop(1, "#1ed760");
             ctx.fillStyle = gradient;
+
+            // Add glow effect
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = "#1ed760";
 
             const halfCount = Math.floor(barCount / 2);
             const center = rect.width / 2;

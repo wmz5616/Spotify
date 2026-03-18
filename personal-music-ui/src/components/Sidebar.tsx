@@ -17,6 +17,7 @@ import {
 import { clsx } from "clsx";
 import type { Playlist, Artist } from "@/types";
 import { usePlayerStore } from "@/store/usePlayerStore";
+import { useSidebarStore } from "@/store/useSidebarStore";
 import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 import { useToastStore } from "@/store/useToastStore";
 import UserQuickLinks from "./UserQuickLinks";
@@ -45,13 +46,19 @@ const LibrarySkeleton = ({ collapsed }: { collapsed: boolean }) => (
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const { isSidebarCollapsed, toggleSidebar } = usePlayerStore();
+  const { isCollapsed: isSidebarCollapsed, toggle: toggleSidebar } = useSidebarStore();
   const { addToast } = useToastStore();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Hydration guard to prevent flash of unstyled/wrong-state content
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -110,10 +117,12 @@ const Sidebar = () => {
   return (
     <div
       className={clsx(
-        "hidden md:flex flex-col h-full bg-black p-2 gap-2 transition-all duration-300 ease-in-out z-40",
-        isSidebarCollapsed ? "w-[80px]" : "w-[300px]"
+        "hidden md:flex flex-col h-full bg-black p-2 gap-2 transition-all duration-300 ease-in-out z-40 transition-opacity duration-300",
+        isSidebarCollapsed ? "w-[80px]" : "w-[300px]",
+        !isHydrated && "opacity-0"
       )}
     >
+
       <div className="rounded-xl bg-[#121212] px-5 py-4 flex flex-col gap-y-4 shadow-lg border border-white/5">
         {routes.map((route) => (
           <Link

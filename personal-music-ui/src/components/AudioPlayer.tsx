@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { useToastStore } from "@/store/useToastStore";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { useUserStore } from "@/store/useUserStore";
-import { getAuthenticatedSrc } from "@/lib/api-client";
+import { getAuthenticatedSrc, getStreamSrc, apiClient } from "@/lib/api-client";
 
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const lastRecordedSongRef = useRef<number | null>(null);
   const { addToast } = useToastStore();
   const { recordPlay } = useHistoryStore();
-  const { isAuthenticated } = useUserStore();
+  const { isAuthenticated, settings } = useUserStore();
+  const [streamToken, setStreamToken] = useState<string | null>(null);
 
   const {
     currentSong,
@@ -100,13 +101,47 @@ const AudioPlayer = () => {
     }
   }, [audioRef.current, setAnalyser]);
 
-  if (!currentSong) return null;
+  useEffect(() => {
+    let isMounted = true;
+    
+    // Reset token when song changes
+    setStreamToken(null);
 
-  const streamUrl = getAuthenticatedSrc(`api/stream/${currentSong.id}`);
+    if (!currentSong || !isAuthenticated) {
+      return;
+    }
+
+    const fetchToken = async () => {
+      try {
+        const data = await apiClient<{ token: string }>(`/api/songs/${currentSong.id}/stream-token`);
+        if (isMounted && data.token) {
+          setStreamToken(data.token);
+        }
+      } catch (err) {
+        if (isMounted) console.error("Failed to fetch stream token:", err);
+      }
+    };
+
+    fetchToken();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentSong?.id, isAuthenticated]);
+
+  const streamUrl = useMemo(() => {
+    if (!currentSong) return undefined;
+    // 如果已登录，务必等待 token 准备好，避免产生无效请求或 401
+    if (isAuthenticated && !streamToken) return undefined;
+    return getStreamSrc(currentSong.id, streamToken || undefined, settings?.audioQuality);
+  }, [currentSong?.id, streamToken, settings?.audioQuality, isAuthenticated]);
+
+  if (!currentSong) return null;
 
   return (
     <audio
       ref={audioRef}
+      onContextMenu={(e) => e.preventDefault()}
       src={streamUrl}
       crossOrigin="anonymous"
       preload="auto"

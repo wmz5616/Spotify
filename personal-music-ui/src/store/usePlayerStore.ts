@@ -16,7 +16,6 @@ interface PlayerState {
   currentQueueIndex: number;
   playMode: PlayMode;
   isQueueOpen: boolean;
-  isSidebarCollapsed: boolean;
   isLoading: boolean;
   isFullScreen: boolean;
   isMuted: boolean;
@@ -48,7 +47,6 @@ interface PlayerState {
   toggleShuffle: () => void;
   toggleRepeat: () => void;
   toggleQueue: () => void;
-  toggleSidebar: () => void;
   setIsLoading: (loading: boolean) => void;
   toggleFullScreen: () => void;
   setFullScreen: (isFull: boolean) => void;
@@ -78,7 +76,6 @@ export const usePlayerStore = create<PlayerState>()(
       currentQueueIndex: -1,
       playMode: "normal",
       isQueueOpen: false,
-      isSidebarCollapsed: false,
       isLoading: false,
       isFullScreen: false,
       isMuted: false,
@@ -334,8 +331,6 @@ export const usePlayerStore = create<PlayerState>()(
         }),
 
       toggleQueue: () => set((state) => ({ isQueueOpen: !state.isQueueOpen })),
-      toggleSidebar: () =>
-        set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
       setIsLoading: (loading) => set({ isLoading: loading }),
 
       toggleFullScreen: () =>
@@ -362,7 +357,6 @@ export const usePlayerStore = create<PlayerState>()(
         currentSong: state.currentSong,
         volume: state.volume,
         playMode: state.playMode,
-        isSidebarCollapsed: state.isSidebarCollapsed,
         isMuted: state.isMuted,
         prevVolume: state.prevVolume,
         autoPlayNext: state.autoPlayNext,

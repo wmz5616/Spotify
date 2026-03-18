@@ -24,7 +24,11 @@ export class UserService {
                 username: true,
                 displayName: true,
                 avatarPath: true,
+                backgroundPath: true,
+                avatarPosition: true,
+                backgroundPosition: true,
                 bio: true,
+                ipLocation: true,
                 createdAt: true,
                 _count: {
                     select: {
@@ -32,6 +36,9 @@ export class UserService {
                         favoriteAlbums: true,
                         followedArtists: true,
                         playlists: true,
+                        followers: true,
+                        following: true,
+                        feedPosts: true,
                     },
                 },
             },
@@ -63,6 +70,10 @@ export class UserService {
                 displayName: dto.displayName,
                 username: dto.username,
                 bio: dto.bio,
+                backgroundPath: dto.backgroundPath,
+                ipLocation: dto.ipLocation,
+                avatarPosition: dto.avatarPosition,
+                backgroundPosition: dto.backgroundPosition,
             },
             select: {
                 id: true,
@@ -70,7 +81,11 @@ export class UserService {
                 username: true,
                 displayName: true,
                 avatarPath: true,
+                avatarPosition: true,
+                backgroundPath: true,
+                backgroundPosition: true,
                 bio: true,
+                ipLocation: true,
             },
         });
 

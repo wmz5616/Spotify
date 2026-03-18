@@ -122,7 +122,8 @@ export class MusicLibraryService {
       percentage: 95,
       message: 'Cleaning up library...',
     });
-    await this.cleanupOrphanedRecords(filePaths, coversDir, artistImagesDir);
+    const cacheDir = path.join(process.cwd(), 'public', 'cache', 'covers');
+    await this.cleanupOrphanedRecords(filePaths, coversDir, artistImagesDir, cacheDir);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     this.logger.log(`Scan complete in ${duration}s.`);
@@ -445,6 +446,7 @@ export class MusicLibraryService {
     currentValidPaths: string[],
     coversDir: string,
     artistImagesDir: string,
+    cacheDir?: string,
   ) {
     const validPathsSet = new Set(currentValidPaths);
     const allSongs = await this.prisma.song.findMany({
@@ -522,6 +524,12 @@ export class MusicLibraryService {
             await remove(path.join(artistImagesDir, file));
           }
         }
+      }
+
+      if (cacheDir && (await pathExists(cacheDir))) {
+        this.logger.log('Cleaning up processed covers cache...');
+        await remove(cacheDir);
+        await ensureDir(cacheDir);
       }
     } catch (e) {
       this.logger.warn(`Cleanup files error: ${e}`);

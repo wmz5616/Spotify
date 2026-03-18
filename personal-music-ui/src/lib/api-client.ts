@@ -7,8 +7,9 @@ if (typeof window !== "undefined" && !API_KEY) {
   );
 }
 
-interface FetchOptions extends RequestInit {
+interface FetchOptions extends Omit<RequestInit, "body"> {
   params?: Record<string, string | number>;
+  body?: any;
 }
 
 /**
@@ -21,10 +22,46 @@ export function getAuthenticatedSrc(path: string): string {
     return "";
   }
 
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const separator = normalizedPath.includes("?") ? "&" : "?";
+  let normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  
+  // 核心逻辑: 如果是媒体文件夹路径且缺少 /public/ 或 /static/ 等前缀，统一补全 /public
+  // 这样可以解决后端存数据库路径不带 public，但 ServeStatic 挂载在 /public 的不一致问题
+  const mediaFolders = ['/avatars/', '/backgrounds/', '/covers/', '/feed/', '/artist-images/', '/playlist-covers/'];
+  const hasCommonPrefix = normalizedPath.startsWith('/public/') || 
+                         normalizedPath.startsWith('/static/') || 
+                         normalizedPath.startsWith('/api/');
+                         
+  if (!hasCommonPrefix && mediaFolders.some(folder => normalizedPath.startsWith(folder))) {
+    normalizedPath = `/public${normalizedPath}`;
+  }
 
+  const separator = normalizedPath.includes("?") ? "&" : "?";
   return `${API_BASE_URL}${normalizedPath}${separator}key=${API_KEY}`;
+}
+
+/**
+ * Get the streaming source URL with an optional token
+ * @param songId 
+ * @param token 
+ * @param quality 
+ */
+export function getStreamSrc(songId: number, token?: string, quality?: string): string {
+  let url = `${API_BASE_URL}/api/stream/${songId}`;
+  const params = new URLSearchParams();
+  
+  if (token) {
+    params.append('token', token);
+  } else if (API_KEY) {
+    // Fallback to key if no token provided
+    params.append('key', API_KEY);
+  }
+  
+  if (quality) {
+    params.append('quality', quality);
+  }
+  
+  const queryString = params.toString();
+  return queryString ? `${url}?${queryString}` : url;
 }
 
 export async function apiClient<T>(
@@ -48,14 +85,35 @@ export async function apiClient<T>(
     }
   }
 
+  // Get token from zustand storage
+  let token = "";
+  if (typeof window !== "undefined") {
+    const storage = localStorage.getItem("user-storage");
+    if (storage) {
+      try {
+        const parsed = JSON.parse(storage);
+        token = parsed.state?.token || "";
+      } catch (e) {
+        console.error("Failed to parse user-storage", e);
+      }
+    }
+  }
+
   const config: RequestInit = {
     ...customConfig,
     headers: {
-      "Content-Type": "application/json",
+      ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
       "x-api-key": API_KEY || "",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
   };
+
+  if (options.body && typeof options.body === "object" && !(options.body instanceof Blob) && !(options.body instanceof FormData)) {
+    config.body = JSON.stringify(options.body);
+  } else if (options.body) {
+    config.body = options.body;
+  }
 
   try {
     const response = await fetch(url, config);

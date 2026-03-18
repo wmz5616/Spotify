@@ -13,42 +13,99 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String
-  username     String?  @unique
-  displayName  String?
-  avatarPath   String?
-  bio          String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                 Int               @id @default(autoincrement())
+  email              String            @unique
+  passwordHash       String
+  username           String?           @unique
+  displayName        String?
+  avatarPath         String?
+  bio                String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  avatarPosition     String?           @default("50% 50%")
+  backgroundPath     String?
+  backgroundPosition String?           @default("50% 50%")
+  ipLocation         String?
+  favoriteAlbums     FavoriteAlbum[]
+  favoriteSongs      FavoriteSong[]
+  feedPosts          FeedPost[]
+  feedPostComments   FeedPostComment[]
+  feedPostLikes      FeedPostLike[]
+  followers          Follow[]          @relation("following")
+  following          Follow[]          @relation("follower")
+  followedArtists    FollowedArtist[]
+  friendOf           Friendship[]      @relation("friend_friendships")
+  friendships        Friendship[]      @relation("user_friendships")
+  sentMessages       Message[]
+  notifications      Notification[]
+  playHistories      PlayHistory[]
+  playlists          UserPlaylist[]
+  settings           UserSettings?
+  conversations      Conversation[]    @relation("UserConversations")
+}
 
-  settings        UserSettings?
-  favoriteSongs   FavoriteSong[]
-  favoriteAlbums  FavoriteAlbum[]
-  followedArtists FollowedArtist[]
-  playHistories   PlayHistory[]
-  playlists       UserPlaylist[]
-  notifications   Notification[]
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followerId  Int
+  followingId Int
+  createdAt   DateTime @default(now())
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model FeedPost {
+  id        Int               @id @default(autoincrement())
+  userId    Int
+  content   String?
+  type      String            @default("text")
+  targetId  Int?
+  createdAt DateTime          @default(now())
+  images    String?
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments  FeedPostComment[]
+  likes     FeedPostLike[]
+}
+
+model FeedPostLike {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      FeedPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model FeedPostComment {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      FeedPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model UserSettings {
   id            Int     @id @default(autoincrement())
   userId        Int     @unique
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   theme         String  @default("dark")
   audioQuality  String  @default("high")
   autoPlay      Boolean @default(true)
   notifications Boolean @default(true)
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model FavoriteSong {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   songId    Int
-  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, songId])
 }
@@ -56,10 +113,10 @@ model FavoriteSong {
 model FavoriteAlbum {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   albumId   Int
-  album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, albumId])
 }
@@ -67,10 +124,10 @@ model FavoriteAlbum {
 model FollowedArtist {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   artistId  Int
-  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, artistId])
 }
@@ -78,35 +135,35 @@ model FollowedArtist {
 model PlayHistory {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   songId    Int
-  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
   playedAt  DateTime @default(now())
   duration  Float?
   completed Boolean  @default(false)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserPlaylist {
   id          Int                @id @default(autoincrement())
   userId      Int
-  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   description String?
   coverPath   String?
   isPublic    Boolean            @default(false)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   songs       UserPlaylistSong[]
 }
 
 model UserPlaylistSong {
   id         Int          @id @default(autoincrement())
   playlistId Int
-  playlist   UserPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
   songId     Int
-  song       Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
   position   Int
   addedAt    DateTime     @default(now())
+  song       Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
+  playlist   UserPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
 
   @@unique([playlistId, songId])
 }
@@ -114,22 +171,22 @@ model UserPlaylistSong {
 model Artist {
   id          Int              @id @default(autoincrement())
   name        String           @unique
-  albums      Album[]
   avatarUrl   String?
   headerUrl   String?
   bio         String?
   bioImageUrl String?
   followers   FollowedArtist[]
+  albums      Album[]          @relation("AlbumToArtist")
 }
 
 model Album {
   id          Int             @id @default(autoincrement())
   title       String
   uniqueId    String          @unique
-  artists     Artist[]
-  songs       Song[]
   coverPath   String?
   favoritedBy FavoriteAlbum[]
+  songs       Song[]
+  artists     Artist[]        @relation("AlbumToArtist")
 }
 
 model Song {
@@ -137,14 +194,14 @@ model Song {
   title             String
   trackNumber       Int?
   path              String             @unique
-  album             Album              @relation(fields: [albumId], references: [id])
   albumId           Int
   duration          Float?
   lyrics            String?
-  playlists         Playlist[]         @relation("PlaylistToSong")
   favoritedBy       FavoriteSong[]
   playHistories     PlayHistory[]
+  album             Album              @relation(fields: [albumId], references: [id])
   userPlaylistSongs UserPlaylistSong[]
+  playlists         Playlist[]         @relation("PlaylistToSong")
 }
 
 model Playlist {
@@ -158,10 +215,41 @@ model Playlist {
 model Notification {
   id        String   @id @default(uuid())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title     String
   message   String
-  type      String   @default("info") // info, success, warning, error
+  type      String   @default("info")
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Friendship {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  friendId  Int
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  friend    User     @relation("friend_friendships", fields: [friendId], references: [id], onDelete: Cascade)
+  user      User     @relation("user_friendships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+}
+
+model Conversation {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  messages     Message[]
+  participants User[]    @relation("UserConversations")
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  senderId       Int
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }

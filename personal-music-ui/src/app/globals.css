@@ -11,8 +11,38 @@
   --text-secondary: #b3b3b3;
   --text-muted: #6a6a6a;
   --border-color: #282828;
-  --accent-color: #1db954;
+  --accent-color: #1ed760;
   --accent-hover: #1ed760;
+}
+
+[data-theme='black'] {
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-tertiary: #050505;
+  --bg-elevated: #121212;
+  --border-color: #1a1a1a;
+  --accent-color: #1db954;
+}
+
+[data-theme='modern'] {
+  --bg-primary: #1a1c1e;
+  --bg-secondary: #212529;
+  --bg-tertiary: #2b3035;
+  --bg-elevated: #343a40;
+  --border-color: #3e444a;
+  --accent-color: #007bff;
+}
+
+[data-theme='light'] {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e9ecef;
+  --bg-elevated: #dee2e6;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #adb5bd;
+  --border-color: #ced4da;
+  --accent-color: #1db954;
 }
 
 html,

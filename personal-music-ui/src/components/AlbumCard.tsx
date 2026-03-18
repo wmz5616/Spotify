@@ -26,13 +26,14 @@ type AlbumWithSongs = AlbumForCard & {
   songs: Song[];
 };
 
-const AlbumCard = ({ album }: { album: AlbumForCard }) => {
+const AlbumCard = ({ album, priority = false }: { album: AlbumForCard, priority?: boolean }) => {
   const { playSong } = usePlayerStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const getCoverUrl = () => {
     if (album.id) {
-      return getAuthenticatedSrc(`api/covers/${album.id}?size=300`);
+      const tParam = album.title ? `&t=${encodeURIComponent(album.title)}` : "";
+      return getAuthenticatedSrc(`api/covers/${album.id}?size=300${tParam}`);
     }
     return "/placeholder.jpg";
   };
@@ -91,7 +92,7 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
             unoptimized
             sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 20vw"
-            priority={false}
+            priority={priority}
           />
         </motion.div>
       </Link>

@@ -47,6 +47,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message: message,
       timestamp: new Date().toISOString(),
       path: path,
+      stack: exception instanceof Error ? exception.stack : (exception as any)?.message || String(exception),
     };
 
     if (httpStatus >= 500) {

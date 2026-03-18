@@ -20,10 +20,11 @@ type AlbumForResume = {
 
 type AlbumWithSongs = AlbumForResume & { songs: Song[] };
 
-const QuickResumeCard = ({ album }: { album: AlbumForResume }) => {
+const QuickResumeCard = ({ album, priority = false }: { album: AlbumForResume, priority?: boolean }) => {
   const { playSong } = usePlayerStore();
   const [isLoading, setIsLoading] = useState(false);
-  const coverUrl = getAuthenticatedSrc(`api/covers/${album.id}?size=128`);
+  const tParam = album.title ? `&t=${encodeURIComponent(album.title)}` : "";
+  const coverUrl = getAuthenticatedSrc(`api/covers/${album.id}?size=128${tParam}`);
 
   const handlePlayClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -65,6 +66,7 @@ const QuickResumeCard = ({ album }: { album: AlbumForResume }) => {
           fill
           className="object-cover"
           unoptimized
+          priority={priority}
         />
       </div>
 

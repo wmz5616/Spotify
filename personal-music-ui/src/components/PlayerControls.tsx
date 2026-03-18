@@ -84,8 +84,9 @@ const PlayerControls = () => {
   }
 
   const albumData = currentSong.album as any;
+  const tParam = albumData?.title ? `&t=${encodeURIComponent(albumData.title)}` : "";
   const albumArtUrl = albumData?.id
-    ? getAuthenticatedSrc(`api/covers/${albumData.id}?size=128`)
+    ? getAuthenticatedSrc(`api/covers/${albumData.id}?size=128${tParam}`)
     : "/placeholder.jpg";
 
   const renderRepeatIcon = () => {
@@ -101,7 +102,7 @@ const PlayerControls = () => {
           barCount={128}
           height={24}
           color="#1db954"
-          className="w-full max-w-2xl mx-auto opacity-30"
+          className="w-full max-w-2xl mx-auto opacity-90"
         />
       </div>
       <footer

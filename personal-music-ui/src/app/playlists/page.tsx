@@ -29,7 +29,7 @@ interface UserPlaylist {
 
 export default function PlaylistsPage() {
   const router = useRouter();
-  const { token, isAuthenticated } = useUserStore();
+  const { token, isAuthenticated, hasHydrated } = useUserStore();
   const { playSong } = usePlayerStore();
   const [playlists, setPlaylists] = useState<UserPlaylist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -137,7 +137,7 @@ export default function PlaylistsPage() {
     }
   }, [showCreateModal]);
 
-  if (!isHydrated) {
+  if (!isHydrated || !hasHydrated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full" />

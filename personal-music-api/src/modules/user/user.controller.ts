@@ -27,6 +27,7 @@ import { UserService } from './user.service';
 import { UpdateProfileDto, UpdateSettingsDto, ChangePasswordDto } from './dto/user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('用户')
 @Controller('api/user')
@@ -36,10 +37,18 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get('profile')
-    @ApiOperation({ summary: '获取用户资料' })
+    @ApiOperation({ summary: '获取当前用户资料' })
     @ApiResponse({ status: 200, description: '获取成功' })
     async getProfile(@CurrentUser() user: { id: number }) {
         return this.userService.getProfile(user.id);
+    }
+
+    @Get('profile/:userId')
+    @Public()
+    @ApiOperation({ summary: '获取指定用户资料' })
+    @ApiResponse({ status: 200, description: '获取成功' })
+    async getPublicProfile(@Param('userId', ParseIntPipe) userId: number) {
+        return this.userService.getProfile(userId);
     }
 
     @Patch('profile')
@@ -55,7 +64,7 @@ export class UserController {
     @Post('avatar')
     @ApiOperation({ summary: '上传头像' })
     @ApiConsumes('multipart/form-data')
-    @UseInterceptors(FileInterceptor('avatar'))
+    @UseInterceptors(FileInterceptor('avatar', { limits: { fileSize: 50 * 1024 * 1024 } }))
     async uploadAvatar(
         @CurrentUser() user: { id: number },
         @UploadedFile() file: { originalname: string; buffer: Buffer },
@@ -72,6 +81,28 @@ export class UserController {
 
         const avatarPath = `/avatars/${fileName}`;
         return this.userService.updateAvatar(user.id, avatarPath);
+    }
+
+    @Post('background')
+    @ApiOperation({ summary: '上传背景图' })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FileInterceptor('background', { limits: { fileSize: 50 * 1024 * 1024 } }))
+    async uploadBackground(
+        @CurrentUser() user: { id: number },
+        @UploadedFile() file: { originalname: string; buffer: Buffer },
+    ) {
+        const uploadDir = path.join(process.cwd(), 'public', 'backgrounds');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const fileName = `${user.id}_${Date.now()}${path.extname(file.originalname)}`;
+        const filePath = path.join(uploadDir, fileName);
+
+        fs.writeFileSync(filePath, file.buffer);
+
+        const backgroundPath = `/backgrounds/${fileName}`;
+        return this.userService.updateProfile(user.id, { backgroundPath });
     }
 
     @Get('avatar/:userId')

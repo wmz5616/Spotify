@@ -19,8 +19,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: JwtPayload) {
+        const userId = Number(payload.sub);
+        if (isNaN(userId)) {
+            throw new UnauthorizedException('无效的用户标识');
+        }
+
         const user = await this.prisma.user.findUnique({
-            where: { id: payload.sub },
+            where: { id: userId },
             select: {
                 id: true,
                 email: true,

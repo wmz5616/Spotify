@@ -7,21 +7,31 @@ import { clsx } from "clsx";
 import UserMenu from "./UserMenu";
 import NotificationPopover from "./NotificationPopover";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { useChatStore } from "@/store/useChatStore";
+import { useUserStore } from "@/store/useUserStore";
+import { MessageCircle, UserPlus } from "lucide-react";
+import AddFriendModal from "./chat/AddFriendModal";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const unreadCount = useNotificationStore(state => state.getUnreadCount());
+  const { setChatOpen, totalUnreadCount, fetchConversations, initSocket } = useChatStore();
   const startPolling = useNotificationStore(state => state.startPolling);
   const stopPolling = useNotificationStore(state => state.stopPolling);
+  const [isAddFriendOpen, setIsAddFriendOpen] = useState(false);
+  const user = useUserStore(state => state.user);
 
   useEffect(() => {
     startPolling();
+    fetchConversations();
+    if (user?.id) {
+        initSocket(user.id);
+    }
     return () => stopPolling();
-  }, [startPolling, stopPolling]);
+  }, [startPolling, stopPolling, fetchConversations, initSocket, user?.id]);
 
   useEffect(() => {
 
@@ -98,25 +108,32 @@ const Header = () => {
       <div className="flex items-center gap-4 min-w-[80px] justify-end">
         <div className="relative">
           <button
-            onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+            onClick={() => setIsAddFriendOpen(true)}
+            className="text-neutral-400 hover:text-white transition p-2 hover:bg-neutral-800 rounded-full"
+            title="添加好友"
+          >
+            <UserPlus size={20} />
+          </button>
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => setChatOpen(true)}
             className="text-neutral-400 hover:text-white transition p-2 hover:bg-neutral-800 rounded-full relative"
           >
-            <Bell size={20} />
-            {unreadCount > 0 ? (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-[#121212]">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            ) : (
-              <span className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full animate-breathe" />
+            <MessageCircle size={20} />
+            {totalUnreadCount > 0 && (
+              <span className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
             )}
           </button>
-          <NotificationPopover
-            isOpen={isNotificationOpen}
-            onClose={() => setIsNotificationOpen(false)}
-          />
         </div>
 
         <UserMenu />
+        
+        <AddFriendModal 
+            isOpen={isAddFriendOpen} 
+            onClose={() => setIsAddFriendOpen(false)} 
+        />
       </div>
     </header>
   );

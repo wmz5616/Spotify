@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import PlayerControls from "@/components/PlayerControls";
@@ -12,12 +11,17 @@ import MobileNavBar from "@/components/MobileNavBar";
 import ThemeProvider from "@/components/ThemeProvider";
 import AppInitializer from "@/components/AppInitializer";
 import AmbientBackground from "@/components/AmbientBackground";
+import ChatModalWrapper from "@/components/chat/ChatModalWrapper";
 
-const inter = Inter({ subsets: ["latin"] });
+// Removed Inter font to bypass Turbopack issue
 
 export const metadata: Metadata = {
-  title: "Personal Music Cloud",
+  title: "Spotify",
   description: "Your personal music library",
+  icons: {
+    icon: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="font-sans antialiased">
         <ThemeProvider>
           <AppInitializer>
             <div className="h-screen flex flex-col bg-black text-white relative">
@@ -50,6 +54,7 @@ export default function RootLayout({
               <NowPlayingView />
               <GlobalKeyboardShortcuts />
               <ToastContainer />
+              <ChatModalWrapper />
             </div>
           </AppInitializer>
         </ThemeProvider>

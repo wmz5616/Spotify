@@ -29,6 +29,7 @@ import {
   ApiSecurity,
 } from '@nestjs/swagger';
 import { MusicLibraryService } from './music-library.service';
+import { StreamingService } from '../streaming/streaming.service';
 import type { Request, Response } from 'express';
 import { createReadStream, statSync, existsSync, mkdirSync } from 'fs';
 import { Observable } from 'rxjs';
@@ -50,7 +51,10 @@ export class MusicLibraryController {
   private readonly logger = new Logger(MusicLibraryController.name);
   private isScanning = false;
 
-  constructor(private readonly musicLibraryService: MusicLibraryService) { }
+  constructor(
+    private readonly musicLibraryService: MusicLibraryService,
+    private readonly streamingService: StreamingService,
+  ) { }
 
   private validateQueryToken(key?: string) {
     const validApiKey = process.env.API_KEY;
@@ -207,7 +211,8 @@ export class MusicLibraryController {
       await pipeline.toFile(cachePath);
 
       response.setHeader('Content-Type', 'image/jpeg');
-      const cacheAge = isPlaceholder ? 3600 : 31536000;
+      // 给 URL 增加 ETag 或更好的缓存控制
+      const cacheAge = isPlaceholder ? 60 : 31536000;
       response.setHeader('Cache-Control', `public, max-age=${cacheAge}`);
 
       createReadStream(cachePath).pipe(response);
@@ -364,22 +369,44 @@ export class MusicLibraryController {
 
   @ApiTags('Songs')
   @ApiOperation({
+    summary: '获取音频流令牌',
+    description: '获取一个短效的音频流令牌，用于后续 stream 接口调用',
+  })
+  @ApiParam({ name: 'id', description: '歌曲 ID', example: 1 })
+  @ApiSecurity('api-key')
+  @UseGuards(ApiKeyGuard)
+  @Get('songs/:id/stream-token')
+  async getStreamToken(@Param('id', ParseIntPipe) id: number) {
+    const token = this.streamingService.createToken(id);
+    return { token };
+  }
+
+  @ApiTags('Songs')
+  @ApiOperation({
     summary: '获取音频流',
     description: '流式传输音频文件，支持 Range 请求用于播放进度控制',
   })
   @ApiParam({ name: 'id', description: '歌曲 ID', example: 1 })
-  @ApiQuery({ name: 'key', required: true, description: 'API Key' })
+  @ApiQuery({ name: 'token', required: false, description: '流授权令牌' })
+  @ApiQuery({ name: 'key', required: false, description: 'API Key (不建议使用，仅作延迟兼容)' })
   @ApiResponse({ status: 200, description: '返回音频流' })
   @ApiResponse({ status: 206, description: '返回部分音频 (Range 请求)' })
   @ApiResponse({ status: 404, description: '歌曲不存在' })
   @Get('stream/:id')
   async getAudioStream(
     @Param('id', ParseIntPipe) id: number,
+    @Query('token') token: string,
     @Query('key') key: string,
     @Req() request: Request,
     @Res() response: Response,
   ) {
-    this.validateQueryToken(key);
+    if (token) {
+      if (!this.streamingService.validateToken(token, id)) {
+        throw new UnauthorizedException('Invalid or expired stream token');
+      }
+    } else {
+      this.validateQueryToken(key);
+    }
 
     const songPath = await this.musicLibraryService.findSongPath(id);
 
@@ -426,6 +453,8 @@ export class MusicLibraryController {
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize,
           'Content-Type': mimeType,
+          'X-Content-Type-Options': 'nosniff',
+          'Content-Disposition': 'inline',
         });
 
         const file = createReadStream(songPath, { start, end });
@@ -439,6 +468,8 @@ export class MusicLibraryController {
       'Content-Length': size,
       'Content-Type': mimeType,
       'Accept-Ranges': 'bytes',
+      'X-Content-Type-Options': 'nosniff',
+      'Content-Disposition': 'inline',
     });
 
     const file = createReadStream(songPath);

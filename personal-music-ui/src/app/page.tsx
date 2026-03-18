@@ -46,9 +46,9 @@ const HomePage = async () => {
         {randomAlbums.length > 0 && (
           <section className="mb-10">
             <FadeInContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-              {randomAlbums.map((album) => (
+              {randomAlbums.map((album, index) => (
                 <FadeInItem key={album.id}>
-                  <QuickResumeCard album={album} />
+                  <QuickResumeCard album={album} priority={index < 6} />
                 </FadeInItem>
               ))}
             </FadeInContainer>
@@ -72,9 +72,9 @@ const HomePage = async () => {
             </div>
           ) : albums.length > 0 ? (
             <FadeInContainer className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-              {albums.map((album) => (
+              {albums.map((album, index) => (
                 <FadeInItem key={album.id}>
-                  <AlbumCard album={album} />
+                  <AlbumCard album={album} priority={index < 12} />
                 </FadeInItem>
               ))}
             </FadeInContainer>

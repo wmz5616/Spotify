@@ -33,7 +33,7 @@ interface FavoriteItem {
 
 export default function FavoritesPage() {
     const router = useRouter();
-    const { token, isAuthenticated } = useUserStore();
+    const { token, isAuthenticated, hasHydrated } = useUserStore();
     const { playSong } = usePlayerStore();
     const { favoriteSongIds, toggleFavoriteSong, isMutating } = useFavoritesStore();
     const { addToast } = useToastStore();
@@ -160,7 +160,7 @@ export default function FavoritesPage() {
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     };
 
-    if (!isHydrated) {
+    if (!isHydrated || !hasHydrated) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full" />
@@ -360,15 +360,16 @@ export default function FavoritesPage() {
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: i * 0.05 }}
+                                            onClick={() => router.push(`/album/${album.id}`)}
                                             className="group p-4 bg-neutral-800/50 rounded-lg hover:bg-neutral-700/50 transition cursor-pointer"
                                         >
-                                            <div className="aspect-square relative rounded-md overflow-hidden mb-4 bg-neutral-700">
+                                            <div className="aspect-square relative rounded-md overflow-hidden mb-4 bg-neutral-700 shadow-lg">
                                                 {getImageUrl(album) ? (
                                                     <Image
                                                         src={getImageUrl(album)!}
                                                         alt={album.title || album.name || ""}
                                                         fill
-                                                        className="object-cover"
+                                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                         unoptimized
                                                     />
                                                 ) : (
@@ -376,10 +377,21 @@ export default function FavoritesPage() {
                                                         <Disc3 size={32} className="text-neutral-500" />
                                                     </div>
                                                 )}
+                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    <div
+                                                        className="absolute bottom-2 right-2 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-xl translate-y-2 group-hover:translate-y-0 transition-transform duration-300 hover:scale-110 active:scale-95"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            router.push(`/album/${album.id}`);
+                                                        }}
+                                                    >
+                                                        <Play size={20} fill="black" className="text-black ml-1" />
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <p className="text-white font-medium truncate">{album.title || album.name}</p>
+                                            <p className="text-white font-medium truncate group-hover:text-green-400 transition-colors">{album.title || album.name}</p>
                                             <p className="text-neutral-400 text-sm truncate">
-                                                {album.artists?.map(a => a.name).join(", ")}
+                                                {album.artists?.map(a => a.name).join(", ") || "未知艺术家"}
                                             </p>
                                         </motion.div>
                                     ))}

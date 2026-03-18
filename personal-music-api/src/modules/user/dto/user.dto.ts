@@ -16,17 +16,37 @@ export class UpdateProfileDto {
     @IsOptional()
     @IsString()
     bio?: string;
+
+    @ApiPropertyOptional({ example: '/backgrounds/default.jpg' })
+    @IsOptional()
+    @IsString()
+    backgroundPath?: string;
+
+    @ApiPropertyOptional({ example: 'China' })
+    @IsOptional()
+    @IsString()
+    ipLocation?: string;
+
+    @ApiPropertyOptional({ example: '50% 50%' })
+    @IsOptional()
+    @IsString()
+    avatarPosition?: string;
+
+    @ApiPropertyOptional({ example: '50% 50%' })
+    @IsOptional()
+    @IsString()
+    backgroundPosition?: string;
 }
 
 export class UpdateSettingsDto {
-    @ApiPropertyOptional({ enum: ['dark', 'light', 'system'] })
+    @ApiPropertyOptional({ enum: ['dark', 'light', 'system', 'black', 'modern'] })
     @IsOptional()
-    @IsEnum(['dark', 'light', 'system'])
+    @IsEnum(['dark', 'light', 'system', 'black', 'modern'])
     theme?: string;
 
-    @ApiPropertyOptional({ enum: ['low', 'medium', 'high', 'lossless'] })
+    @ApiPropertyOptional({ enum: ['low', 'normal', 'high', 'veryhigh', 'lossless'] })
     @IsOptional()
-    @IsEnum(['low', 'medium', 'high', 'lossless'])
+    @IsEnum(['low', 'normal', 'high', 'veryhigh', 'lossless'])
     audioQuality?: string;
 
     @ApiPropertyOptional()

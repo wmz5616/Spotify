@@ -11,6 +11,9 @@ interface User {
     username: string | null;
     displayName: string | null;
     avatarPath: string | null;
+    avatarPosition?: string | null;
+    backgroundPath?: string | null;
+    backgroundPosition?: string | null;
     bio?: string | null;
     createdAt?: string;
     _count?: {
@@ -37,9 +40,11 @@ interface UserState {
     token: string | null;
     settings: UserSettings | null;
     isAuthenticated: boolean;
+    hasHydrated: boolean;
     isLoading: boolean;
     error: string | null;
 
+    setHasHydrated: (val: boolean) => void;
     login: (email: string, password: string) => Promise<boolean>;
     register: (email: string, password: string, username?: string, displayName?: string) => Promise<boolean>;
     logout: () => void;
@@ -59,8 +64,13 @@ export const useUserStore = create<UserState>()(
             token: null,
             settings: null,
             isAuthenticated: false,
+            hasHydrated: false,
             isLoading: false,
             error: null,
+
+            setHasHydrated: (hydrated: boolean) => {
+                set({ hasHydrated: hydrated });
+            },
 
             login: async (email: string, password: string) => {
                 set({ isLoading: true, error: null });
@@ -164,8 +174,8 @@ export const useUserStore = create<UserState>()(
             },
 
             updateProfile: async (data: Partial<User>) => {
-                const { token } = get();
-                if (!token) return;
+                const { token, user: currentUser } = get();
+                if (!token || !currentUser) return;
 
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
@@ -177,17 +187,22 @@ export const useUserStore = create<UserState>()(
                         body: JSON.stringify(data),
                     });
 
-                    if (!response.ok) throw new Error("更新失败");
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "更新失败");
+                    }
 
                     const updatedUser = await response.json();
-                    set({ user: updatedUser });
+                    set({ user: { ...currentUser, ...updatedUser } });
                 } catch (error) {
-                    set({ error: error instanceof Error ? error.message : "更新失败" });
+                    const message = error instanceof Error ? error.message : "更新失败";
+                    set({ error: message });
+                    throw error;
                 }
             },
 
             updateSettings: async (data: Partial<UserSettings>) => {
-                const { token } = get();
+                const { token, settings: currentSettings } = get();
                 if (!token) return;
 
                 try {
@@ -200,12 +215,23 @@ export const useUserStore = create<UserState>()(
                         body: JSON.stringify(data),
                     });
 
-                    if (!response.ok) throw new Error("更新设置失败");
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "更新设置失败");
+                    }
 
                     const settings = await response.json();
-                    set({ settings });
+                    set({ settings: { ...currentSettings, ...settings } as UserSettings });
+                    
+                    // Synchronize with ThemeStore if theme changed
+                    if (data.theme) {
+                        const { useThemeStore } = await import("./useThemeStore");
+                        useThemeStore.getState().setMode(data.theme as any);
+                    }
                 } catch (error) {
-                    set({ error: error instanceof Error ? error.message : "更新设置失败" });
+                    const message = error instanceof Error ? error.message : "更新设置失败";
+                    set({ error: message });
+                    throw error;
                 }
             },
 
@@ -219,6 +245,11 @@ export const useUserStore = create<UserState>()(
         }),
         {
             name: "user-storage",
+            onRehydrateStorage: (state) => {
+                return () => {
+                    state?.setHasHydrated(true);
+                };
+            },
             partialize: (state) => ({
                 user: state.user,
                 token: state.token,

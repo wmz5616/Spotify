@@ -11,6 +11,8 @@ import { PlayHistoryModule } from './modules/play-history/play-history.module';
 import { UserPlaylistModule } from './modules/user-playlist/user-playlist.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationModule } from './modules/notification/notification.module';
+import { SocialModule } from './modules/social/social.module';
+import { ChatModule } from './modules/chat/chat.module';
 import {
   WinstonModule,
   utilities as nestWinstonModuleUtilities,
@@ -64,6 +66,8 @@ import { join } from 'path';
     PlayHistoryModule,
     UserPlaylistModule,
     NotificationModule,
+    SocialModule,
+    ChatModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],

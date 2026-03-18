@@ -31,7 +31,8 @@ const NowPlayingView = () => {
     if (!currentSong) return "/placeholder.jpg";
 
     if (currentSong.album?.id) {
-      return getAuthenticatedSrc(`api/covers/${currentSong.album.id}`);
+      const tParam = currentSong.album.title ? `?t=${encodeURIComponent(currentSong.album.title)}` : "";
+      return getAuthenticatedSrc(`api/covers/${currentSong.album.id}${tParam}`);
     }
 
     const path = currentSong.album?.coverPath;

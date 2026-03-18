@@ -67,10 +67,7 @@ export default function UserMenu() {
 
     const getAvatarUrl = () => {
         if (user?.avatarPath) {
-            const path = user.avatarPath.startsWith("/public")
-                ? user.avatarPath
-                : `/public${user.avatarPath}`;
-            return getAuthenticatedSrc(path);
+            return getAuthenticatedSrc(user.avatarPath);
         }
         return null;
     };
@@ -100,6 +97,7 @@ export default function UserMenu() {
                                 width={32}
                                 height={32}
                                 className="object-cover w-full h-full"
+                                style={{ objectPosition: (user as any)?.avatarPosition || "50% 50%" }}
                             />
                         ) : isAuthenticated ? (
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700">
@@ -148,6 +146,7 @@ export default function UserMenu() {
                                                         width={40}
                                                         height={40}
                                                         className="object-cover w-full h-full"
+                                                        style={{ objectPosition: (user as any)?.avatarPosition || "50% 50%" }}
                                                     />
                                                 ) : (
                                                     <span className="font-bold text-lg text-black">
@@ -167,6 +166,16 @@ export default function UserMenu() {
                                     </div>
 
                                     <div className="py-2">
+                                        <Link
+                                            href={`/profile/${user?.id}`}
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center gap-3 px-4 py-2.5 text-neutral-300 hover:text-white hover:bg-neutral-700/50 transition font-bold"
+                                        >
+                                            <User size={18} />
+                                            <span>个人主页</span>
+                                            <ChevronRight size={16} className="ml-auto text-neutral-500" />
+                                        </Link>
+
                                         <Link
                                             href="/favorites"
                                             onClick={() => setIsOpen(false)}

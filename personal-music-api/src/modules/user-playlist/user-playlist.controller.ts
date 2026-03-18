@@ -28,6 +28,7 @@ import {
 } from './dto/user-playlist.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -39,10 +40,19 @@ export class UserPlaylistController {
     constructor(private readonly userPlaylistService: UserPlaylistService) { }
 
     @Get()
-    @ApiOperation({ summary: '获取用户的播放列表' })
+    @ApiOperation({ summary: '获取当前用户的播放列表' })
     @ApiResponse({ status: 200, description: '获取成功' })
     async getUserPlaylists(@CurrentUser() user: { id: number }) {
         return this.userPlaylistService.getUserPlaylists(user.id);
+    }
+
+    @Get('user/:userId')
+    @Public()
+    @ApiOperation({ summary: '获取指定用户的公开播放列表' })
+    @ApiResponse({ status: 200, description: '获取成功' })
+    async getTargetUserPlaylists(@Param('userId', ParseIntPipe) userId: number) {
+        const playlists = await this.userPlaylistService.getUserPlaylists(userId);
+        return playlists.filter(p => p.isPublic);
     }
 
     @Get(':id')

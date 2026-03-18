@@ -59,6 +59,14 @@ export class GetCoverQueryDto {
   size?: string;
 
   @ApiPropertyOptional({
+    description: '缓存旁路参数 (用于突破浏览器缓存)',
+    example: 'Title',
+  })
+  @IsOptional()
+  @IsString()
+  t?: string;
+
+  @ApiPropertyOptional({
     description: 'API Key (可选，通过 URL 参数认证)',
   })
   @IsOptional()

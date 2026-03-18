@@ -38,8 +38,9 @@ const AlbumDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const tParam = album?.title ? `&t=${encodeURIComponent(album.title)}` : "";
   const albumArtUrl = id
-    ? `${API_BASE_URL}/api/covers/${id}?size=600&key=${API_KEY}`
+    ? `${API_BASE_URL}/api/covers/${id}?size=600&key=${API_KEY}${tParam}`
     : "/placeholder.jpg";
 
   const { data: dominantColor } = useColor(albumArtUrl, "hex", {

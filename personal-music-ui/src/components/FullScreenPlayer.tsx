@@ -98,8 +98,9 @@ const FullScreenPlayer = () => {
   if (!currentSong) return null;
 
   const getCoverUrl = () => {
+    const tParam = currentSong.album?.title ? `&t=${encodeURIComponent(currentSong.album.title)}` : "";
     if (currentSong.album?.id) {
-      return getAuthenticatedSrc(`api/covers/${currentSong.album.id}?size=600`);
+      return getAuthenticatedSrc(`api/covers/${currentSong.album.id}?size=600${tParam}`);
     }
 
     const path = currentSong.album?.coverPath;
