@@ -18,15 +18,21 @@ import {
   MonitorSpeaker,
   Maximize2,
 } from "lucide-react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import { motion, AnimatePresence } from "framer-motion";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { useToastStore } from "@/store/useToastStore";
+import { useFavoritesStore } from "@/store/useFavoritesStore";
+import { useUserStore } from "@/store/useUserStore";
 import ProgressBar from "./ProgressBar";
 import VolumeControl from "./VolumeControl";
 import FullScreenPlayer from "./FullScreenPlayer";
+import LyricsPanel from "./LyricsPanel";
+import LikeButton from "./LikeButton";
+import AudioVisualizer from "./AudioVisualizer";
+import QueuePanel from "./QueuePanel";
 import { getAuthenticatedSrc } from "@/lib/api-client";
-import { cn } from "@/lib/utils";
+import { cn, cleanSongTitle } from "@/lib/utils";
 
 const PlayerControls = () => {
   const {
@@ -41,17 +47,29 @@ const PlayerControls = () => {
     toggleFullScreen,
   } = usePlayerStore();
   const { addToast } = useToastStore();
+  const { isSongFavorited, toggleFavoriteSong } = useFavoritesStore();
+  const { isAuthenticated } = useUserStore();
 
   const [isMounted, setIsMounted] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [showLyrics, setShowLyrics] = useState(false);
+  const [showQueue, setShowQueue] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const handleLikeToggle = () => {
-    setIsLiked(!isLiked);
-    addToast(isLiked ? "Removed from Liked Songs" : "Added to Liked Songs");
+  const isLiked = currentSong ? isSongFavorited(currentSong.id) : false;
+
+  const handleLikeToggle = async () => {
+    if (!currentSong) return;
+    if (!isAuthenticated) {
+      addToast("请先登录");
+      return;
+    }
+    const success = await toggleFavoriteSong(currentSong.id);
+    if (success) {
+      addToast(isLiked ? "已取消收藏" : "已添加到收藏");
+    }
   };
 
   if (!isMounted)
@@ -65,7 +83,6 @@ const PlayerControls = () => {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const albumData = currentSong.album as any;
   const albumArtUrl = albumData?.id
     ? getAuthenticatedSrc(`api/covers/${albumData.id}?size=128`)
@@ -78,6 +95,15 @@ const PlayerControls = () => {
 
   return (
     <>
+      <div className="fixed bottom-[90px] left-0 right-0 z-40 px-4 pointer-events-none">
+        <AudioVisualizer
+          isPlaying={isPlaying}
+          barCount={128}
+          height={24}
+          color="#1db954"
+          className="w-full max-w-2xl mx-auto opacity-30"
+        />
+      </div>
       <footer
         className="fixed bottom-0 z-50 w-full h-[90px] bg-black border-t border-[#282828] px-4 grid grid-cols-[30%_40%_30%] items-center select-none"
         onClick={(e) => e.stopPropagation()}
@@ -106,11 +132,11 @@ const PlayerControls = () => {
               href={albumData?.id ? `/album/${albumData.id}` : "#"}
               className="font-medium text-sm text-white hover:underline truncate cursor-pointer"
             >
-              {currentSong.title}
+              {cleanSongTitle(currentSong.title, albumData?.artists || currentSong.artist)}
             </Link>
             <div className="text-xs text-[#b3b3b3] truncate group">
               {albumData?.artists ? (
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
                 albumData.artists.map((artist: any, i: number) => (
                   <span key={artist.id}>
                     <Link
@@ -130,15 +156,13 @@ const PlayerControls = () => {
             </div>
           </div>
 
-          <button
-            onClick={handleLikeToggle}
-            className={cn(
-              "flex-shrink-0 transition-colors hover:scale-105 active:scale-95",
-              isLiked ? "text-green-500" : "text-[#b3b3b3] hover:text-white"
-            )}
-          >
-            <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
-          </button>
+          <LikeButton
+            isLiked={isLiked}
+            onToggle={handleLikeToggle}
+            size={18}
+            className="flex-shrink-0"
+            inactiveColor="text-[#b3b3b3] hover:text-white"
+          />
         </div>
 
         <div className="flex flex-col items-center justify-center gap-1.5 max-w-[722px] w-full mx-auto">
@@ -151,7 +175,7 @@ const PlayerControls = () => {
                   ? "text-green-500"
                   : "text-[#b3b3b3] hover:text-white",
                 playMode === "shuffle" &&
-                  "after:content-[''] after:block after:w-1 after:h-1 after:bg-green-500 after:rounded-full after:mx-auto after:mt-1 after:absolute after:left-1/2 after:-translate-x-1/2"
+                "after:content-[''] after:block after:w-1 after:h-1 after:bg-green-500 after:rounded-full after:mx-auto after:mt-1 after:absolute after:left-1/2 after:-translate-x-1/2"
               )}
               title="Enable Shuffle"
             >
@@ -193,7 +217,7 @@ const PlayerControls = () => {
                   ? "text-green-500"
                   : "text-[#b3b3b3] hover:text-white",
                 playMode.includes("repeat") &&
-                  "after:content-[''] after:block after:w-1 after:h-1 after:bg-green-500 after:rounded-full after:mx-auto after:mt-1 after:absolute after:left-1/2 after:-translate-x-1/2"
+                "after:content-[''] after:block after:w-1 after:h-1 after:bg-green-500 after:rounded-full after:mx-auto after:mt-1 after:absolute after:left-1/2 after:-translate-x-1/2"
               )}
               title="Enable Repeat"
             >
@@ -206,15 +230,29 @@ const PlayerControls = () => {
 
         <div className="flex items-center justify-end gap-3 min-w-0">
           <button
-            className="text-[#b3b3b3] hover:text-white transition-colors p-1"
-            title="Lyrics"
+            onClick={() => {
+              setShowLyrics(!showLyrics);
+              if (showQueue) setShowQueue(false);
+            }}
+            className={cn(
+              "transition-colors p-1",
+              showLyrics ? "text-green-500" : "text-[#b3b3b3] hover:text-white"
+            )}
+            title="歌词"
           >
             <Mic2 size={16} />
           </button>
 
           <button
-            className="text-[#b3b3b3] hover:text-white transition-colors p-1"
-            title="Queue"
+            onClick={() => {
+              setShowQueue(!showQueue);
+              if (showLyrics) setShowLyrics(false);
+            }}
+            className={cn(
+              "transition-colors p-1",
+              showQueue ? "text-green-500" : "text-[#b3b3b3] hover:text-white"
+            )}
+            title="播放队列"
           >
             <ListMusic size={16} />
           </button>
@@ -241,8 +279,11 @@ const PlayerControls = () => {
       </footer>
 
       <FullScreenPlayer />
+      <LyricsPanel isOpen={showLyrics} onClose={() => setShowLyrics(false)} />
+      <QueuePanel isOpen={showQueue} onClose={() => setShowQueue(false)} />
     </>
   );
 };
 
 export default PlayerControls;
+

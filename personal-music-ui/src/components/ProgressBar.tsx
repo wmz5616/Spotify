@@ -76,7 +76,6 @@ const ProgressBar = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging, duration, seek]);
 
   const progressPercent = duration ? (dragValue / duration) * 100 : 0;

@@ -56,7 +56,7 @@ const QuickResumeCard = ({ album }: { album: AlbumForResume }) => {
   return (
     <Link
       href={`/album/${album.id}`}
-      className="group relative flex items-center h-16 md:h-20 bg-white/10 hover:bg-white/20 rounded-md overflow-hidden transition-colors duration-300 pr-4"
+      className="group relative flex items-center h-16 md:h-20 bg-neutral-800/40 hover:bg-neutral-800/80 backdrop-blur-md rounded-md overflow-hidden transition-all duration-300 pr-4 hover:shadow-xl hover:-translate-y-1 border border-white/5"
     >
       <div className="relative h-full aspect-square flex-shrink-0 shadow-lg mr-4">
         <Image

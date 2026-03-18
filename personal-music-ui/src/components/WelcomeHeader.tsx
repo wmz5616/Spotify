@@ -3,8 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+import { useUserStore } from "@/store/useUserStore";
+
 const WelcomeHeader = () => {
-  const [greeting, setGreeting] = useState("Welcome");
+  const { user } = useUserStore();
+  const [greeting, setGreeting] = useState("欢迎");
   const [timeStr, setTimeStr] = useState("");
   const [mounted, setMounted] = useState(false);
 
@@ -14,16 +17,22 @@ const WelcomeHeader = () => {
     const updateTime = () => {
       const now = new Date();
       const hour = now.getHours();
+      let greetText = "";
 
-      if (hour >= 5 && hour < 12) {
-        setGreeting("Good morning");
-      } else if (hour >= 12 && hour < 18) {
-        setGreeting("Good afternoon");
+      if (hour >= 5 && hour < 11) {
+        greetText = "早上好";
+      } else if (hour >= 11 && hour < 13) {
+        greetText = "中午好";
+      } else if (hour >= 13 && hour < 18) {
+        greetText = "下午好";
       } else {
-        setGreeting("Good evening");
+        greetText = "晚上好";
       }
 
-      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const userName = user?.displayName || user?.username || "";
+      setGreeting(userName ? `${greetText} ${userName}` : greetText);
+
+      const days = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
       const dayName = days[now.getDay()];
 
       const hours = String(now.getHours()).padStart(2, "0");
@@ -38,7 +47,7 @@ const WelcomeHeader = () => {
     const timer = setInterval(updateTime, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [user]);
 
   if (!mounted) {
     return <div className="h-[88px] mb-8" />;

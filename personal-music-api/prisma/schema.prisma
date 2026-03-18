@@ -3,8 +3,8 @@ generator client {
 }
 
 generator interfaces {
-  provider        = "prisma-generator-typescript-interfaces"
-  output          = "../../personal-music-ui/src/lib/prisma-types.ts"
+  provider = "prisma-generator-typescript-interfaces"
+  output   = "../../personal-music-ui/src/lib/prisma-types.ts"
 }
 
 datasource db {
@@ -12,35 +12,139 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  username     String?  @unique
+  displayName  String?
+  avatarPath   String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  settings        UserSettings?
+  favoriteSongs   FavoriteSong[]
+  favoriteAlbums  FavoriteAlbum[]
+  followedArtists FollowedArtist[]
+  playHistories   PlayHistory[]
+  playlists       UserPlaylist[]
+  notifications   Notification[]
+}
+
+model UserSettings {
+  id            Int     @id @default(autoincrement())
+  userId        Int     @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme         String  @default("dark")
+  audioQuality  String  @default("high")
+  autoPlay      Boolean @default(true)
+  notifications Boolean @default(true)
+}
+
+model FavoriteSong {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  songId    Int
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, songId])
+}
+
+model FavoriteAlbum {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  albumId   Int
+  album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, albumId])
+}
+
+model FollowedArtist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artistId  Int
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, artistId])
+}
+
+model PlayHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  songId    Int
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  playedAt  DateTime @default(now())
+  duration  Float?
+  completed Boolean  @default(false)
+}
+
+model UserPlaylist {
+  id          Int                @id @default(autoincrement())
+  userId      Int
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  coverPath   String?
+  isPublic    Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  songs       UserPlaylistSong[]
+}
+
+model UserPlaylistSong {
+  id         Int          @id @default(autoincrement())
+  playlistId Int
+  playlist   UserPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  songId     Int
+  song       Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
+  position   Int
+  addedAt    DateTime     @default(now())
+
+  @@unique([playlistId, songId])
+}
+
 model Artist {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
   albums      Album[]
   avatarUrl   String?
   headerUrl   String?
   bio         String?
   bioImageUrl String?
+  followers   FollowedArtist[]
 }
 
 model Album {
-  id        Int      @id @default(autoincrement())
-  title     String
-  uniqueId  String   @unique
-  artists   Artist[]
-  songs     Song[]
-  coverPath String?
+  id          Int             @id @default(autoincrement())
+  title       String
+  uniqueId    String          @unique
+  artists     Artist[]
+  songs       Song[]
+  coverPath   String?
+  favoritedBy FavoriteAlbum[]
 }
 
 model Song {
-  id          Int        @id @default(autoincrement())
-  title       String
-  trackNumber Int?
-  path        String     @unique
-  album       Album      @relation(fields: [albumId], references: [id])
-  albumId     Int
-  duration    Float?
-  lyrics      String?
-  playlists   Playlist[] @relation("PlaylistToSong")
+  id                Int                @id @default(autoincrement())
+  title             String
+  trackNumber       Int?
+  path              String             @unique
+  album             Album              @relation(fields: [albumId], references: [id])
+  albumId           Int
+  duration          Float?
+  lyrics            String?
+  playlists         Playlist[]         @relation("PlaylistToSong")
+  favoritedBy       FavoriteSong[]
+  playHistories     PlayHistory[]
+  userPlaylistSongs UserPlaylistSong[]
 }
 
 model Playlist {
@@ -49,4 +153,15 @@ model Playlist {
   description String?
   createdAt   DateTime @default(now())
   songs       Song[]   @relation("PlaylistToSong")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("info") // info, success, warning, error
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 }

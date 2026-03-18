@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { Play, LoaderCircle } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import type { Artist, Song, Album } from "@/types";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -30,12 +30,18 @@ const TopResultCard = ({ result, type }: TopResultProps) => {
   if (isArtist) {
     const artist = result as Artist;
     if (artist.avatarUrl) {
-      imageUrl = `${API_BASE_URL}/static${artist.avatarUrl}`;
+      const path = artist.avatarUrl.startsWith("/public")
+        ? artist.avatarUrl
+        : `/public${artist.avatarUrl}`;
+      imageUrl = getAuthenticatedSrc(path);
     }
   } else {
     const album = result as Album;
     if (album.coverPath) {
-      imageUrl = `${API_BASE_URL}/static${album.coverPath}`;
+      const path = album.coverPath.startsWith("/public")
+        ? album.coverPath
+        : `/public${album.coverPath}`;
+      imageUrl = getAuthenticatedSrc(path);
     }
   }
 

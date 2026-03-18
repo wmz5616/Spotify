@@ -3,11 +3,16 @@
 import { useEffect, useRef } from "react";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { useToastStore } from "@/store/useToastStore";
+import { useHistoryStore } from "@/store/useHistoryStore";
+import { useUserStore } from "@/store/useUserStore";
 import { getAuthenticatedSrc } from "@/lib/api-client";
 
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const lastRecordedSongRef = useRef<number | null>(null);
   const { addToast } = useToastStore();
+  const { recordPlay } = useHistoryStore();
+  const { isAuthenticated } = useUserStore();
 
   const {
     currentSong,
@@ -23,6 +28,13 @@ const AudioPlayer = () => {
   useEffect(() => {
     setAudioRef(audioRef);
   }, [setAudioRef]);
+
+  useEffect(() => {
+    if (currentSong && isAuthenticated && lastRecordedSongRef.current !== currentSong.id) {
+      lastRecordedSongRef.current = currentSong.id;
+      recordPlay(currentSong.id);
+    }
+  }, [currentSong, isAuthenticated, recordPlay]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -51,6 +63,42 @@ const AudioPlayer = () => {
       audioRef.current.volume = volume;
     }
   }, [volume]);
+
+  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const { setAnalyser } = usePlayerStore();
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || sourceRef.current) return;
+
+    try {
+      const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextCtor) return;
+
+      const ctx = new AudioContextCtor();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+
+      const source = ctx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+
+      sourceRef.current = source;
+      setAnalyser(analyser);
+
+      const handlePlay = () => {
+        if (ctx.state === 'suspended') ctx.resume();
+      };
+
+      audio.addEventListener('play', handlePlay);
+
+      return () => {
+        audio.removeEventListener('play', handlePlay);
+      };
+    } catch (e) {
+      console.error("Audio Visualization Setup Failed:", e);
+    }
+  }, [audioRef.current, setAnalyser]);
 
   if (!currentSong) return null;
 
@@ -89,3 +137,4 @@ const AudioPlayer = () => {
 };
 
 export default AudioPlayer;
+

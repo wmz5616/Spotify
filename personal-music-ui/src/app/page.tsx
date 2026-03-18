@@ -35,13 +35,10 @@ const HomePage = async () => {
     error = "无法连接到服务器或认证失败 (请检查 API Key)";
   }
 
-  const gradientColor = "from-emerald-900";
-
   return (
     <div
-      className={`relative min-h-screen bg-gradient-to-b ${gradientColor} via-[#121212] to-[#121212] pt-4 pb-32`}
+      className="relative min-h-screen pt-4 pb-32"
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30 pointer-events-none" />
 
       <div className="relative z-10 px-6">
         <WelcomeHeader />

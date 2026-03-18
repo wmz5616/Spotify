@@ -1,16 +1,20 @@
 "use client";
 
 import { usePlayerStore } from "@/store/usePlayerStore";
+import { useFavoritesStore } from "@/store/useFavoritesStore";
+import { useUserStore } from "@/store/useUserStore";
+import { useToastStore } from "@/store/useToastStore";
 import type { Song } from "@/types";
-import { formatDuration } from "@/lib/utils";
+import { formatDuration, cleanSongTitle } from "@/lib/utils";
 import { Play, Pause, BarChart3, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import clsx from "clsx";
 import SongContextMenu from "./SongContextMenu";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getAuthenticatedSrc } from "@/lib/api-client";
+import LikeButton from "./LikeButton";
+
+import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -31,8 +35,12 @@ const SongRowItem = ({
 }: SongRowItemProps) => {
   const { playSong, togglePlayPause, currentSong, isPlaying } =
     usePlayerStore();
+  const { isSongFavorited, toggleFavoriteSong } = useFavoritesStore();
+  const { isAuthenticated } = useUserStore();
+  const { addToast } = useToastStore();
 
   const isCurrentSong = song.id === currentSong?.id;
+  const isFavorited = isSongFavorited(song.id);
   const [isHovered, setIsHovered] = useState(false);
 
   const handlePlayClick = (e: React.MouseEvent) => {
@@ -44,9 +52,25 @@ const SongRowItem = ({
     }
   };
 
-  const coverUrl = song.album?.coverPath
-    ? `${API_BASE_URL}/static${song.album.coverPath}`
-    : "/placeholder.jpg";
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      addToast("请先登录");
+      return;
+    }
+    const success = await toggleFavoriteSong(song.id);
+    if (success) {
+      addToast(isFavorited ? "已取消收藏" : "已添加到收藏");
+    }
+  };
+
+  const getCoverUrl = (path: string | null | undefined) => {
+    if (!path) return "/placeholder.jpg";
+    const pathWithPublic = path.startsWith("/public") ? path : `/public${path}`;
+    return getAuthenticatedSrc(pathWithPublic);
+  };
+
+  const coverUrl = getCoverUrl(song.album?.coverPath);
 
   return (
     <SongContextMenu song={song}>
@@ -112,7 +136,7 @@ const SongRowItem = ({
                 isCurrentSong ? "text-green-500" : "text-white"
               )}
             >
-              {song.title}
+              {cleanSongTitle(song.title, song.album?.artists || song.artist)}
             </span>
             <div className="flex items-center gap-1 text-sm text-neutral-400 group-hover:text-white transition-colors truncate">
               <span className="truncate">
@@ -134,14 +158,12 @@ const SongRowItem = ({
         </div>
 
         <div className="flex items-center justify-end gap-4 pl-2 pr-2">
-          <button
-            className={clsx(
-              "hover:text-white transition-colors hover:scale-105",
-              "invisible group-hover:visible"
-            )}
-          >
-            <Heart size={16} />
-          </button>
+          <LikeButton
+            isLiked={isFavorited}
+            onToggle={handleToggleFavorite}
+            size={16}
+            className={clsx(!isFavorited && "invisible group-hover:visible")}
+          />
 
           <div className="text-sm font-variant-numeric tabular-nums w-10 text-right">
             {formatDuration(song.duration)}

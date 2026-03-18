@@ -20,6 +20,14 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiSecurity,
+} from '@nestjs/swagger';
 import { MusicLibraryService } from './music-library.service';
 import type { Request, Response } from 'express';
 import { createReadStream, statSync, existsSync, mkdirSync } from 'fs';
@@ -31,7 +39,7 @@ import sharp from 'sharp';
 import rangeParser from 'range-parser';
 import { ApiKeyGuard } from '../../common/guards/api-key.guard';
 import {
-  CreatePlaylistDto,
+  CreateLibraryPlaylistDto,
   AddSongsDto,
   SearchQueryDto,
   GetCoverQueryDto,
@@ -42,7 +50,7 @@ export class MusicLibraryController {
   private readonly logger = new Logger(MusicLibraryController.name);
   private isScanning = false;
 
-  constructor(private readonly musicLibraryService: MusicLibraryService) {}
+  constructor(private readonly musicLibraryService: MusicLibraryService) { }
 
   private validateQueryToken(key?: string) {
     const validApiKey = process.env.API_KEY;
@@ -56,6 +64,12 @@ export class MusicLibraryController {
     }
   }
 
+  @ApiTags('Library')
+  @ApiOperation({
+    summary: '扫描进度 SSE 流',
+    description: '通过 Server-Sent Events 实时获取音乐库扫描进度',
+  })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Sse('library/scan/progress')
   scanProgress(): Observable<MessageEvent> {
@@ -66,6 +80,20 @@ export class MusicLibraryController {
     );
   }
 
+  @ApiTags('Library')
+  @ApiOperation({
+    summary: '扫描音乐库',
+    description: '启动后台任务扫描指定目录中的音乐文件',
+  })
+  @ApiQuery({
+    name: 'force',
+    required: false,
+    description: '是否强制重新扫描所有文件',
+    example: 'true',
+  })
+  @ApiResponse({ status: 200, description: '扫描任务已启动' })
+  @ApiResponse({ status: 409, description: '扫描正在进行中' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Post('library/scan')
   async scanLibrary(@Query('force') force: string) {
@@ -97,6 +125,21 @@ export class MusicLibraryController {
     };
   }
 
+  @ApiTags('Albums')
+  @ApiOperation({
+    summary: '获取专辑封面',
+    description: '根据专辑 ID 获取封面图片，支持自定义尺寸',
+  })
+  @ApiParam({ name: 'id', description: '专辑 ID', example: 1 })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    description: '封面尺寸 (像素)',
+    example: '300',
+  })
+  @ApiQuery({ name: 'key', required: true, description: 'API Key' })
+  @ApiResponse({ status: 200, description: '成功返回封面图片' })
+  @ApiResponse({ status: 404, description: '封面不存在' })
   @Get('covers/:id')
   @UsePipes(new ValidationPipe({ transform: true }))
   async getAlbumCover(
@@ -174,6 +217,19 @@ export class MusicLibraryController {
     }
   }
 
+  @ApiTags('Albums')
+  @ApiOperation({
+    summary: '获取随机专辑',
+    description: '随机获取指定数量的专辑，用于首页推荐',
+  })
+  @ApiQuery({
+    name: 'take',
+    required: false,
+    description: '返回数量',
+    example: 6,
+  })
+  @ApiResponse({ status: 200, description: '成功返回随机专辑列表' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('albums/random')
   findRandomAlbums(
@@ -182,12 +238,28 @@ export class MusicLibraryController {
     return this.musicLibraryService.findRandomAlbums(take);
   }
 
+  @ApiTags('Artists')
+  @ApiOperation({
+    summary: '获取所有艺术家',
+    description: '返回音乐库中所有艺术家列表',
+  })
+  @ApiResponse({ status: 200, description: '成功返回艺术家列表' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('artists')
   findAllArtists() {
     return this.musicLibraryService.findAllArtists();
   }
 
+  @ApiTags('Artists')
+  @ApiOperation({
+    summary: '获取艺术家详情',
+    description: '根据 ID 获取艺术家详细信息，包括专辑列表',
+  })
+  @ApiParam({ name: 'id', description: '艺术家 ID', example: 1 })
+  @ApiResponse({ status: 200, description: '成功返回艺术家信息' })
+  @ApiResponse({ status: 404, description: '艺术家不存在' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('artists/:id')
   async findArtistById(@Param('id', ParseIntPipe) id: number) {
@@ -198,12 +270,28 @@ export class MusicLibraryController {
     return artist;
   }
 
+  @ApiTags('Albums')
+  @ApiOperation({
+    summary: '获取所有专辑',
+    description: '返回音乐库中所有专辑列表',
+  })
+  @ApiResponse({ status: 200, description: '成功返回专辑列表' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('albums')
   findAllAlbums() {
     return this.musicLibraryService.findAllAlbums();
   }
 
+  @ApiTags('Albums')
+  @ApiOperation({
+    summary: '获取专辑详情',
+    description: '根据 ID 获取专辑详细信息，包括歌曲列表',
+  })
+  @ApiParam({ name: 'id', description: '专辑 ID', example: 1 })
+  @ApiResponse({ status: 200, description: '成功返回专辑信息' })
+  @ApiResponse({ status: 404, description: '专辑不存在' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('albums/:id')
   async findAlbumById(@Param('id', ParseIntPipe) id: number) {
@@ -214,6 +302,15 @@ export class MusicLibraryController {
     return album;
   }
 
+  @ApiTags('Songs')
+  @ApiOperation({
+    summary: '获取歌曲详情',
+    description: '根据 ID 获取歌曲信息，包括歌词',
+  })
+  @ApiParam({ name: 'id', description: '歌曲 ID', example: 1 })
+  @ApiResponse({ status: 200, description: '成功返回歌曲信息' })
+  @ApiResponse({ status: 404, description: '歌曲不存在' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('songs/:id')
   async findSongById(@Param('id', ParseIntPipe) id: number) {
@@ -227,6 +324,37 @@ export class MusicLibraryController {
     return song;
   }
 
+  @ApiTags('Songs')
+  @ApiOperation({
+    summary: '获取歌词',
+    description: '获取指定歌曲的歌词内容',
+  })
+  @ApiParam({ name: 'id', description: '歌曲 ID', example: 1 })
+  @ApiResponse({ status: 200, description: '成功返回歌词' })
+  @ApiSecurity('api-key')
+  @UseGuards(ApiKeyGuard)
+  @Get('songs/:id/lyrics')
+  async getLyrics(@Param('id', ParseIntPipe) id: number) {
+    const song = await this.musicLibraryService.findSongById(id);
+    if (!song) {
+      throw new NotFoundException(`Song with ID ${id} not found`);
+    }
+    return { lyrics: song.lyrics || '' };
+  }
+
+  @ApiTags('Search')
+  @ApiOperation({
+    summary: '搜索',
+    description: '全局搜索艺术家、专辑和歌曲',
+  })
+  @ApiQuery({
+    name: 'q',
+    required: false,
+    description: '搜索关键词',
+    example: '周杰伦',
+  })
+  @ApiResponse({ status: 200, description: '成功返回搜索结果' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('search')
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -234,6 +362,16 @@ export class MusicLibraryController {
     return this.musicLibraryService.search(query.q || '');
   }
 
+  @ApiTags('Songs')
+  @ApiOperation({
+    summary: '获取音频流',
+    description: '流式传输音频文件，支持 Range 请求用于播放进度控制',
+  })
+  @ApiParam({ name: 'id', description: '歌曲 ID', example: 1 })
+  @ApiQuery({ name: 'key', required: true, description: 'API Key' })
+  @ApiResponse({ status: 200, description: '返回音频流' })
+  @ApiResponse({ status: 206, description: '返回部分音频 (Range 请求)' })
+  @ApiResponse({ status: 404, description: '歌曲不存在' })
   @Get('stream/:id')
   async getAudioStream(
     @Param('id', ParseIntPipe) id: number,
@@ -241,7 +379,6 @@ export class MusicLibraryController {
     @Req() request: Request,
     @Res() response: Response,
   ) {
-    // 1. 鉴权
     this.validateQueryToken(key);
 
     const songPath = await this.musicLibraryService.findSongPath(id);
@@ -309,12 +446,28 @@ export class MusicLibraryController {
     file.pipe(response);
   }
 
+  @ApiTags('Playlists')
+  @ApiOperation({
+    summary: '获取所有播放列表',
+    description: '返回用户创建的所有播放列表',
+  })
+  @ApiResponse({ status: 200, description: '成功返回播放列表' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('playlists')
   findAllPlaylists() {
     return this.musicLibraryService.findAllPlaylists();
   }
 
+  @ApiTags('Playlists')
+  @ApiOperation({
+    summary: '获取播放列表详情',
+    description: '根据 ID 获取播放列表详情，包括歌曲列表',
+  })
+  @ApiParam({ name: 'id', description: '播放列表 ID', example: 1 })
+  @ApiResponse({ status: 200, description: '成功返回播放列表' })
+  @ApiResponse({ status: 404, description: '播放列表不存在' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Get('playlists/:id')
   async findPlaylistById(@Param('id', ParseIntPipe) id: number) {
@@ -325,16 +478,32 @@ export class MusicLibraryController {
     return playlist;
   }
 
+  @ApiTags('Playlists')
+  @ApiOperation({
+    summary: '创建播放列表',
+    description: '创建一个新的播放列表',
+  })
+  @ApiResponse({ status: 201, description: '播放列表创建成功' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Post('playlists')
   @UsePipes(new ValidationPipe())
-  createPlaylist(@Body() createPlaylistDto: CreatePlaylistDto) {
+  createPlaylist(@Body() createPlaylistDto: CreateLibraryPlaylistDto) {
     return this.musicLibraryService.createPlaylist(
       createPlaylistDto.name,
       createPlaylistDto.description,
     );
   }
 
+  @ApiTags('Playlists')
+  @ApiOperation({
+    summary: '添加歌曲到播放列表',
+    description: '将一首或多首歌曲添加到指定播放列表',
+  })
+  @ApiParam({ name: 'id', description: '播放列表 ID', example: 1 })
+  @ApiResponse({ status: 200, description: '歌曲添加成功' })
+  @ApiResponse({ status: 404, description: '播放列表不存在' })
+  @ApiSecurity('api-key')
   @UseGuards(ApiKeyGuard)
   @Post('playlists/:id/songs')
   @UsePipes(new ValidationPipe())

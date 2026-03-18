@@ -2,17 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Search, ChevronLeft, ChevronRight, User, Bell } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Bell } from "lucide-react";
 import { clsx } from "clsx";
+import UserMenu from "./UserMenu";
+import NotificationPopover from "./NotificationPopover";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const unreadCount = useNotificationStore(state => state.getUnreadCount());
+  const startPolling = useNotificationStore(state => state.startPolling);
+  const stopPolling = useNotificationStore(state => state.stopPolling);
 
   useEffect(() => {
+    startPolling();
+    return () => stopPolling();
+  }, [startPolling, stopPolling]);
+
+  useEffect(() => {
+
     const mainContent = document.getElementById("main-content");
     if (!mainContent) return;
 
@@ -46,20 +58,20 @@ const Header = () => {
           : "bg-transparent"
       )}
     >
-      <div className="flex items-center gap-2 min-w-[80px]">
+      <div className="flex items-center gap-4 min-w-[80px]">
         <button
           onClick={() => router.back()}
-          className="bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full transition disabled:opacity-50 cursor-pointer"
-          title="Go back"
+          className="rounded-full bg-black/40 flex items-center justify-center w-8 h-8 transition hover:bg-black/60 border border-transparent hover:border-white/10"
+          title="Go Back"
         >
-          <ChevronLeft size={22} />
+          <ChevronLeft size={22} className="text-white translate-x-[-1px]" />
         </button>
         <button
           onClick={() => router.forward()}
-          className="bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full transition disabled:opacity-50 cursor-pointer"
-          title="Go forward"
+          className="rounded-full bg-black/40 flex items-center justify-center w-8 h-8 transition hover:bg-black/60 border border-transparent hover:border-white/10"
+          title="Go Forward"
         >
-          <ChevronRight size={22} />
+          <ChevronRight size={22} className="text-white translate-x-[1px]" />
         </button>
       </div>
 
@@ -84,18 +96,31 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-4 min-w-[80px] justify-end">
-        <button className="text-neutral-400 hover:text-white transition p-2 hover:bg-neutral-800 rounded-full">
-          <Bell size={20} />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+            className="text-neutral-400 hover:text-white transition p-2 hover:bg-neutral-800 rounded-full relative"
+          >
+            <Bell size={20} />
+            {unreadCount > 0 ? (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-[#121212]">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            ) : (
+              <span className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full animate-breathe" />
+            )}
+          </button>
+          <NotificationPopover
+            isOpen={isNotificationOpen}
+            onClose={() => setIsNotificationOpen(false)}
+          />
+        </div>
 
-        <button className="bg-neutral-800 p-1.5 rounded-full hover:scale-105 transition border-2 border-black">
-          <div className="w-7 h-7 bg-orange-600 rounded-full flex items-center justify-center">
-            <span className="font-bold text-xs text-black">U</span>
-          </div>
-        </button>
+        <UserMenu />
       </div>
     </header>
   );
 };
 
 export default Header;
+

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Search as SearchIcon, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { clsx } from "clsx";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 import type { Album, Artist, Song, Playlist } from "@/types";
 import TopResultCard from "@/components/TopResultCard";
 import SongRowItem from "@/components/SongRowItem";
@@ -170,9 +170,13 @@ const SearchPage = () => {
                   {results.artists
                     .slice(0, filter === "artists" ? undefined : 6)
                     .map((artist) => {
-                      const imageUrl = artist.avatarUrl
-                        ? `${API_BASE_URL}/static${artist.avatarUrl}`
-                        : "/placeholder.jpg";
+                      const getImageUrl = (path: string | null | undefined) => {
+                        if (!path) return "/placeholder.jpg";
+                        const pathWithPublic = path.startsWith("/public") ? path : `/public${path}`;
+                        return getAuthenticatedSrc(pathWithPublic);
+                      };
+
+                      const imageUrl = getImageUrl(artist.avatarUrl);
 
                       return (
                         <a

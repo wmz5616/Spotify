@@ -74,7 +74,7 @@ const AlbumCard = ({ album }: { album: AlbumForCard }) => {
   };
 
   return (
-    <div className="group relative block h-full bg-[#181818] p-4 rounded-md hover:bg-[#282828] transition-colors duration-300 ease-in-out">
+    <div className="group relative block h-full bg-[#181818]/60 backdrop-blur-md p-4 rounded-md hover:bg-[#282828]/80 transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 border border-white/5 hover:border-white/10">
       <Link
         href={`/album/${album.id}`}
         className="block relative aspect-square w-full mb-4 rounded-md shadow-lg overflow-hidden"

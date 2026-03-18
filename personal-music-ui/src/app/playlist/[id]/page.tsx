@@ -4,15 +4,17 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { usePlayerStore } from "@/store/usePlayerStore";
+import { useUserStore } from "@/store/useUserStore";
 import type { Playlist, Song } from "@/types";
-import { Clock, Play, AlertCircle } from "lucide-react";
+import { Clock, Play, AlertCircle, Music } from "lucide-react";
 import SongRowItem from "@/components/SongRowItem";
 import { FixedSizeList as List } from "react-window";
-import { apiClient } from "@/lib/api-client";
+import PlaylistCoverUpload from "@/components/PlaylistCoverUpload";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 type PlaylistDetails = Playlist & {
+  coverPath?: string | null;
   songs: (Song & {
     album: {
       id: number;
@@ -29,17 +31,26 @@ const PlaylistDetailPage = () => {
 
   const [playlist, setPlaylist] = useState<PlaylistDetails | null>(null);
   const { playSong } = usePlayerStore();
+  const { token, isAuthenticated } = useUserStore();
   const [listHeight, setListHeight] = useState(600);
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !token) return;
     const fetchPlaylistData = async () => {
       try {
         setLoading(true);
-        const data = await apiClient<PlaylistDetails>(`/api/playlists/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/user-playlists/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status}`);
+        }
+        const data = await response.json();
         setPlaylist(data);
       } catch (error) {
         console.error("Failed to fetch playlist details:", error);
@@ -49,7 +60,7 @@ const PlaylistDetailPage = () => {
       }
     };
     fetchPlaylistData();
-  }, [id]);
+  }, [id, token]);
 
   useEffect(() => {
     const updateHeight = () => {
@@ -97,16 +108,13 @@ const PlaylistDetailPage = () => {
     <div className="relative h-full flex flex-col">
       <div className="p-8 pb-4 flex-shrink-0">
         <header className="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8 pt-8">
-          <div className="relative w-48 h-48 lg:w-56 lg:h-56 flex-shrink-0 bg-neutral-800 rounded-md shadow-2xl overflow-hidden">
-            <Image
-              src={coverArtUrl}
-              alt={`Cover for ${playlist.name}`}
-              fill
-              className="object-cover"
-              priority
-              unoptimized
-            />
-          </div>
+          <PlaylistCoverUpload
+            playlistId={Number(id)}
+            currentCoverPath={playlist.coverPath}
+            onCoverChange={(newPath) => {
+              setPlaylist((prev) => prev ? { ...prev, coverPath: newPath } : null);
+            }}
+          />
           <div className="flex flex-col gap-3 text-center md:text-left">
             <span className="text-sm font-bold">PLAYLIST</span>
             <h1 className="text-5xl lg:text-8xl font-black tracking-tighter break-words">

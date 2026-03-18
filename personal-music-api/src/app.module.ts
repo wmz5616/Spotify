@@ -4,6 +4,13 @@ import { AppService } from './app.service';
 import { MusicLibraryModule } from './modules/music-library/music-library.module';
 import { PrismaService } from './prisma/prisma.service';
 import { StreamingModule } from './modules/streaming/streaming.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { FavoritesModule } from './modules/favorites/favorites.module';
+import { PlayHistoryModule } from './modules/play-history/play-history.module';
+import { UserPlaylistModule } from './modules/user-playlist/user-playlist.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationModule } from './modules/notification/notification.module';
 import {
   WinstonModule,
   utilities as nestWinstonModuleUtilities,
@@ -51,8 +58,16 @@ import { join } from 'path';
     }),
     MusicLibraryModule,
     StreamingModule,
+    AuthModule,
+    UserModule,
+    FavoritesModule,
+    PlayHistoryModule,
+    UserPlaylistModule,
+    NotificationModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
-export class AppModule {}
+export class AppModule { }
+

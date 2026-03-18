@@ -60,7 +60,7 @@ const LyricDisplay = () => {
           setIsLoading(false);
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [currentSong?.id, currentSong?.lyrics]);
 
   const lyrics: LyricLine[] = useMemo(() => {
@@ -191,9 +191,13 @@ const LyricDisplay = () => {
                 width={containerSize.width}
                 itemCount={lyrics.length + 2}
                 itemSize={getItemHeight}
-                className="lyric-list [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                className="lyric-list no-scrollbar"
                 itemData={lyrics}
-                style={{ scrollBehavior: "smooth" }}
+                style={{
+                  scrollBehavior: "smooth",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none"
+                }}
               >
                 {({ index, style }) => {
                   if (index === 0 || index === lyrics.length + 1) {

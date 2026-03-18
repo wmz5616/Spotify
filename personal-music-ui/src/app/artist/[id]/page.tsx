@@ -3,13 +3,16 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { Play, AlertCircle } from "lucide-react";
+import { Play, AlertCircle, UserPlus, UserCheck, Check } from "lucide-react";
 import type { Song, Album, Artist } from "@/types";
 import AlbumCard from "@/components/AlbumCard";
 import PopularSongsList from "@/components/PopularSongsList";
 import AboutCard from "@/components/AboutCard";
 import clsx from "clsx";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
+import { usePlayerStore } from "@/store/usePlayerStore";
+import { useFavoritesStore } from "@/store/useFavoritesStore";
+import { useToastStore } from "@/store/useToastStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -45,6 +48,34 @@ const ArtistDetailPage = () => {
   const [scrollY, setScrollY] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+
+  const { playSong } = usePlayerStore();
+  const { followedArtistIds, toggleFollowArtist, initializeFavorites } = useFavoritesStore();
+  const { addToast } = useToastStore();
+
+  useEffect(() => {
+    if (id && followedArtistIds) {
+      setIsFollowing(followedArtistIds.has(Number(id)));
+    }
+  }, [id, followedArtistIds]);
+
+
+
+  const handleToggleFollow = async () => {
+    if (!id) return;
+    setFollowLoading(true);
+    try {
+      await toggleFollowArtist(Number(id));
+      setIsFollowing(!isFollowing);
+      addToast(isFollowing ? "已取消关注" : "已关注艺术家", <Check size={16} />);
+    } catch {
+      addToast("操作失败", <AlertCircle size={16} className="text-red-400" />);
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   useEffect(() => {
     const mainContent = document.getElementById("main-content");
@@ -120,13 +151,20 @@ const ArtistDetailPage = () => {
     )
     .slice(0, 5);
 
-  const avatarUrl = artist.avatarUrl
-    ? `${API_BASE_URL}/static${artist.avatarUrl}`
-    : null;
+  const handlePlayArtist = () => {
+    if (popularSongs.length > 0) {
+      playSong(popularSongs[0] as Song, popularSongs as Song[]);
+    }
+  };
 
-  const headerImageUrl = artist.headerUrl
-    ? `${API_BASE_URL}/static${artist.headerUrl}`
-    : avatarUrl || "/placeholder.jpg";
+  const getFullUrl = (path: string | null | undefined) => {
+    if (!path) return null;
+    const pathWithPublic = path.startsWith("/public") ? path : `/public${path}`;
+    return getAuthenticatedSrc(pathWithPublic);
+  };
+
+  const avatarUrl = getFullUrl(artist.avatarUrl);
+  const headerImageUrl = getFullUrl(artist.headerUrl) || avatarUrl || "/placeholder.jpg";
 
   const headerTextOpacity = Math.max(0, 1 - scrollY / 150);
   const headerTextTransform = `translateY(${Math.min(
@@ -202,6 +240,7 @@ const ArtistDetailPage = () => {
       <div className="p-8">
         <div className="flex items-center gap-6 mb-8">
           <button
+            onClick={handlePlayArtist}
             className="bg-green-500 text-black p-4 rounded-full shadow-lg hover:scale-105 transition-transform"
             aria-label={`Play ${artist.name}`}
           >
@@ -212,8 +251,25 @@ const ArtistDetailPage = () => {
             />
           </button>
 
-          <button className="px-4 py-1.5 border border-neutral-500 rounded-full text-sm font-bold hover:border-white transition-colors">
-            Follow
+          <button
+            onClick={handleToggleFollow}
+            disabled={followLoading}
+            className={clsx(
+              "px-5 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2",
+              isFollowing
+                ? "bg-neutral-800/80 text-green-400 border-2 border-green-500/60 hover:bg-neutral-700/80"
+                : "bg-transparent text-white border-2 border-white/80 hover:bg-white hover:text-black hover:scale-105"
+            )}
+          >
+            {isFollowing ? (
+              <>
+                已关注
+              </>
+            ) : (
+              <>
+                关注
+              </>
+            )}
           </button>
         </div>
 
@@ -225,7 +281,7 @@ const ArtistDetailPage = () => {
         {artist.bio && artist.bioImageUrl && (
           <AboutCard
             bio={artist.bio}
-            imageUrl={`${API_BASE_URL}/static${artist.bioImageUrl}`}
+            imageUrl={getFullUrl(artist.bioImageUrl)!}
           />
         )}
 
@@ -247,8 +303,8 @@ const ArtistDetailPage = () => {
         )}
 
         {singlesAndEPs.length > 0 && (
-          <section>
-            <h2 className="text-2xl font-bold mb-6">Singles & EPs</h2>
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold mb-6">单曲与EP</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {singlesAndEPs.map((album) => (
                 <AlbumCard

@@ -9,6 +9,9 @@ import NowPlayingView from "@/components/NowPlayingView";
 import GlobalKeyboardShortcuts from "@/components/GlobalKeyboardShortcuts";
 import ToastContainer from "@/components/ToastContainer";
 import MobileNavBar from "@/components/MobileNavBar";
+import ThemeProvider from "@/components/ThemeProvider";
+import AppInitializer from "@/components/AppInitializer";
+import AmbientBackground from "@/components/AmbientBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,24 +28,34 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="h-screen flex flex-col bg-black text-white">
-          <div className="flex-grow flex min-h-0">
-            <Sidebar />
-            <main id="main-content" className="flex-1 overflow-y-auto relative">
-              <Header />
-              <div className="p-6 pb-32 md:pb-6">{children}</div>
-            </main>
-          </div>
+        <ThemeProvider>
+          <AppInitializer>
+            <div className="h-screen flex flex-col bg-black text-white relative">
+              <AmbientBackground />
 
-          <MobileNavBar />
-          <PlayerControls />
+              <div className="flex-grow flex min-h-0 relative z-10">
+                <Sidebar />
+                <main id="main-content" className="flex-1 overflow-y-auto relative custom-scrollbar">
+                  <Header />
+                  <div className="p-6 pb-32 md:pb-6">{children}</div>
+                </main>
+              </div>
 
-          <AudioPlayer />
-          <NowPlayingView />
-          <GlobalKeyboardShortcuts />
-          <ToastContainer />
-        </div>
+              <div className="relative z-20">
+                <MobileNavBar />
+                <PlayerControls />
+              </div>
+
+              <AudioPlayer />
+              <NowPlayingView />
+              <GlobalKeyboardShortcuts />
+              <ToastContainer />
+            </div>
+          </AppInitializer>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+
+

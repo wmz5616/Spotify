@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, Logger } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -30,7 +29,7 @@ export class MusicLibraryService {
   private readonly logger = new Logger(MusicLibraryService.name);
   private progressSubject = new Subject<ScanProgress>();
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   getProgressStream(): Observable<ScanProgress> {
     return this.progressSubject.asObservable();
@@ -143,12 +142,28 @@ export class MusicLibraryService {
     const parts = relativePath.split(path.sep);
     if (parts.length < 3) return null;
 
-    const artistName = this.sanitizeString(parts[0]);
-    const albumTitle = this.sanitizeString(parts[1]);
+    let artistName = this.sanitizeString(parts[0]);
+    let albumTitle = this.sanitizeString(parts[1]);
     if (!artistName || !albumTitle) return null;
 
+    const fileName = path.basename(filePath);
+    const filenameMatch = fileName.match(/^(.+?)\s+-\s+(.+)\.[^.]+$/);
+
     let title = path.basename(filePath, path.extname(filePath));
-    title = title.replace(/^\d+\s*[-.]?\s*/, '');
+    let isFilenameParsed = false;
+
+    if (filenameMatch) {
+      const extractedTitle = this.sanitizeString(filenameMatch[2]);
+
+      if (extractedTitle) {
+        title = extractedTitle;
+        isFilenameParsed = true;
+      }
+    }
+
+    if (!isFilenameParsed) {
+      title = title.replace(/^\d+\s*[-.]?\s*/, '');
+    }
 
     let trackNumber: number | undefined;
     let duration: number | undefined;
@@ -159,9 +174,12 @@ export class MusicLibraryService {
       const metadata = await mm.parseFile(filePath, { skipCovers: false });
       trackNumber = metadata.common.track.no ?? undefined;
       duration = metadata.format.duration;
-      title =
-        this.sanitizeString(metadata.common.title) ||
-        this.sanitizeString(title);
+
+      if (!isFilenameParsed) {
+        title =
+          this.sanitizeString(metadata.common.title) ||
+          this.sanitizeString(title);
+      }
 
       if (metadata.common.picture && metadata.common.picture.length > 0) {
         imageBuffer = Buffer.from(metadata.common.picture[0].data);
@@ -173,19 +191,37 @@ export class MusicLibraryService {
           typeof lyricEntry === 'string' ? lyricEntry : lyricEntry.text;
       }
     } catch {
-      /* ignore */
     }
 
     return {
       artist: artistName,
       album: albumTitle,
-      title,
+      title: isFilenameParsed ? title : this.cleanTitle(title, artistName),
       trackNumber,
       duration,
       imageBuffer,
       filePath,
       embeddedLyrics,
     };
+  }
+
+  private cleanTitle(title: string, artistName: string): string {
+    if (!title || !artistName) return title;
+
+    const regex = /^(.+?)\s*[-_]\s*(.+)$/;
+    const match = title.match(regex);
+
+    if (match) {
+      const prefix = match[1].toLowerCase();
+      const cleanArtist = artistName.toLowerCase();
+      const potentialTitle = match[2];
+
+      if (prefix.includes(cleanArtist) || cleanArtist.includes(prefix)) {
+        return potentialTitle;
+      }
+    }
+
+    return title;
   }
 
   private async saveBatch(
@@ -236,7 +272,6 @@ export class MusicLibraryService {
               finalLyrics = info.embeddedLyrics;
             }
           } catch {
-            /* ignore */
           }
 
           await tx.song.upsert({
@@ -402,7 +437,7 @@ export class MusicLibraryService {
           where: { id: artistId },
           data: updateData,
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }
 
@@ -437,7 +472,11 @@ export class MusicLibraryService {
     }
 
     const emptyArtists = await this.prisma.artist.findMany({
-      where: { albums: { none: {} } },
+      where: {
+        albums: { none: {} },
+        avatarUrl: null,
+        headerUrl: null,
+      },
       select: { id: true },
     });
     if (emptyArtists.length > 0) {
@@ -563,7 +602,6 @@ export class MusicLibraryService {
             files.push(res);
         }
       } catch (e) {
-        /* ignore */
       }
     }
     return files;
@@ -579,6 +617,7 @@ export class MusicLibraryService {
       include: {
         albums: {
           include: {
+            artists: true,
             songs: {
               orderBy: { trackNumber: 'asc' },
               select: { id: true, title: true, duration: true },
@@ -680,7 +719,6 @@ export class MusicLibraryService {
   }
 
   private sanitizeString(str: string | undefined): string {
-    // eslint-disable-next-line no-control-regex
     return str ? str.replace(/\u0000/g, '').trim() : '';
   }
 }

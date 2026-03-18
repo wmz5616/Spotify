@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Play, Clock, Calendar, AlertCircle } from "lucide-react";
+import { Play, Clock, Calendar, AlertCircle, Heart } from "lucide-react";
 import { usePlayerStore } from "@/store/usePlayerStore";
+import { useFavoritesStore } from "@/store/useFavoritesStore";
 import type { Song, Album, Artist } from "@/types";
 import SongRowItem from "@/components/SongRowItem";
 import AlbumPageSkeleton from "@/components/AlbumPageSkeleton";
@@ -29,6 +30,9 @@ const AlbumDetailPage = () => {
   const router = useRouter();
   const id = params.id as string;
   const { playSong } = usePlayerStore();
+  const { favoriteAlbumIds, toggleFavoriteAlbum } = useFavoritesStore();
+
+  const isFavorited = id ? favoriteAlbumIds.has(Number(id)) : false;
 
   const [album, setAlbum] = useState<AlbumDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,9 +110,8 @@ const AlbumDetailPage = () => {
       <div
         className="absolute inset-x-0 top-0 h-[400px] -z-10 transition-colors duration-700 ease-in-out"
         style={{
-          background: `linear-gradient(to bottom, ${
-            dominantColor || "#222"
-          } 0%, #121212 100%)`,
+          background: `linear-gradient(to bottom, ${dominantColor || "#222"
+            } 0%, #121212 100%)`,
           opacity: 0.6,
         }}
       />
@@ -180,6 +183,20 @@ const AlbumDetailPage = () => {
               size={28}
               fill="black"
               className="translate-x-0.5 text-black"
+            />
+          </button>
+
+          <button
+            onClick={() => id && toggleFavoriteAlbum(Number(id))}
+            className="group p-3 hover:scale-110 transition-all"
+            aria-label={isFavorited ? "取消收藏" : "收藏专辑"}
+          >
+            <Heart
+              size={32}
+              className={`transition-colors ${isFavorited
+                ? "fill-green-500 text-green-500"
+                : "text-neutral-400 group-hover:text-white"
+                }`}
             />
           </button>
         </div>

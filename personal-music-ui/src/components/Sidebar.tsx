@@ -19,6 +19,7 @@ import type { Playlist, Artist } from "@/types";
 import { usePlayerStore } from "@/store/usePlayerStore";
 import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 import { useToastStore } from "@/store/useToastStore";
+import UserQuickLinks from "./UserQuickLinks";
 
 const LibrarySkeleton = ({ collapsed }: { collapsed: boolean }) => (
   <div className="space-y-4 p-2 animate-pulse">
@@ -93,13 +94,13 @@ const Sidebar = () => {
 
   const routes = [
     {
-      label: "Home",
+      label: "首页",
       icon: Home,
       href: "/",
       active: pathname === "/",
     },
     {
-      label: "Search",
+      label: "搜索",
       icon: Search,
       href: "/search",
       active: pathname === "/search",
@@ -120,7 +121,7 @@ const Sidebar = () => {
             href={route.href}
             className={clsx(
               "flex items-center gap-x-4 text-neutral-400 hover:text-white transition cursor-pointer font-bold",
-              route.active && "text-white",
+              route.active && "text-green-500",
               isSidebarCollapsed && "justify-center"
             )}
           >
@@ -139,9 +140,11 @@ const Sidebar = () => {
           )}
         >
           <RefreshCw size={26} className={clsx(isScanning && "animate-spin")} />
-          {!isSidebarCollapsed && <p className="truncate">Refresh</p>}
+          {!isSidebarCollapsed && <p className="truncate">刷新</p>}
         </button>
       </div>
+
+      <UserQuickLinks collapsed={isSidebarCollapsed} />
 
       <div className="flex-1 rounded-xl bg-[#121212] overflow-hidden flex flex-col shadow-lg border border-white/5">
         <div className="p-4 shadow-md z-10">
@@ -159,7 +162,7 @@ const Sidebar = () => {
             >
               <Library size={26} />
               {!isSidebarCollapsed && (
-                <p className="font-bold truncate">Your Library</p>
+                <p className="font-bold truncate">音乐库</p>
               )}
             </div>
             <button
@@ -176,7 +179,7 @@ const Sidebar = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hover:[&::-webkit-scrollbar]:block hover:[scrollbar-width:thin]">
+        <div className="flex-1 overflow-y-auto p-2 no-scrollbar">
           {loading ? (
             <LibrarySkeleton collapsed={isSidebarCollapsed} />
           ) : error ? (
@@ -192,7 +195,7 @@ const Sidebar = () => {
                   className={clsx(
                     "flex items-center gap-x-3 p-2 rounded-md hover:bg-[#1f1f1f] cursor-pointer group transition",
                     pathname === `/playlist/${playlist.id}` &&
-                      "bg-[#232323] text-green-500",
+                    "bg-[#232323] text-green-500",
                     isSidebarCollapsed && "justify-center"
                   )}
                 >
@@ -201,7 +204,7 @@ const Sidebar = () => {
                       className={clsx(
                         "text-neutral-400 group-hover:text-white",
                         pathname === `/playlist/${playlist.id}` &&
-                          "text-green-500"
+                        "text-green-500"
                       )}
                       size={24}
                     />
@@ -242,7 +245,7 @@ const Sidebar = () => {
                     className={clsx(
                       "flex items-center gap-x-3 p-2 rounded-md hover:bg-[#1f1f1f] cursor-pointer group transition",
                       pathname === `/artist/${artist.id}` &&
-                        "bg-[#232323] text-green-500",
+                      "bg-[#232323] text-green-500",
                       isSidebarCollapsed && "justify-center"
                     )}
                   >
@@ -270,9 +273,6 @@ const Sidebar = () => {
                           )}
                         >
                           {artist.name}
-                        </p>
-                        <p className="text-sm text-neutral-400 truncate">
-                          Artist
                         </p>
                       </div>
                     )}

@@ -19,58 +19,13 @@ import { usePlayerStore } from "@/store/usePlayerStore";
 import LyricDisplay from "./LyricDisplay";
 import Image from "next/image";
 import { getAuthenticatedSrc } from "@/lib/api-client";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Song } from "@/types";
+import LikeButton from "./LikeButton";
+import { useFavoritesStore } from "@/store/useFavoritesStore";
+import { useUserStore } from "@/store/useUserStore";
+import { useToastStore } from "@/store/useToastStore";
 
-const LikeButton = ({
-  isLiked,
-  onClick,
-}: {
-  isLiked: boolean;
-  onClick: () => void;
-}) => {
-  return (
-    <motion.button
-      onClick={onClick}
-      className="relative p-2 flex items-center justify-center group"
-      whileTap={{ scale: 0.8 }}
-    >
-      <AnimatePresence>
-        {isLiked && (
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute left-1/2 top-1/2 w-1.5 h-1.5 bg-green-500 rounded-full"
-                initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
-                animate={{
-                  scale: 0,
-                  x: Math.cos(i * 45 * (Math.PI / 180)) * 20,
-                  y: Math.sin(i * 45 * (Math.PI / 180)) * 20,
-                  opacity: 0,
-                }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              />
-            ))}
-          </div>
-        )}
-      </AnimatePresence>
 
-      <motion.div
-        animate={isLiked ? { scale: [1, 1.4, 0.8, 1.1, 1] } : { scale: 1 }}
-        transition={{ duration: 0.4 }}
-      >
-        <Heart
-          className={`w-8 h-8 transition-colors duration-300 ${
-            isLiked
-              ? "fill-green-500 text-green-500"
-              : "text-neutral-300 group-hover:text-white"
-          }`}
-        />
-      </motion.div>
-    </motion.button>
-  );
-};
 
 const PlayPauseButton = ({
   isPlaying,
@@ -131,12 +86,13 @@ const FullScreenPlayer = () => {
     setVolume,
   } = usePlayerStore();
 
+  const { isSongFavorited, toggleFavoriteSong } = useFavoritesStore();
+  const { isAuthenticated } = useUserStore();
+  const { addToast } = useToastStore();
   const [imgError, setImgError] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     setImgError(false);
-    setIsLiked(false);
   }, [currentSong?.id]);
 
   if (!currentSong) return null;
@@ -154,11 +110,11 @@ const FullScreenPlayer = () => {
 
     const cleanPath = path.startsWith("/") ? path : `/${path}`;
 
-    if (cleanPath.startsWith("/static")) {
+    if (cleanPath.startsWith("/public")) {
       return getAuthenticatedSrc(cleanPath);
     }
 
-    return getAuthenticatedSrc(`/static${cleanPath}`);
+    return getAuthenticatedSrc(`/public${cleanPath}`);
   };
 
   const albumCover = getCoverUrl();
@@ -205,8 +161,15 @@ const FullScreenPlayer = () => {
     }
   };
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
+  const isLiked = currentSong ? isSongFavorited(currentSong.id) : false;
+
+  const handleLike = async () => {
+    if (!currentSong) return;
+    if (!isAuthenticated) {
+      addToast("请先登录");
+      return;
+    }
+    await toggleFavoriteSong(currentSong.id);
     if (typeof navigator !== "undefined" && navigator.vibrate) {
       navigator.vibrate([10, 30, 10]);
     }
@@ -336,7 +299,7 @@ const FullScreenPlayer = () => {
                     </p>
                   </div>
 
-                  <LikeButton isLiked={isLiked} onClick={handleLike} />
+                  <LikeButton isLiked={isLiked} onToggle={handleLike} />
                 </div>
 
                 <div className="pt-2 space-y-2">
@@ -375,11 +338,10 @@ const FullScreenPlayer = () => {
                 <div className="flex justify-between items-center px-2">
                   <button
                     onClick={toggleShuffle}
-                    className={`transition-colors hover:scale-110 active:scale-95 ${
-                      playMode === "shuffle"
-                        ? "text-green-500"
-                        : "text-neutral-300 hover:text-white"
-                    }`}
+                    className={`transition-colors hover:scale-110 active:scale-95 ${playMode === "shuffle"
+                      ? "text-green-500"
+                      : "text-neutral-300 hover:text-white"
+                      }`}
                   >
                     <Shuffle className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
@@ -407,11 +369,10 @@ const FullScreenPlayer = () => {
 
                   <button
                     onClick={toggleRepeat}
-                    className={`transition-colors hover:scale-105 active:scale-95 ${
-                      playMode.includes("repeat")
-                        ? "text-green-500"
-                        : "text-neutral-300 hover:text-white"
-                    }`}
+                    className={`transition-colors hover:scale-105 active:scale-95 ${playMode.includes("repeat")
+                      ? "text-green-500"
+                      : "text-neutral-300 hover:text-white"
+                      }`}
                   >
                     {renderRepeatIcon()}
                   </button>

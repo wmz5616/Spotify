@@ -6,7 +6,6 @@ import { formatDuration } from "@/lib/utils";
 import { Play, Pause } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { getAuthenticatedSrc } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -20,9 +19,13 @@ const PopularSongsList = ({ songs }: { songs: Song[] }) => {
       {songs.map((song, index) => {
         const isActive = currentSong?.id === song.id;
 
-        const coverUrl = song.album?.coverPath
-          ? `${API_BASE_URL}/static${song.album.coverPath}`
-          : "/placeholder.jpg";
+        const getCoverUrl = (path: string | null | undefined) => {
+          if (!path) return "/placeholder.jpg";
+          const pathWithPublic = path.startsWith("/public") ? path : `/public${path}`;
+          return getAuthenticatedSrc(pathWithPublic);
+        };
+
+        const coverUrl = getCoverUrl(song.album?.coverPath);
 
         const handlePlay = () => {
           if (isActive) {
@@ -77,9 +80,8 @@ const PopularSongsList = ({ songs }: { songs: Song[] }) => {
 
             <div className="flex-1 flex flex-col justify-center overflow-hidden">
               <div
-                className={`font-medium truncate ${
-                  isActive ? "text-green-500" : "text-white"
-                }`}
+                className={`font-medium truncate ${isActive ? "text-green-500" : "text-white"
+                  }`}
               >
                 {song.title}
               </div>

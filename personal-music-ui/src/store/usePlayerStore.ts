@@ -21,8 +21,12 @@ interface PlayerState {
   isFullScreen: boolean;
   isMuted: boolean;
   prevVolume: number;
+  autoPlayNext: boolean;
 
   audioRef: React.RefObject<HTMLAudioElement | null> | null;
+  analyser: AnalyserNode | null;
+
+  queue: Song[];
 
   playSong: (song: Song, queue?: Song[]) => void;
   togglePlayPause: () => void;
@@ -30,12 +34,15 @@ interface PlayerState {
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setAudioRef: (ref: React.RefObject<HTMLAudioElement | null>) => void;
+  setAnalyser: (analyser: AnalyserNode | null) => void;
   seek: (time: number) => void;
 
   playNext: () => void;
   playPrev: () => void;
   insertNext: (song: Song) => void;
   addToQueue: (song: Song) => void;
+  removeFromQueue: (index: number) => void;
+  clearQueue: () => void;
   handleSongEnd: () => void;
 
   toggleShuffle: () => void;
@@ -46,6 +53,7 @@ interface PlayerState {
   toggleFullScreen: () => void;
   setFullScreen: (isFull: boolean) => void;
   toggleMute: () => void;
+  setAutoPlayNext: (enabled: boolean) => void;
 }
 
 const shuffleArray = <T>(array: T[]): T[] => {
@@ -75,7 +83,18 @@ export const usePlayerStore = create<PlayerState>()(
       isFullScreen: false,
       isMuted: false,
       prevVolume: 0.8,
+      autoPlayNext: true,
       audioRef: null,
+      analyser: null,
+
+      get queue() {
+        const state = get();
+        const idx = state.currentQueueIndex;
+        if (state.playQueue.length === 0) return [];
+        if (idx >= state.playQueue.length - 1) return [];
+
+        return state.playQueue.slice(idx + 1);
+      },
 
       playSong: (song, queue) => {
         const state = get();
@@ -118,6 +137,12 @@ export const usePlayerStore = create<PlayerState>()(
           isLoading: true,
           currentTime: 0,
         });
+
+        if (typeof window !== "undefined") {
+          import("./useHistoryStore").then(({ useHistoryStore }) => {
+            useHistoryStore.getState().recordPlay(song.id);
+          });
+        }
       },
 
       togglePlayPause: () => {
@@ -143,6 +168,7 @@ export const usePlayerStore = create<PlayerState>()(
       setCurrentTime: (time) => set({ currentTime: time }),
       setDuration: (duration) => set({ duration }),
       setAudioRef: (ref) => set({ audioRef: ref }),
+      setAnalyser: (analyser) => set({ analyser }),
 
       seek: (time) => {
         const { audioRef } = get();
@@ -207,8 +233,6 @@ export const usePlayerStore = create<PlayerState>()(
 
       addToQueue: (song) => {
         set((state) => {
-          if (state.playQueue.some((s) => s.id === song.id)) return state;
-
           const newQueue = [...state.playQueue, song];
           const newOriginalQueue =
             state.originalQueue.length > 0
@@ -222,13 +246,42 @@ export const usePlayerStore = create<PlayerState>()(
         });
       },
 
+      removeFromQueue: (index) => {
+        set((state) => {
+          const actualIndex = state.currentQueueIndex + 1 + index;
+          if (actualIndex < 0 || actualIndex >= state.playQueue.length) return state;
+
+          const newQueue = [...state.playQueue];
+          newQueue.splice(actualIndex, 1);
+
+          const newOriginalQueue = state.originalQueue.length > 0
+            ? state.originalQueue.filter((_, i) => i !== actualIndex)
+            : [];
+
+          return {
+            playQueue: newQueue,
+            originalQueue: newOriginalQueue,
+          };
+        });
+      },
+
+      clearQueue: () => {
+        set((state) => ({
+          playQueue: state.currentSong ? [state.currentSong] : [],
+          originalQueue: [],
+          currentQueueIndex: state.currentSong ? 0 : -1,
+        }));
+      },
+
       handleSongEnd: () => {
-        const { playMode, audioRef } = get();
+        const { playMode, audioRef, autoPlayNext } = get();
         if (playMode === "repeat-one" && audioRef?.current) {
           audioRef.current.currentTime = 0;
           audioRef.current.play();
-        } else {
+        } else if (autoPlayNext) {
           get().playNext();
+        } else {
+          set({ isPlaying: false });
         }
       },
 
@@ -300,6 +353,8 @@ export const usePlayerStore = create<PlayerState>()(
           set({ isMuted: true });
         }
       },
+
+      setAutoPlayNext: (enabled: boolean) => set({ autoPlayNext: enabled }),
     }),
     {
       name: "player-storage",
@@ -310,6 +365,10 @@ export const usePlayerStore = create<PlayerState>()(
         isSidebarCollapsed: state.isSidebarCollapsed,
         isMuted: state.isMuted,
         prevVolume: state.prevVolume,
+        autoPlayNext: state.autoPlayNext,
+        playQueue: state.playQueue,
+        originalQueue: state.originalQueue,
+        currentQueueIndex: state.currentQueueIndex,
       }),
     }
   )

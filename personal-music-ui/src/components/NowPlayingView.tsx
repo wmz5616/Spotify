@@ -11,6 +11,7 @@ import clsx from "clsx";
 import SongRowItem from "./SongRowItem";
 import { useColor } from "color-thief-react";
 import { getAuthenticatedSrc } from "@/lib/api-client";
+import { cleanSongTitle } from "@/lib/utils";
 
 const NowPlayingView = () => {
   const {
@@ -37,10 +38,10 @@ const NowPlayingView = () => {
     if (path && path !== "undefined" && path !== "null") {
       if (path.startsWith("http")) return path;
       const cleanPath = path.startsWith("/") ? path : `/${path}`;
-      if (cleanPath.startsWith("/static")) {
+      if (cleanPath.startsWith("/public")) {
         return getAuthenticatedSrc(cleanPath);
       }
-      return getAuthenticatedSrc(`/static${cleanPath}`);
+      return getAuthenticatedSrc(`/public${cleanPath}`);
     }
 
     return "/placeholder.jpg";
@@ -128,7 +129,7 @@ const NowPlayingView = () => {
                 />
                 <div>
                   <h3 className="font-bold text-white line-clamp-1">
-                    {currentSong.title}
+                    {cleanSongTitle(currentSong.title, album?.artists || currentSong.artist)}
                   </h3>
                   <div className="text-sm text-neutral-300 line-clamp-1">
                     {album?.artists && Array.isArray(album.artists) ? (
