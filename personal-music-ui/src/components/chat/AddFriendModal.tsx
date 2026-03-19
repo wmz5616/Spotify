@@ -2,11 +2,12 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Loader2, UserPlus, Send, Check } from "lucide-react";
+import { Search, X, Loader2, UserPlus, Send, Check, UserMinus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 import { useToastStore } from "@/store/useToastStore";
+import { useUserStore } from "@/store/useUserStore";
 
 interface AddFriendModalProps {
     isOpen: boolean;
@@ -19,12 +20,15 @@ export default function AddFriendModal({ isOpen, onClose }: AddFriendModalProps)
     const [searchResult, setSearchResult] = useState<any | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [sent, setSent] = useState(false);
-    
+    const [hasSearched, setHasSearched] = useState(false);
+
     const addToast = useToastStore(state => state.addToast);
+    const currentUser = useUserStore(state => state.user);
 
     const handleSearch = async () => {
         if (!searchId.trim()) return;
         setIsSearching(true);
+        setHasSearched(true);
         setSent(false);
         try {
             const result = await apiClient<any>(`/api/chat/search/${searchId}`);
@@ -60,7 +64,7 @@ export default function AddFriendModal({ isOpen, onClose }: AddFriendModalProps)
     return (
         <AnimatePresence>
             <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -79,9 +83,9 @@ export default function AddFriendModal({ isOpen, onClose }: AddFriendModalProps)
 
                     <div className="p-6">
                         <div className="relative mb-6">
-                            <input 
-                                type="text" 
-                                placeholder="输入用户名 (例如: jennie)..."
+                            <input
+                                type="text"
+                                placeholder="输入用户名"
                                 value={searchId}
                                 onChange={(e) => setSearchId(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -92,23 +96,23 @@ export default function AddFriendModal({ isOpen, onClose }: AddFriendModalProps)
                         </div>
 
                         {searchResult ? (
-                            <motion.div 
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-5 group hover:bg-white/10 transition-all duration-300"
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-5 group hover:border-green-500/30 transition-all duration-500 shadow-2xl backdrop-blur-md"
                             >
-                                <Link 
-                                    href={`/profile/${searchResult.id}`}
+                                <Link
+                                    href={`/${searchResult.username}`}
                                     onClick={onClose}
-                                    className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-transparent hover:border-green-500/50 transition-all duration-500 shadow-2xl shrink-0 cursor-pointer"
+                                    className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-transparent group-hover:border-green-500/50 transition-all duration-500 shadow-2xl shrink-0 cursor-pointer"
                                 >
                                     {searchResult.avatarPath ? (
-                                        <Image 
-                                            src={getAuthenticatedSrc(searchResult.avatarPath)} 
-                                            alt={searchResult.displayName} 
-                                            fill 
+                                        <Image
+                                            src={getAuthenticatedSrc(searchResult.avatarPath)}
+                                            alt={searchResult.displayName}
+                                            fill
                                             sizes="64px"
-                                            className="object-cover hover:scale-110 transition-transform duration-500" 
+                                            className="object-cover group-hover:scale-110 transition-transform duration-700"
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-700 flex items-center justify-center font-black text-black text-2xl uppercase">
@@ -117,8 +121,8 @@ export default function AddFriendModal({ isOpen, onClose }: AddFriendModalProps)
                                     )}
                                 </Link>
                                 <div className="flex-1 min-w-0">
-                                    <Link 
-                                        href={`/profile/${searchResult.id}`}
+                                    <Link
+                                        href={`/${searchResult.username}`}
                                         onClick={onClose}
                                         className="inline-block max-w-full"
                                     >
@@ -126,40 +130,51 @@ export default function AddFriendModal({ isOpen, onClose }: AddFriendModalProps)
                                     </Link>
                                     <p className="text-sm text-neutral-400 font-medium truncate">@{searchResult.username}</p>
                                     {searchResult.bio && (
-                                        <p className="text-xs text-neutral-500 truncate mt-1 italic">"{searchResult.bio}"</p>
+                                        <p className="text-xs text-neutral-500 truncate mt-1 italic opacity-80 uppercase tracking-tighter grayscale group-hover:grayscale-0 transition-all">"{searchResult.bio}"</p>
                                     )}
                                 </div>
                                 <button
                                     onClick={handleAddFriend}
-                                    disabled={isSubmitting || sent}
-                                    className={`px-5 py-2.5 rounded-full text-sm font-black transition-all shadow-xl active:scale-95 flex items-center gap-2 ${
-                                        sent 
-                                        ? "bg-neutral-800 text-green-500 border border-green-500/20" 
-                                        : "bg-green-500 text-black hover:bg-green-400 hover:scale-105 shadow-green-500/20"
-                                    }`}
+                                    disabled={isSubmitting || sent || searchResult.isMe || searchResult.id === currentUser?.id}
+                                    className={`px-5 py-2.5 rounded-full text-sm font-black transition-all active:scale-95 flex items-center justify-center gap-2 ${sent || searchResult.isMe || searchResult.id === currentUser?.id
+                                        ? "bg-neutral-800 text-neutral-500 border border-white/5 cursor-not-allowed"
+                                        : "bg-green-500 text-black hover:bg-green-400 hover:scale-[1.02]"
+                                        }`}
                                 >
-                                    {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : sent ? <Check size={14} /> : <UserPlus size={14} />}
-                                    {sent ? "申请已发" : "添加"}
+                                    {isSubmitting ? (
+                                        <Loader2 size={14} className="animate-spin" />
+                                    ) : (searchResult.isMe || searchResult.id === currentUser?.id) ? (
+                                        null
+                                    ) : sent ? (
+                                        <Check size={14} />
+                                    ) : (
+                                        <UserPlus size={14} />
+                                    )}
+                                    {searchResult.isMe || searchResult.id === currentUser?.id ? "自己" : sent ? "申请已发" : "添加"}
                                 </button>
                             </motion.div>
-                        ) : (
-                            <div className="py-16 text-center text-neutral-600 bg-black/20 rounded-2xl border border-dashed border-white/5">
-                                <div className="relative inline-block mb-4">
-                                    <Search size={48} className="text-neutral-800" />
-                                    <motion.div 
-                                        animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.5, 0.2] }}
-                                        transition={{ duration: 2, repeat: Infinity }}
-                                        className="absolute inset-0 bg-green-500/20 blur-xl rounded-full"
-                                    />
+                        ) : hasSearched ? (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="py-16 text-center bg-white/[0.02] rounded-2xl border border-white/5"
+                            >
+                                <div className="mb-4">
+                                    <UserMinus size={40} className="text-neutral-800 mx-auto" />
                                 </div>
-                                <p className="text-base font-bold text-neutral-400">通过用户名寻找你的朋友</p>
-                                <p className="text-xs text-neutral-600 mt-1 px-10">输入准确的 @用户名，即刻与志同道合的乐迷开启私谈</p>
+                                <h3 className="text-xl font-black text-neutral-500 tracking-tight">空空如也</h3>
+                                <p className="text-xs text-neutral-600 mt-2">未找到此用户</p>
+                            </motion.div>
+                        ) : (
+                            <div className="py-16 text-center bg-white/[0.01] rounded-2xl border border-white/5">
+                                <Search size={40} className="text-neutral-800 mx-auto mb-4" />
+                                <p className="text-sm font-bold text-neutral-500 tracking-tight">通过用户名寻找你的朋友</p>
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="px-6 pb-6 pt-0">
-                        <button 
+                        <button
                             onClick={onClose}
                             className="w-full py-3 text-sm font-bold text-neutral-400 hover:text-white transition-colors"
                         >

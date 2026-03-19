@@ -16,11 +16,13 @@ import { useFavoritesStore } from "@/store/useFavoritesStore";
 import AuthModal from "./AuthModal";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { apiClient, getAuthenticatedSrc } from "@/lib/api-client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function UserMenu() {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -51,6 +53,7 @@ export default function UserMenu() {
         logout();
         resetFavorites();
         setIsOpen(false);
+        router.push("/");
     };
 
     const openLogin = () => {
@@ -167,7 +170,7 @@ export default function UserMenu() {
 
                                     <div className="py-2">
                                         <Link
-                                            href={`/profile/${user?.id}`}
+                                            href={`/${user?.username}`}
                                             onClick={() => setIsOpen(false)}
                                             className="flex items-center gap-3 px-4 py-2.5 text-neutral-300 hover:text-white hover:bg-neutral-700/50 transition font-bold"
                                         >

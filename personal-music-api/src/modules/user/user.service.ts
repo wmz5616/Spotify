@@ -51,6 +51,53 @@ export class UserService {
         return user;
     }
 
+    async getProfileByUsername(username: string) {
+        const selectFields = {
+            id: true,
+            email: true,
+            username: true,
+            displayName: true,
+            avatarPath: true,
+            backgroundPath: true,
+            avatarPosition: true,
+            backgroundPosition: true,
+            bio: true,
+            ipLocation: true,
+            createdAt: true,
+            _count: {
+                select: {
+                    favoriteSongs: true,
+                    favoriteAlbums: true,
+                    followedArtists: true,
+                    playlists: true,
+                    followers: true,
+                    following: true,
+                    feedPosts: true,
+                },
+            },
+        };
+
+        // 1. Try by username
+        let user = await this.prisma.user.findUnique({
+            where: { username },
+            select: selectFields,
+        });
+
+        // 2. If not found and identifier is numeric, try by ID
+        if (!user && /^\d+$/.test(username)) {
+            user = await this.prisma.user.findUnique({
+                where: { id: parseInt(username) },
+                select: selectFields,
+            });
+        }
+
+        if (!user) {
+            throw new NotFoundException('用户不存在');
+        }
+
+        return user;
+    }
+
     async updateProfile(userId: number, dto: UpdateProfileDto) {
         if (dto.username) {
             const existingUser = await this.prisma.user.findFirst({

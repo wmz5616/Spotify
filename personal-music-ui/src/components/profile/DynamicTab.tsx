@@ -110,7 +110,8 @@ export default function DynamicTab({ feed, isLoading, onLike }: DynamicTabProps)
     };
 
     const handleShare = (postId: number) => {
-        const url = `${window.location.origin}/profile/${feed.find(p => p.id === postId)?.user.id}`;
+        const post = feed.find(p => p.id === postId);
+        const url = `${window.location.origin}/${post?.user.username || ""}`;
         navigator.clipboard.writeText(url)
             .then(() => addToast("分享链接已复制", <Share2 size={16} className="text-green-500" />))
             .catch(() => addToast("无法复制链接"));
@@ -231,7 +232,7 @@ export default function DynamicTab({ feed, isLoading, onLike }: DynamicTabProps)
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2">
                                 <Link 
-                                    href={`/profile/${post.user.id}`}
+                                    href={`/${post.user.username}`}
                                     className="font-bold text-white transition-colors hover:text-green-400 cursor-pointer"
                                 >
                                     {post.user.displayName || post.user.username}
@@ -447,7 +448,7 @@ export default function DynamicTab({ feed, isLoading, onLike }: DynamicTabProps)
 
                                                                 {/* Avatar */}
                                                                 <Link 
-                                                                    href={`/profile/${comment.user.id}`}
+                                                                    href={`/${comment.user.username}`}
                                                                     className={clsx(
                                                                         "rounded-full overflow-hidden shrink-0 bg-neutral-900 border border-white/5 hover:opacity-80 transition-all z-10 self-start shadow-sm",
                                                                         isReply ? "w-6 h-6 mt-1" : "w-9 h-9"
@@ -476,7 +477,7 @@ export default function DynamicTab({ feed, isLoading, onLike }: DynamicTabProps)
                                                                 <div className="flex-1 min-w-0 pr-2 pt-0.5">
                                                                     <div className="flex items-center gap-2 mb-1">
                                                                         <Link 
-                                                                            href={`/profile/${comment.user.id}`}
+                                                                            href={`/${comment.user.username}`}
                                                                             className="font-bold text-neutral-100 text-[13px] hover:text-green-400 transition-colors"
                                                                         >
                                                                             {comment.user.displayName || comment.user.username}

@@ -52,7 +52,7 @@ export default function FriendsTab({ friends, type, isLoading }: FriendsTabProps
                     transition={{ delay: index * 0.05 }}
                 >
                     <Link
-                        href={`/profile/${friend.id}`}
+                        href={`/${friend.username}`}
                         className="group flex items-center gap-4 bg-neutral-900/40 border border-neutral-800/50 p-4 rounded-2xl hover:bg-neutral-800/40 hover:border-neutral-700/50 transition-all duration-300"
                     >
                         <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-neutral-800 group-hover:border-green-500/50 transition-colors">

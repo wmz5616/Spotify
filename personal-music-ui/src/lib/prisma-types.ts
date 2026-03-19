@@ -178,6 +178,7 @@ export interface Song {
   album?: Album;
   userPlaylistSongs?: UserPlaylistSong[];
   playlists?: Playlist[];
+  messages?: Message[];
 }
 
 export interface Playlist {
@@ -222,8 +223,12 @@ export interface Message {
   conversationId: number;
   senderId: number;
   content: string;
+  type: string;
+  imagePath: string | null;
+  songId: number | null;
   isRead: boolean;
   createdAt: Date;
   sender?: User;
   conversation?: Conversation;
+  song?: Song | null;
 }

@@ -25,12 +25,16 @@ const Header = () => {
   const user = useUserStore(state => state.user);
 
   useEffect(() => {
+
+    if (!user?.id) return;
+
     startPolling();
     fetchConversations();
-    if (user?.id) {
-        initSocket(user.id);
-    }
-    return () => stopPolling();
+    initSocket(user.id);
+
+    return () => {
+      stopPolling();
+    };
   }, [startPolling, stopPolling, fetchConversations, initSocket, user?.id]);
 
   useEffect(() => {
@@ -129,10 +133,10 @@ const Header = () => {
         </div>
 
         <UserMenu />
-        
-        <AddFriendModal 
-            isOpen={isAddFriendOpen} 
-            onClose={() => setIsAddFriendOpen(false)} 
+
+        <AddFriendModal
+          isOpen={isAddFriendOpen}
+          onClose={() => setIsAddFriendOpen(false)}
         />
       </div>
     </header>

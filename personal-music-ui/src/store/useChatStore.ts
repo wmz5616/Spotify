@@ -15,6 +15,10 @@ interface Message {
         avatarPath: string;
         updatedAt?: string;
     };
+    type: "text" | "image" | "song";
+    imagePath?: string;
+    songId?: number;
+    song?: any;
 }
 
 interface Conversation {
@@ -39,7 +43,7 @@ interface ChatState {
     initSocket: (userId: number) => void;
     fetchConversations: () => Promise<void>;
     fetchMessages: (conversationId: number) => Promise<void>;
-    sendMessage: (recipientId: number, content: string, senderId: number) => Promise<void>;
+    sendMessage: (recipientId: number, content: string, senderId: number, type?: string, imagePath?: string, songId?: number) => Promise<void>;
     setActiveConversation: (id: number | null) => void;
     setChatOpen: (open: boolean) => void;
     startChatWith: (userId: number) => void;
@@ -119,11 +123,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
         } catch (error) {}
     },
 
-    sendMessage: async (recipientId: number, content: string, senderId: number) => {
+    sendMessage: async (recipientId: number, content: string, senderId: number, type: string = "text", imagePath?: string, songId?: number) => {
         const { socket } = get();
         if (socket && socket.connected) {
-            console.log(`Sending message to ${recipientId}: ${content}`);
-            socket.emit("sendMessage", { recipientId, content, senderId }, (message: Message) => {
+            console.log(`Sending message (${type}) to ${recipientId}: ${content}`);
+            socket.emit("sendMessage", { recipientId, content, senderId, type, imagePath, songId }, (message: Message) => {
                 if (message) {
                     get().addMessage(message);
                 }

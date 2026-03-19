@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -81,12 +81,21 @@ export class ChatService {
             avatarPath: true,
           },
         },
+        song: {
+          include: {
+            album: {
+              include: {
+                artists: true
+              }
+            }
+          }
+        }
       },
       orderBy: { createdAt: 'asc' },
     });
   }
 
-  async sendMessage(senderId: number, recipientId: number, content: string) {
+  async sendMessage(senderId: number, recipientId: number, content: string, type: string = "text", imagePath?: string, songId?: number) {
     // Find if a conversation already exists between these two
     let conversation = await this.prisma.conversation.findFirst({
       where: {
@@ -112,6 +121,9 @@ export class ChatService {
         content,
         senderId,
         conversationId: conversation.id,
+        type,
+        imagePath,
+        songId,
       },
       include: {
         sender: {
@@ -122,6 +134,15 @@ export class ChatService {
             avatarPath: true,
           },
         },
+        song: {
+          include: {
+            album: {
+              include: {
+                artists: true
+              }
+            }
+          }
+        }
       },
     });
 
@@ -184,7 +205,7 @@ export class ChatService {
     return friendships.map((f) => (f.userId === userId ? f.friend : f.user));
   }
 
-  async searchUserByUsername(username: string) {
+  async searchUserByUsername(username: string, currentUserId: number) {
     const user = await this.prisma.user.findUnique({
       where: { username },
       select: {
@@ -195,7 +216,10 @@ export class ChatService {
         bio: true,
       },
     });
-    if (!user) throw new NotFoundException('User not found');
-    return user;
+    if (!user) return null;
+    return {
+      ...user,
+      isMe: user.id === currentUserId
+    };
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, ExecutionContext } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common'; // <-- 引入 UnauthorizedException
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
@@ -31,9 +31,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
             context.getHandler(),
             context.getClass(),
         ]);
-        
+
         if (user) return user;
         if (isPublic) return null;
-        throw err || new Error('Unauthorized');
+
+        throw err || new UnauthorizedException('未授权的访问');
     }
 }

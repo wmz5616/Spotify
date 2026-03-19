@@ -16,10 +16,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Plus } from "lucide-react";
 import Image from "next/image";
 
-export default function ProfilePage() {
+export default function UserProfilePage() {
     const params = useParams();
     const router = useRouter();
-    const userId = Number(params.id);
+    const username = params.username as string;
     const { user: currentUser, isAuthenticated, hasHydrated } = useUserStore();
     
     const [user, setUser] = useState<User | null>(null);
@@ -33,18 +33,18 @@ export default function ProfilePage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
-    useEffect(() => {
-        if (userId) {
-            fetchProfile();
-        }
-    }, [userId]);
-
     // Auth Guard: Redirect to home if not authenticated and storage is hydrated
     useEffect(() => {
         if (hasHydrated && !isAuthenticated) {
             router.push("/");
         }
     }, [hasHydrated, isAuthenticated, router]);
+
+    useEffect(() => {
+        if (username) {
+            fetchProfile();
+        }
+    }, [username]);
 
     useEffect(() => {
         if (user) {
@@ -55,36 +55,39 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
         setIsLoading(true);
         try {
-            const data = await apiClient<User>(`/api/user/profile/${userId}`);
+            // New endpoint: fetching by username/identifier
+            const data = await apiClient<User>(`/api/user/profile/username/${username}`);
             setUser(data);
             
             // Check if following (if logged in)
-            if (currentUser && currentUser.id !== userId) {
+            if (currentUser && currentUser.id !== data.id) {
                 const following = await apiClient<any[]>(`/api/social/following/${currentUser.id}`);
-                setIsFollowing(following.some(f => f.followingId === userId));
+                setIsFollowing(following.some(f => f.followingId === data.id));
             }
         } catch (error) {
             console.error("Failed to fetch profile:", error);
+            // If fetching by identifier fails, it might be a 404
+            setUser(null);
         } finally {
             setIsLoading(false);
         }
     };
 
     const fetchTabData = async () => {
+        if (!user) return;
         setIsLoadingTab(true);
         try {
             if (activeTab === "feed") {
-                const data = await apiClient<any[]>(`/api/social/feed/${userId}`);
+                const data = await apiClient<any[]>(`/api/social/feed/${user.id}`);
                 setFeed(data);
             } else if (activeTab === "following") {
-                const data = await apiClient<any[]>(`/api/social/following/${userId}`);
+                const data = await apiClient<any[]>(`/api/social/following/${user.id}`);
                 setFriends(data.map(f => f.following));
             } else if (activeTab === "followers") {
-                const data = await apiClient<any[]>(`/api/social/followers/${userId}`);
+                const data = await apiClient<any[]>(`/api/social/followers/${user.id}`);
                 setFriends(data.map(f => f.follower));
             } else if (activeTab === "playlists") {
-                // Modified: Use the correct endpoint for playlists
-                const endpoint = isCurrentUser ? `/api/user-playlists` : `/api/user-playlists/user/${userId}`;
+                const endpoint = isCurrentUser ? `/api/user-playlists` : `/api/user-playlists/user/${user.id}`;
                 const data = await apiClient<any[]>(endpoint);
                 setPlaylists(data);
             }
@@ -141,8 +144,9 @@ export default function ProfilePage() {
     };
 
     const handleFollow = async () => {
+        if (!user) return;
         try {
-            await apiClient(`/api/social/follow/${userId}`, { method: "POST" });
+            await apiClient(`/api/social/follow/${user.id}`, { method: "POST" });
             setIsFollowing(true);
             fetchProfile(); // Refresh stats
         } catch (error) {
@@ -151,8 +155,9 @@ export default function ProfilePage() {
     };
 
     const handleUnfollow = async () => {
+        if (!user) return;
         try {
-            await apiClient(`/api/social/follow/${userId}`, { method: "DELETE" });
+            await apiClient(`/api/social/follow/${user.id}`, { method: "DELETE" });
             setIsFollowing(false);
             fetchProfile(); // Refresh stats
         } catch (error) {
@@ -177,7 +182,7 @@ export default function ProfilePage() {
         );
     }
 
-    const isCurrentUser = currentUser?.id === userId;
+    const isCurrentUser = currentUser?.id === user.id;
 
     return (
         <div className="min-h-screen bg-[#121212]">
@@ -258,7 +263,7 @@ export default function ProfilePage() {
                                                     )}
                                                 </div>
                                                 <h3 className="font-bold text-white truncate">{playlist.name}</h3>
-                                                <p className="text-neutral-500 text-sm mt-1">{playlist.userId === userId ? "创建者" : "已收藏"}</p>
+                                                <p className="text-neutral-500 text-sm mt-1">{playlist.userId === user.id ? "创建者" : "已收藏"}</p>
                                             </Link>
                                         ))}
                                     </div>

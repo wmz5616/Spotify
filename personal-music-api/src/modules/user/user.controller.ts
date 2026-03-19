@@ -45,10 +45,18 @@ export class UserController {
 
     @Get('profile/:userId')
     @Public()
-    @ApiOperation({ summary: '获取指定用户资料' })
+    @ApiOperation({ summary: '获取指定用户资料 (通过ID)' })
     @ApiResponse({ status: 200, description: '获取成功' })
     async getPublicProfile(@Param('userId', ParseIntPipe) userId: number) {
         return this.userService.getProfile(userId);
+    }
+
+    @Get('profile/username/:username')
+    @Public()
+    @ApiOperation({ summary: '获取指定用户资料 (通过用户名)' })
+    @ApiResponse({ status: 200, description: '获取成功' })
+    async getPublicProfileByUsername(@Param('username') username: string) {
+        return this.userService.getProfileByUsername(username);
     }
 
     @Patch('profile')

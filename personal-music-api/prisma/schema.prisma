@@ -202,6 +202,7 @@ model Song {
   album             Album              @relation(fields: [albumId], references: [id])
   userPlaylistSongs UserPlaylistSong[]
   playlists         Playlist[]         @relation("PlaylistToSong")
+  messages          Message[]
 }
 
 model Playlist {
@@ -248,8 +249,12 @@ model Message {
   conversationId Int
   senderId       Int
   content        String
+  type           String       @default("text")
+  imagePath      String?
+  songId         Int?
   isRead         Boolean      @default(false)
   createdAt      DateTime     @default(now())
   sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  song           Song?        @relation(fields: [songId], references: [id], onDelete: SetNull)
 }

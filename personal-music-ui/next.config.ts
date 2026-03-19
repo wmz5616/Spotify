@@ -45,6 +45,12 @@ const nextConfig = {
         pathname: "/playlist-covers/**",
       },
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3001",
+        pathname: "/chat/**",
+      },
+      {
         protocol: "https",
         hostname: "images.unsplash.com",
         pathname: "/**",

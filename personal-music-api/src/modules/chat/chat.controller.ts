@@ -1,4 +1,7 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from 'path';
+import * as fs from 'fs';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -33,12 +36,33 @@ export class ChatController {
   }
 
   @Get('search/:username')
-  searchUser(@Param('username') username: string) {
-    return this.chatService.searchUserByUsername(username);
+  searchUser(@Param('username') username: string, @Req() req: any) {
+    return this.chatService.searchUserByUsername(username, req.user.id);
   }
 
   @Post('read/:conversationId')
   markAsRead(@Param('conversationId') conversationId: string, @Req() req: any) {
     return this.chatService.markAsRead(parseInt(conversationId), req.user.id);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 50 * 1024 * 1024 } }))
+  async uploadFile(
+    @Req() req,
+    @UploadedFile() file: { originalname: string; buffer: Buffer },
+  ) {
+    const uploadDir = path.join(process.cwd(), 'public', 'chat');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const fileName = `${req.user.id}_${Date.now()}${path.extname(file.originalname)}`;
+    const filePath = path.join(uploadDir, fileName);
+
+    fs.writeFileSync(filePath, file.buffer);
+
+    return {
+      path: `/chat/${fileName}`,
+    };
   }
 }

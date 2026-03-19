@@ -26,7 +26,7 @@ export function getAuthenticatedSrc(path: string): string {
   
   // 核心逻辑: 如果是媒体文件夹路径且缺少 /public/ 或 /static/ 等前缀，统一补全 /public
   // 这样可以解决后端存数据库路径不带 public，但 ServeStatic 挂载在 /public 的不一致问题
-  const mediaFolders = ['/avatars/', '/backgrounds/', '/covers/', '/feed/', '/artist-images/', '/playlist-covers/'];
+  const mediaFolders = ['/avatars/', '/backgrounds/', '/covers/', '/feed/', '/artist-images/', '/playlist-covers/', '/chat/'];
   const hasCommonPrefix = normalizedPath.startsWith('/public/') || 
                          normalizedPath.startsWith('/static/') || 
                          normalizedPath.startsWith('/api/');
@@ -129,7 +129,12 @@ export async function apiClient<T>(
       return {} as T;
     }
 
-    return await response.json();
+    const text = await response.text();
+    try {
+      return text ? JSON.parse(text) : (null as any as T);
+    } catch (e) {
+      return null as any as T;
+    }
   } catch (error) {
     console.error(`Request failed: ${url}`, error);
     throw error;
